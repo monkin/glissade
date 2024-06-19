@@ -2,6 +2,10 @@
 name = "glissade"
 version = "0.1.0"
 authors = ["Andrei Monkin <monkin.andrey@gmail.com>"]
+description = "Rust library that provides various utilities for animations and transitions"
+keywords = ["animation", "transition", "interpolation", "easing"]
 readme = "../README.md"
 license = "MIT"
+repository = "https://github.com/monkin/glissade"
 edition = "2021"
+publish = true
