@@ -5,7 +5,7 @@ Glissade is a Rust library that provides various utilities for animations and tr
 ## Features
 
 - InertialValue: A value that changes over time towards a target value.
-- Transition: Represents transitioning between two states.
+- Transition: Represents transitioning between key points.
 - Animation: Provides functionality for animating values (running Transition,
   or in other words a Transition with start time attached).
 - Easing: Contains various easing functions for smooth transitions.
