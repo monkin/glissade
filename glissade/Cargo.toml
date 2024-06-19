@@ -1,0 +1,7 @@
+[package]
+name = "glissade"
+version = "0.1.0"
+authors = ["Andrei Monkin <monkin.andrey@gmail.com>"]
+readme = "../README.md"
+license = "MIT"
+edition = "2021"
