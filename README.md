@@ -1,5 +1,10 @@
 # Glissade
 
+![Tests Status](https://github.com/monkin/glissade/actions/workflows/tests.yml/badge.svg)
+![Build Status](https://github.com/monkin/glissade/actions/workflows/build.yml/badge.svg)
+![Clippy Status](https://github.com/monkin/glissade/actions/workflows/clippy.yml/badge.svg)
+![Format Status](https://github.com/monkin/glissade/actions/workflows/format.yml/badge.svg)
+
 Glissade is a Rust library that provides various utilities for animations and transitions.
 
 The lib contains two main types: `Animation` and `InertialValue`.
