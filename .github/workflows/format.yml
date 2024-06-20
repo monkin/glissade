@@ -1,0 +1,20 @@
+name: Format
+
+on: [push, pull_request]
+
+permissions:
+  contents: read
+
+jobs:
+  format:
+    name: Rustfmt
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          components: rustfmt
+          override: true
+      - run: cd glissade && cargo fmt --all -- --check
