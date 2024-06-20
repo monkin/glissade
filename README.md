@@ -35,7 +35,7 @@ extern crate glissade;
 
 ### Simple two-step animation
 
-```
+```rust
 use glissade::{Easing, transition, Transition};
 use std::time::{Duration, SystemTime};
 
@@ -61,7 +61,7 @@ assert_eq!(animation.get(now + Duration::from_secs(3)), 5.0);
 
 ### Smoothly change color
 
-```
+```rust
 use glissade::{InertialValue, Easing};
 use std::time::{Duration, SystemTime};
 
