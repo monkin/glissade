@@ -100,18 +100,6 @@ impl Mix for u64 {
     }
 }
 
-impl Mix for i128 {
-    fn mix(self, other: i128, t: f32) -> i128 {
-        (self as f64).mix(other as f64, t).round() as i128
-    }
-}
-
-impl Mix for u128 {
-    fn mix(self, other: u128, t: f32) -> u128 {
-        (self as f64).mix(other as f64, t).round() as u128
-    }
-}
-
 impl Mix for isize {
     fn mix(self, other: isize, t: f32) -> isize {
         (self as f64).mix(other as f64, t).round() as isize
@@ -192,8 +180,6 @@ mod tests {
         assert_eq!(1u32.mix(3, 0.5), 2);
         assert_eq!(1i64.mix(3, 0.5), 2);
         assert_eq!(1u64.mix(3, 0.5), 2);
-        assert_eq!(1i128.mix(3, 0.5), 2);
-        assert_eq!(1u128.mix(3, 0.5), 2);
         assert_eq!(1isize.mix(3, 0.5), 2);
         assert_eq!(1usize.mix(3, 0.5), 2);
     }
