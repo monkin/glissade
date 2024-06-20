@@ -54,9 +54,9 @@ impl<I: Clone + Debug + Sized, T: Transition<I>> Animation<I, T> {
 
 #[cfg(test)]
 mod tests {
-    use std::time::Duration;
     use super::*;
     use crate::transition::LinearTransition;
+    use std::time::Duration;
 
     #[test]
     fn it_works() {
