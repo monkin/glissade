@@ -1,0 +1,26 @@
+name: Check
+
+on: [push, pull_request]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Tests
+    runs-on: rust:1.79.0-alpine
+    steps:
+      - uses: actions/checkout@v4
+      - run: cd glissade && cargo test
+  clippy:
+    name: Clippy
+    runs-on: rust:1.79.0-alpine
+    steps:
+      - uses: actions/checkout@v4
+      - run: cd glissade && cargo clippy --all-targets --all-features
+  format:
+    name: Rustfmt
+    runs-on: rust:1.79.0-alpine
+    steps:
+      - uses: actions/checkout@v4
+      - run: cd glissade && cargo fmt --all -- --check
