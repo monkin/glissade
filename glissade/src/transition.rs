@@ -263,12 +263,14 @@ impl<T: Clone + Debug + Sized, S1: Transition<T>, S2: Transition<T>> Transition<
     }
 }
 
-impl<T: Clone + Debug + Sized, S1: Transition<T>, S2: Transition<T>> SequentialTransition<T, S1, S2> {
+impl<T: Clone + Debug + Sized, S1: Transition<T>, S2: Transition<T>>
+    SequentialTransition<T, S1, S2>
+{
     pub fn new(t1: S1, t2: S2) -> Self {
         Self {
             t1,
             t2,
-            phantom: PhantomData::default(),
+            phantom: Default::default(),
         }
     }
 }
@@ -330,7 +332,7 @@ impl<T: Clone + Debug + Sized, S: Transition<T>> RepeatTransition<T, S> {
     pub fn new(transition: S) -> Self {
         Self {
             transition,
-            phantom: PhantomData::default(),
+            phantom: Default::default(),
         }
     }
 }
@@ -377,7 +379,7 @@ impl<T: Clone + Debug + Sized, S: Transition<T>> RepeatNTransition<T, S> {
         Self {
             transition,
             n,
-            phantom: PhantomData::default(),
+            phantom: Default::default(),
         }
     }
 }
@@ -415,7 +417,7 @@ impl<T: Clone + Debug + Sized, S: Transition<T>> ReverseTransition<T, S> {
     pub fn new(transition: S) -> Self {
         Self {
             transition,
-            phantom: PhantomData::default(),
+            phantom: Default::default(),
         }
     }
 }
@@ -448,7 +450,7 @@ impl<T: Clone + Debug + Sized, S: Transition<T>, F: Fn(T) -> T> MapTransition<T,
         Self {
             transition,
             map,
-            phantom: PhantomData::default(),
+            phantom: Default::default(),
         }
     }
 }
@@ -486,7 +488,7 @@ impl<T: Clone + Debug + Sized, S: Transition<T>> ScaleTransition<T, S> {
         Self {
             transition,
             scale,
-            phantom: PhantomData::default(),
+            phantom: Default::default(),
         }
     }
 }

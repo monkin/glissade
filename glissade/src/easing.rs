@@ -1,6 +1,6 @@
 /// The easing functions are used to provide a smooth transition between two values over time.
 /// See: [https://easings.net/](https://easings.net/) for more information.
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, Default)]
 pub enum Easing {
     Linear,
     QuadraticIn,
@@ -11,17 +11,11 @@ pub enum Easing {
     CubicInOut,
     QuarticIn,
     QuarticOut,
-    /// Default easing function.
+    #[default]
     QuarticInOut,
     Step(f32),
     Bezier(f32, f32, f32, f32),
     None,
-}
-
-impl Default for Easing {
-    fn default() -> Self {
-        Easing::QuadraticInOut
-    }
 }
 
 impl Easing {

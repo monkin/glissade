@@ -1,7 +1,7 @@
 use crate::Transition;
 use std::fmt::Debug;
 use std::marker::PhantomData;
-use std::time::{Duration, SystemTime};
+use std::time::SystemTime;
 
 /// Transition started at a specific time.
 #[derive(Clone, Debug)]
@@ -20,7 +20,7 @@ impl<I: Clone + Debug + Sized, T: Transition<I>> Animation<I, T> {
         Self {
             transition,
             start_time,
-            phantom: PhantomData::default(),
+            phantom: Default::default(),
         }
     }
 
@@ -29,7 +29,7 @@ impl<I: Clone + Debug + Sized, T: Transition<I>> Animation<I, T> {
         self.transition.is_finished(
             current_time
                 .duration_since(self.start_time)
-                .unwrap_or(Duration::default()),
+                .unwrap_or_default(),
         )
     }
 
@@ -47,15 +47,14 @@ impl<I: Clone + Debug + Sized, T: Transition<I>> Animation<I, T> {
     /// Get the value of the animation at a specific time.
     /// * `time` - The time to get the value of the animation, usually `SystemTime::now()`.
     pub fn get(&self, time: SystemTime) -> I {
-        self.transition.get(
-            time.duration_since(self.start_time)
-                .unwrap_or(Duration::default()),
-        )
+        self.transition
+            .get(time.duration_since(self.start_time).unwrap_or_default())
     }
 }
 
 #[cfg(test)]
 mod tests {
+    use std::time::Duration;
     use super::*;
     use crate::transition::LinearTransition;
 

@@ -39,7 +39,7 @@ impl<T: TransitionItem> InertialValue<T> {
     }
 
     /// Get transition end time.
-    fn end_time(&self) -> SystemTime {
+    pub fn end_time(&self) -> SystemTime {
         self.start_time + self.duration
     }
 
@@ -57,7 +57,7 @@ impl<T: TransitionItem> InertialValue<T> {
         } else if let Some(parent) = &self.parent {
             let elapsed = current_time
                 .duration_since(self.start_time)
-                .unwrap_or(Duration::default());
+                .unwrap_or_default();
 
             let t = elapsed.as_secs_f32() / self.duration.as_secs_f32();
             let t = self.easing.ease(t);
@@ -114,8 +114,7 @@ impl<T: TransitionItem> InertialValue<T> {
                 None
             } else {
                 self.parent
-                    .map(|parent| parent.clean_up_at(current_time))
-                    .flatten()
+                    .and_then(|parent| parent.clean_up_at(current_time))
             },
         }))
     }
