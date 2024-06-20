@@ -33,6 +33,16 @@ impl<T: TransitionItem> InertialValue<T> {
         current_time > self.start_time + self.duration
     }
 
+    /// Get the target value.
+    pub fn target(&self) -> T {
+        self.target.clone()
+    }
+
+    /// Get transition end time.
+    fn end_time(&self) -> SystemTime {
+        self.start_time + self.duration
+    }
+
     /// Get the value of the inertial value at a specific time.
     /// * `current_time` - The time to get the value of the inertial value, usually `SystemTime::now()`.
     pub fn get(&self, current_time: SystemTime) -> T {
