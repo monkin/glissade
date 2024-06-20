@@ -8,19 +8,36 @@ permissions:
 jobs:
   test:
     name: Tests
-    runs-on: rust:1.79.0-alpine
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          override: true
       - run: cd glissade && cargo test
   clippy:
     name: Clippy
-    runs-on: rust:1.79.0-alpine
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          components: clippy
+          override: true
       - run: cd glissade && cargo clippy --all-targets --all-features
   format:
     name: Rustfmt
-    runs-on: rust:1.79.0-alpine
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          components: rustfmt
+          override: true
       - run: cd glissade && cargo fmt --all -- --check
