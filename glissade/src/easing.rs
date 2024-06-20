@@ -54,7 +54,20 @@ pub enum Easing {
     ///     <img style="width: 102px; height: 102px;" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDIiIGhlaWdodD0iMTAyIiB2aWV3Qm94PSItMSAtMSAxMDIgMTAyIj48cGF0aCBmaWxsPSJyZ2JhKDAsIDAsIDAsIDAuMTIpIiBkPSJNLTEtMWgxMDJ2MTAySC0xeiIvPjxwYXRoIGQ9Ik0wIDEwMGgxMFY5MGgxMFY4MGgxMFY3MGgxMFY2MGgxMFY1MGgxMFY0MGgxMFYzMGgxMFYyMGgxMFYxMGgxMFYwIiBzdHlsZT0ic3Ryb2tlOiMwMDA7c3Ryb2tlLXdpZHRoOjE7ZmlsbDpub25lIi8+PC9zdmc+"/>
     /// </div>
     Step(f32),
+
+    /// For more information see: [https://cubic-bezier.com/](https://cubic-bezier.com/)
+    ///
+    /// Bezier(0.17, 0.67, 0.7, 0.05)
+    /// <div>
+    ///     <img style="width: 102px; height: 102px;" src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22102%22%20height%3D%22102%22%20viewBox%3D%22-1%20-1%20102%20102%22%3E%3Cpath%20fill%3D%22rgba(0%2C%200%2C%200%2C%200.12)%22%20d%3D%22M-1-1h102v102H-1z%22%2F%3E%3Cpath%20d%3D%22M0%20100%20C17%2C33%2C70%2C95%2C100%2C0%22%20style%3D%22stroke%3A%23000%3Bstroke-width%3A1%3Bfill%3Anone%22%2F%3E%3C%2Fsvg%3E"/>
+    /// </div>
+    ///
+    /// Bezier(0.98, 0.62, 0.42, 0.93)
+    /// <div>
+    ///     <img style="width: 102px; height: 102px;" src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22102%22%20height%3D%22102%22%20viewBox%3D%22-1%20-1%20102%20102%22%3E%3Cpath%20fill%3D%22rgba(0%2C%200%2C%200%2C%200.12)%22%20d%3D%22M-1-1h102v102H-1z%22%2F%3E%3Cpath%20d%3D%22M0%20100%20C98%2C38%2C42%2C7%2C100%2C0%22%20style%3D%22stroke%3A%23000%3Bstroke-width%3A1%3Bfill%3Anone%22%2F%3E%3C%2Fsvg%3E"/>
+    /// </div>
     Bezier(f32, f32, f32, f32),
+
     /// <div>
     ///     <img style="width: 102px; height: 102px;" src="data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjEwMiIgd2lkdGg9IjEwMiIgdmlld0JveD0iLTEgLTEgMTAyIDEwMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB4PSItMSIgeT0iLTEiIHdpZHRoPSIxMDIiIGhlaWdodD0iMTAyIiBmaWxsPSJyZ2JhKDAsIDAsIDAsIDAuMTIpIi8+CiAgPHBvbHlsaW5lIHBvaW50cz0iMCwwIDEwMCwwIiBzdHlsZT0ic3Ryb2tlOiBibGFjazsgc3Ryb2tlLXdpZHRoOiAxOyBmaWxsOiBub25lOyIgLz4KPC9zdmc+"/>
     /// </div>
@@ -106,7 +119,7 @@ impl Easing {
                     1.0 - t * t / 2.0
                 }
             }
-            Easing::Bezier(p0, p1, p2, p3) => {
+            Easing::Bezier(p1x, p1y, p2x, p2y) => {
                 let nt = 1.0 - t;
                 let t2 = t * t;
                 let nt2 = nt * nt;

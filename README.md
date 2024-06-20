@@ -21,21 +21,6 @@ Most of the methods receive `SystemTime` as a parameter to allow testing without
 and have a consistent behavior during a single animation frame. It's expected that time is received
 from `SystemTime::now()` once in the beginning of the frame, and used lately during the frame rendering.
 
-## Usage
-
-Add this to your `Cargo.toml`:
-
-```toml
-[dependencies]
-glissade = "0.1.1"
-```
-
-And this to your crate root:
-
-```rust
-extern crate glissade;
-```
-
 ## Examples
 
 ### Simple two-step animation
