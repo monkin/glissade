@@ -1,6 +1,6 @@
 //! # A library for creating animations and transitions in Rust.
 //!
-//! It contains two main types: [`Animation`] and [`InertialValue`].
+//! The lib contains two main types: [`Animation`] and [`InertialValue`].
 //! * [`Animation`] can be used in cases when we know start, end, and in between keyframes.
 //! * [`InertialValue`] can be used to make an object smoothly follow a target value.
 //!   For example, a particle following a cursor. Background color changing smoothly on theme change.
