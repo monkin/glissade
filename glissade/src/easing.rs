@@ -43,6 +43,16 @@ pub enum Easing {
     ///     <img style="width: 102px; height: 102px;" src="data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjEwMiIgd2lkdGg9IjEwMiIgdmlld0JveD0iLTEgLTEgMTAyIDEwMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB4PSItMSIgeT0iLTEiIHdpZHRoPSIxMDIiIGhlaWdodD0iMTAyIiBmaWxsPSJyZ2JhKDAsIDAsIDAsIDAuMTIpIi8+CiAgPHBvbHlsaW5lIHBvaW50cz0iMCwxMDAgNSwxMDAgMTAsOTkuODc1IDE1LDk5LjYyNSAyMCw5OC43NSAyNSw5Ni44NzUgMzAsOTMuNSAzNSw4OCA0MCw3OS41IDQ1LDY3LjI1IDUwLDUwIDU1LDMyLjc1IDYwLDIwLjUgNjUsMTIgNzAsNi41IDc1LDMuMTI1IDgwLDEuMjUgODUsMC4zNzUgOTAsMC4xMjUgOTUsMCAxMDAsMCIgc3R5bGU9InN0cm9rZTogYmxhY2s7IHN0cm9rZS13aWR0aDogMTsgZmlsbDogbm9uZTsiIC8+Cjwvc3ZnPg=="/>
     /// </div>
     QuarticInOut,
+
+    /// Step(4)
+    /// <div>
+    ///     <img style="width: 102px; height: 102px;" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDIiIGhlaWdodD0iMTAyIiB2aWV3Qm94PSItMSAtMSAxMDIgMTAyIj4KPHBhdGggZmlsbD0icmdiYSgwLCAwLCAwLCAwLjEyKSIgZD0iTS0xLTFoMTAydjEwMkgtMXoiLz48cGF0aCBkPSJNMCAxMDBoMjVsMC0yNWgyNWwwLTI1aDI1bDAtMjVoMjVsMC0yNSIgc3R5bGU9InN0cm9rZTojMDAwO3N0cm9rZS13aWR0aDoxO2ZpbGw6bm9uZSIvPjwvc3ZnPg=="/>
+    /// </div>
+    ///
+    /// Step(10)
+    /// <div>
+    ///     <img style="width: 102px; height: 102px;" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDIiIGhlaWdodD0iMTAyIiB2aWV3Qm94PSItMSAtMSAxMDIgMTAyIj48cGF0aCBmaWxsPSJyZ2JhKDAsIDAsIDAsIDAuMTIpIiBkPSJNLTEtMWgxMDJ2MTAySC0xeiIvPjxwYXRoIGQ9Ik0wIDEwMGgxMFY5MGgxMFY4MGgxMFY3MGgxMFY2MGgxMFY1MGgxMFY0MGgxMFYzMGgxMFYyMGgxMFYxMGgxMFYwIiBzdHlsZT0ic3Ryb2tlOiMwMDA7c3Ryb2tlLXdpZHRoOjE7ZmlsbDpub25lIi8+PC9zdmc+"/>
+    /// </div>
     Step(f32),
     Bezier(f32, f32, f32, f32),
     /// <div>
