@@ -59,7 +59,7 @@ pub enum Easing {
     /// </div>
     Step(f32),
 
-    /// Easing described by a table of values.
+    /// Easing described by a table of values. Values in between are interpolated.
     /// For example: `Easing::Tabular(vec![0.0, 0.1, 0.2, 0.4, 0.8, 1.0])`
     Tabular(Vec<f32>),
 
