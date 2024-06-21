@@ -316,8 +316,6 @@ impl<T: TransitionItem> Transition<T> for EasingTransition<T> {
     }
 }
 
-impl<T: TransitionItem + Copy> Copy for EasingTransition<T> {}
-
 //----------------------------------------------------------------
 // RepeatTransition
 

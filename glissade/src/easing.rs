@@ -1,6 +1,10 @@
+use crate::Mix;
+
+const BEZIER_POINTS_COUNT: usize = 128;
+
 /// The easing functions are used to provide a smooth transition between two values over time.
 /// See: [https://easings.net/](https://easings.net/) for more information.
-#[derive(Clone, Copy, Debug, PartialEq, Default)]
+#[derive(Clone, Debug, PartialEq, Default)]
 pub enum Easing {
     /// <div>
     ///     <img style="width: 102px; height: 102px;" src="data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjEwMCIgd2lkdGg9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0icmdiYSgwLCAwLCAwLCAwLjEyKSIvPgogIDxwb2x5Z29uIHBvaW50cz0iMCwgMTAwIDEwMCwgMCIgc3R5bGU9InN0cm9rZTogYmxhY2s7IHN0cm9rZS13aWR0aDogMTsgZmlsbDogbm9uZTsiIC8+Cjwvc3ZnPg=="/>
@@ -55,18 +59,9 @@ pub enum Easing {
     /// </div>
     Step(f32),
 
-    /// For more information see: [https://cubic-bezier.com/](https://cubic-bezier.com/)
-    ///
-    /// Bezier(0.17, 0.67, 0.7, 0.05)
-    /// <div>
-    ///     <img style="width: 102px; height: 102px;" src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22102%22%20height%3D%22102%22%20viewBox%3D%22-1%20-1%20102%20102%22%3E%3Cpath%20fill%3D%22rgba(0%2C%200%2C%200%2C%200.12)%22%20d%3D%22M-1-1h102v102H-1z%22%2F%3E%3Cpath%20d%3D%22M0%20100%20C17%2C33%2C70%2C95%2C100%2C0%22%20style%3D%22stroke%3A%23000%3Bstroke-width%3A1%3Bfill%3Anone%22%2F%3E%3C%2Fsvg%3E"/>
-    /// </div>
-    ///
-    /// Bezier(0.98, 0.62, 0.42, 0.93)
-    /// <div>
-    ///     <img style="width: 102px; height: 102px;" src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22102%22%20height%3D%22102%22%20viewBox%3D%22-1%20-1%20102%20102%22%3E%3Cpath%20fill%3D%22rgba(0%2C%200%2C%200%2C%200.12)%22%20d%3D%22M-1-1h102v102H-1z%22%2F%3E%3Cpath%20d%3D%22M0%20100%20C98%2C38%2C42%2C7%2C100%2C0%22%20style%3D%22stroke%3A%23000%3Bstroke-width%3A1%3Bfill%3Anone%22%2F%3E%3C%2Fsvg%3E"/>
-    /// </div>
-    Bezier(f32, f32, f32, f32),
+    /// Easing described by a table of values.
+    /// For example: `Easing::Tabular(vec![0.0, 0.1, 0.2, 0.4, 0.8, 1.0])`
+    Tabular(Vec<f32>),
 
     /// <div>
     ///     <img style="width: 102px; height: 102px;" src="data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjEwMiIgd2lkdGg9IjEwMiIgdmlld0JveD0iLTEgLTEgMTAyIDEwMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB4PSItMSIgeT0iLTEiIHdpZHRoPSIxMDIiIGhlaWdodD0iMTAyIiBmaWxsPSJyZ2JhKDAsIDAsIDAsIDAuMTIpIi8+CiAgPHBvbHlsaW5lIHBvaW50cz0iMCwwIDEwMCwwIiBzdHlsZT0ic3Ryb2tlOiBibGFjazsgc3Ryb2tlLXdpZHRoOiAxOyBmaWxsOiBub25lOyIgLz4KPC9zdmc+"/>
@@ -75,7 +70,7 @@ pub enum Easing {
 }
 
 impl Easing {
-    pub fn ease(self, t: f32) -> f32 {
+    pub fn ease(&self, t: f32) -> f32 {
         let t = t.clamp(0.0, 1.0);
 
         match self {
@@ -119,14 +114,179 @@ impl Easing {
                     1.0 - t * t / 2.0
                 }
             }
-            Easing::Bezier(p1x, p1y, p2x, p2y) => {
-                let nt = 1.0 - t;
-                let t2 = t * t;
-                let nt2 = nt * nt;
-                nt * nt2 * p0 + 3.0 * t * nt2 * p1 + 3.0 * t2 * nt * p2 + t2 * t * p3
+            Easing::Tabular(data) => {
+                if t == 1.0 {
+                    data.last().copied().unwrap_or(1.0)
+                } else {
+                    let i = t * (data.len() - 1) as f32;
+
+                    let ii = i.floor() as usize;
+                    let f = i.fract();
+
+                    data[ii].mix(data[ii + 1], f)
+                }
             }
             Easing::Step(steps) => (t * steps).floor() / steps,
             Easing::None => 1.0,
         }
+    }
+
+    /// For more information see: [https://cubic-bezier.com/](https://cubic-bezier.com/)
+    ///
+    /// Bezier(0.17, 0.67, 0.7, 0.05)
+    /// <div>
+    ///     <img style="width: 102px; height: 102px;" src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22102%22%20height%3D%22102%22%20viewBox%3D%22-1%20-1%20102%20102%22%3E%3Cpath%20fill%3D%22rgba(0%2C%200%2C%200%2C%200.12)%22%20d%3D%22M-1-1h102v102H-1z%22%2F%3E%3Cpath%20d%3D%22M0%20100%20C17%2C33%2C70%2C95%2C100%2C0%22%20style%3D%22stroke%3A%23000%3Bstroke-width%3A1%3Bfill%3Anone%22%2F%3E%3C%2Fsvg%3E"/>
+    /// </div>
+    ///
+    /// Bezier(0.98, 0.62, 0.42, 0.93)
+    /// <div>
+    ///     <img style="width: 102px; height: 102px;" src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22102%22%20height%3D%22102%22%20viewBox%3D%22-1%20-1%20102%20102%22%3E%3Cpath%20fill%3D%22rgba(0%2C%200%2C%200%2C%200.12)%22%20d%3D%22M-1-1h102v102H-1z%22%2F%3E%3Cpath%20d%3D%22M0%20100%20C98%2C38%2C42%2C7%2C100%2C0%22%20style%3D%22stroke%3A%23000%3Bstroke-width%3A1%3Bfill%3Anone%22%2F%3E%3C%2Fsvg%3E"/>
+    /// </div>
+    pub fn bezier(x1: f32, y1: f32, x2: f32, y2: f32) -> Easing {
+        let x1 = x1.clamp(0.0, 1.0);
+        let x2 = x2.clamp(0.0, 1.0);
+
+        let max_i = (BEZIER_POINTS_COUNT - 1) as f32;
+
+        let mut points: [(f32, f32); BEZIER_POINTS_COUNT] = [(0.0, 0.0); BEZIER_POINTS_COUNT];
+
+        points[0] = (0.0, 0.0);
+        points[BEZIER_POINTS_COUNT - 1] = (1.0, 1.0);
+
+        for i in 1..BEZIER_POINTS_COUNT - 1 {
+            let t = i as f32 / (BEZIER_POINTS_COUNT - 1) as f32;
+            let nt = 1.0 - t;
+            let t2 = t * t;
+            let nt2 = nt * nt;
+
+            let x = (3.0 * nt2 * t * x1 + 3.0 * nt * t2 * x2 + t2 * t).clamp(0.0, 1.0);
+            let y = 3.0 * nt2 * t * y1 + 3.0 * nt * t2 * y2 + t2 * t;
+
+            points[i] = (x, y);
+        }
+
+        let mut data = Vec::with_capacity(BEZIER_POINTS_COUNT);
+        data.resize(BEZIER_POINTS_COUNT, 0.0);
+
+        for points in points.windows(2) {
+            let p1 = points[0];
+            let p2 = points[1];
+
+            let (x1, y1) = p1;
+            let (x2, y2) = p2;
+
+            if x2 > x1 {
+                let mut i = (x1 * max_i).ceil();
+                let max = x2 * max_i;
+                while i <= max {
+                    let t = (i / max_i - x1) / (x2 - x1);
+                    data[i as usize] = y1.mix(y2, t);
+                    i += 1.0;
+                }
+            }
+        }
+
+        Easing::Tabular(data)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn linear() {
+        let easing = Easing::Linear;
+        assert_eq!(easing.ease(0.0), 0.0);
+        assert_eq!(easing.ease(0.5), 0.5);
+        assert_eq!(easing.ease(1.0), 1.0);
+    }
+
+    #[test]
+    fn quadratic_in() {
+        let easing = Easing::QuadraticIn;
+        assert_eq!(easing.ease(0.0), 0.0);
+        assert_eq!(easing.ease(0.5), 0.25);
+        assert_eq!(easing.ease(1.0), 1.0);
+    }
+
+    #[test]
+    fn quadratic_out() {
+        let easing = Easing::QuadraticOut;
+        assert_eq!(easing.ease(0.0), 0.0);
+        assert_eq!(easing.ease(0.5), 0.75);
+        assert_eq!(easing.ease(1.0), 1.0);
+    }
+
+    #[test]
+    fn quadratic_in_out() {
+        let easing = Easing::QuadraticInOut;
+        assert_eq!(easing.ease(0.0), 0.0);
+        assert_eq!(easing.ease(0.5), 0.5);
+        assert_eq!(easing.ease(1.0), 1.0);
+    }
+
+    #[test]
+    fn cubic_in() {
+        let easing = Easing::CubicIn;
+        assert_eq!(easing.ease(0.0), 0.0);
+        assert_eq!(easing.ease(0.5), 0.125);
+        assert_eq!(easing.ease(1.0), 1.0);
+    }
+
+    #[test]
+    fn cubic_out() {
+        let easing = Easing::CubicOut;
+        assert_eq!(easing.ease(0.0), 0.0);
+        assert_eq!(easing.ease(0.5), 0.875);
+        assert_eq!(easing.ease(1.0), 1.0);
+    }
+
+    #[test]
+    fn cubic_in_out() {
+        let easing = Easing::CubicInOut;
+        assert_eq!(easing.ease(0.0), 0.0);
+        assert_eq!(easing.ease(0.5), 0.5);
+        assert_eq!(easing.ease(1.0), 1.0);
+    }
+
+    #[test]
+    fn tabular() {
+        let easing = Easing::Tabular(vec![0.0, 1.0]);
+        assert_eq!(easing.ease(0.0), 0.0);
+        assert_eq!(easing.ease(0.25), 0.25);
+        assert_eq!(easing.ease(0.5), 0.5);
+        assert_eq!(easing.ease(0.75), 0.75);
+        assert_eq!(easing.ease(1.0), 1.0);
+    }
+
+    #[test]
+    fn tabular_non_linear() {
+        let easing = Easing::Tabular(vec![0.0, 1.0, 0.0, 0.5, 1.0]);
+        assert_eq!(easing.ease(0.0), 0.0);
+        assert_eq!(easing.ease(0.125), 0.5);
+        assert_eq!(easing.ease(0.25), 1.0);
+        assert_eq!(easing.ease(0.375), 0.5);
+        assert_eq!(easing.ease(0.5), 0.0);
+        assert_eq!(easing.ease(0.625), 0.25);
+        assert_eq!(easing.ease(0.75), 0.5);
+        assert_eq!(easing.ease(0.875), 0.75);
+        assert_eq!(easing.ease(1.0), 1.0);
+    }
+
+    #[test]
+    fn bezier() {
+        let easing = Easing::bezier(0.0, 0.0, 1.0, 1.0);
+        assert_eq!(easing.ease(0.0), 0.0);
+        assert_eq!(easing.ease(0.5), 0.5);
+        assert_eq!(easing.ease(1.0), 1.0);
+    }
+
+    #[test]
+    fn bezier_non_linear() {
+        let easing = Easing::bezier(0.0, 0.5, 1.0, 0.5);
+        assert_eq!(easing.ease(0.0), 0.0);
+        assert_eq!(easing.ease(0.5), 0.5);
+        assert_eq!(easing.ease(1.0), 1.0);
     }
 }
