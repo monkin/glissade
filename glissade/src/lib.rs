@@ -31,7 +31,7 @@
 //! // 1. from 0.0 to 10.0 in 1 second linearly,
 //! // 2. and then go to 5.0 with easing function.
 //! let transition = transition(0.0)
-//!     .linear_to(10.0, Duration::from_secs(1))
+//!     .go_to(10.0, Duration::from_secs(1))
 //!     .ease_to(5.0, Duration::from_secs(2), Easing::QuadraticInOut);
 //!
 //! let now = SystemTime::now();

@@ -48,7 +48,7 @@ pub trait Transition<T: Clone + Debug + Sized>: Sized {
     }
 
     /// Create a transition that linearly interpolates between the end value and the target value.
-    fn linear_to(
+    fn go_to(
         self,
         target: T,
         duration: Duration,
@@ -161,7 +161,7 @@ pub trait Transition<T: Clone + Debug + Sized>: Sized {
 ///
 /// let transition = transition(5.0)
 ///     .stay(Duration::from_secs(1))
-///     .linear_to(9.0, Duration::from_secs(4))
+///     .go_to(9.0, Duration::from_secs(4))
 ///     .repeat_n(2.0);
 ///
 /// assert_eq!(transition.get(Duration::from_secs(0)), 5.0);
