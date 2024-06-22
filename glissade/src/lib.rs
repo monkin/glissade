@@ -83,6 +83,9 @@ mod mix;
 mod transition;
 mod transition_item;
 
+#[cfg(feature = "euclid")]
+mod euclid;
+
 pub use animation::Animation;
 pub use easing::Easing;
 pub use inertial_value::InertialValue;
