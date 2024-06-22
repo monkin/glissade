@@ -23,6 +23,12 @@ Most of the methods receive `SystemTime` as a parameter to allow testing without
 and have a consistent behavior during a single animation frame. It's expected that time is received
 from `SystemTime::now()` once in the beginning of the frame, and used lately during the frame rendering.
 
+## Cargo features
+
+* `"euclid"` - enables [euclid](https://crates.io/crates/euclid) vectors, rotations, etc. animation.
+* `"nalgebra"` - enables [nalgebra](https://crates.io/crates/nalgebra) vectors, matrices, transformations, etc. animation.
+* `"palette"` - enables [palette](https://crates.io/crates/palette) colors interpolation.
+
 ## Examples
 
 ### Simple two-step animation
