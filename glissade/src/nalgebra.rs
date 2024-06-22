@@ -1,5 +1,8 @@
 use nalgebra::{
-    ClosedAdd, ClosedMul, ClosedSub, Isometry, Matrix2, Matrix3, Matrix4, Matrix5, Matrix6, Point,
+    ClosedAdd, ClosedMul, ClosedSub, Isometry, Matrix1x2, Matrix1x3, Matrix1x4, Matrix1x5,
+    Matrix1x6, Matrix2, Matrix2x3, Matrix2x4, Matrix2x5, Matrix2x6, Matrix3, Matrix3x2, Matrix3x4,
+    Matrix3x5, Matrix3x6, Matrix4, Matrix4x2, Matrix4x3, Matrix4x5, Matrix4x6, Matrix5, Matrix5x2,
+    Matrix5x3, Matrix5x4, Matrix5x6, Matrix6, Matrix6x2, Matrix6x3, Matrix6x4, Matrix6x5, Point,
     Quaternion, RealField, Rotation, Scalar, Scale, Translation, Vector1, Vector2, Vector3,
     Vector4, Vector5, Vector6,
 };
@@ -7,104 +10,73 @@ use num_traits::{One, Zero};
 
 use crate::mix::Mix;
 
-impl<T> Mix for Vector1<T>
-where
-    T: Scalar + Zero + One + ClosedAdd + ClosedSub + ClosedMul + From<f32>,
-{
-    fn mix(self, other: Self, t: f32) -> Self {
-        self.lerp(&other, T::from(t))
-    }
+macro_rules! impl_mix_for_vector {
+    ($vector:ident) => {
+        impl<T> Mix for $vector<T>
+        where
+            T: Scalar + Zero + One + ClosedAdd + ClosedSub + ClosedMul + From<f32>,
+        {
+            fn mix(self, other: Self, t: f32) -> Self {
+                self.lerp(&other, T::from(t))
+            }
+        }
+    };
 }
 
-impl<T> Mix for Vector2<T>
-where
-    T: Scalar + Zero + One + ClosedAdd + ClosedSub + ClosedMul + From<f32>,
-{
-    fn mix(self, other: Self, t: f32) -> Self {
-        self.lerp(&other, T::from(t))
-    }
+impl_mix_for_vector!(Vector1);
+impl_mix_for_vector!(Vector2);
+impl_mix_for_vector!(Vector3);
+impl_mix_for_vector!(Vector4);
+impl_mix_for_vector!(Vector5);
+impl_mix_for_vector!(Vector6);
+
+macro_rules! impl_mix_for_matrix {
+    ($matrix:ident) => {
+        impl<T> Mix for $matrix<T>
+        where
+            T: Scalar + Mix,
+        {
+            fn mix(self, other: Self, t: f32) -> Self {
+                self.zip_map(&other, |a, b| a.mix(b, t))
+            }
+        }
+    };
 }
 
-impl<T> Mix for Vector3<T>
-where
-    T: Scalar + Zero + One + ClosedAdd + ClosedSub + ClosedMul + From<f32>,
-{
-    fn mix(self, other: Self, t: f32) -> Self {
-        self.lerp(&other, T::from(t))
-    }
-}
+impl_mix_for_matrix!(Matrix1x2);
+impl_mix_for_matrix!(Matrix2);
+impl_mix_for_matrix!(Matrix3x2);
+impl_mix_for_matrix!(Matrix4x2);
+impl_mix_for_matrix!(Matrix5x2);
+impl_mix_for_matrix!(Matrix6x2);
 
-impl<T> Mix for Vector4<T>
-where
-    T: Scalar + Zero + One + ClosedAdd + ClosedSub + ClosedMul + From<f32>,
-{
-    fn mix(self, other: Self, t: f32) -> Self {
-        self.lerp(&other, T::from(t))
-    }
-}
+impl_mix_for_matrix!(Matrix1x3);
+impl_mix_for_matrix!(Matrix2x3);
+impl_mix_for_matrix!(Matrix3);
+impl_mix_for_matrix!(Matrix4x3);
+impl_mix_for_matrix!(Matrix5x3);
+impl_mix_for_matrix!(Matrix6x3);
 
-impl<T> Mix for Vector5<T>
-where
-    T: Scalar + Zero + One + ClosedAdd + ClosedSub + ClosedMul + From<f32>,
-{
-    fn mix(self, other: Self, t: f32) -> Self {
-        self.lerp(&other, T::from(t))
-    }
-}
+impl_mix_for_matrix!(Matrix1x4);
+impl_mix_for_matrix!(Matrix2x4);
+impl_mix_for_matrix!(Matrix3x4);
+impl_mix_for_matrix!(Matrix4);
+impl_mix_for_matrix!(Matrix5x4);
+impl_mix_for_matrix!(Matrix6x4);
 
-impl<T> Mix for Matrix2<T>
-where
-    T: Scalar + Mix,
-{
-    fn mix(self, other: Self, t: f32) -> Self {
-        self.zip_map(&other, |a, b| a.mix(b, t))
-    }
-}
+impl_mix_for_matrix!(Matrix1x5);
+impl_mix_for_matrix!(Matrix2x5);
+impl_mix_for_matrix!(Matrix3x5);
+impl_mix_for_matrix!(Matrix4x5);
+impl_mix_for_matrix!(Matrix5);
+impl_mix_for_matrix!(Matrix6x5);
 
-impl<T> Mix for Matrix3<T>
-where
-    T: Scalar + Mix,
-{
-    fn mix(self, other: Self, t: f32) -> Self {
-        self.zip_map(&other, |a, b| a.mix(b, t))
-    }
-}
-
-impl<T> Mix for Matrix4<T>
-where
-    T: Scalar + Mix,
-{
-    fn mix(self, other: Self, t: f32) -> Self {
-        self.zip_map(&other, |a, b| a.mix(b, t))
-    }
-}
-
-impl<T> Mix for Matrix5<T>
-where
-    T: Scalar + Mix,
-{
-    fn mix(self, other: Self, t: f32) -> Self {
-        self.zip_map(&other, |a, b| a.mix(b, t))
-    }
-}
-
-impl<T> Mix for Matrix6<T>
-where
-    T: Scalar + Mix,
-{
-    fn mix(self, other: Self, t: f32) -> Self {
-        self.zip_map(&other, |a, b| a.mix(b, t))
-    }
-}
-
-impl<T> Mix for Vector6<T>
-where
-    T: Scalar + Zero + One + ClosedAdd + ClosedSub + ClosedMul + From<f32>,
-{
-    fn mix(self, other: Self, t: f32) -> Self {
-        self.lerp(&other, T::from(t))
-    }
-}
+impl_mix_for_matrix!(Matrix1x6);
+impl_mix_for_matrix!(Matrix2x6);
+impl_mix_for_matrix!(Matrix3x6);
+impl_mix_for_matrix!(Matrix4x6);
+impl_mix_for_matrix!(Matrix5x6);
+impl_mix_for_matrix!(Matrix6);
 
 impl<T, const D: usize> Mix for Point<T, D>
 where
