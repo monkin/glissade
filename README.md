@@ -6,7 +6,8 @@
 ![Format Status](https://github.com/monkin/glissade/actions/workflows/format.yml/badge.svg)
 
 Glissade is a Rust animations and transitions library. It's framework-agnostic with optional
-[euclid](https://crates.io/crates/euclid) and [nalgebra](https://crates.io/crates/nalgebra) support.
+[euclid](https://crates.io/crates/euclid), [nalgebra](https://crates.io/crates/nalgebra), and
+[palette](https://crates.io/crates/palette) support.
 
 The lib contains two main types: `Animation` and `InertialValue`.
 * `Animation` can be used in cases when we know start, end, and in between keyframes.

@@ -87,6 +87,8 @@ mod transition_item;
 mod euclid;
 #[cfg(feature = "nalgebra")]
 mod nalgebra;
+#[cfg(feature = "palette")]
+mod palette;
 
 pub use animation::Animation;
 pub use easing::Easing;

@@ -153,7 +153,12 @@ impl Easing {
         points[0] = (0.0, 0.0);
         points[BEZIER_POINTS_COUNT - 1] = (1.0, 1.0);
 
-        for i in 1..BEZIER_POINTS_COUNT - 1 {
+        for (i, point) in points
+            .iter_mut()
+            .enumerate()
+            .take(BEZIER_POINTS_COUNT - 1)
+            .skip(1)
+        {
             let t = i as f32 / (BEZIER_POINTS_COUNT - 1) as f32;
             let nt = 1.0 - t;
             let t2 = t * t;
@@ -162,7 +167,8 @@ impl Easing {
             let x = (3.0 * nt2 * t * x1 + 3.0 * nt * t2 * x2 + t2 * t).clamp(0.0, 1.0);
             let y = 3.0 * nt2 * t * y1 + 3.0 * nt * t2 * y2 + t2 * t;
 
-            points[i] = (x, y);
+            point.0 = x;
+            point.1 = y;
         }
 
         let mut data = Vec::with_capacity(BEZIER_POINTS_COUNT);
