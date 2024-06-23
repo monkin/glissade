@@ -17,7 +17,10 @@ The lib contains two main types: `Animation` and `InertialValue`.
 It also contains a set of easing functions to make animations more natural. See the `Easing` enum for more details.
 
 Animation can be applied to any type that implements `Mix` trait. This trait is used to interpolate between two values.
-Mix trait is implemented for common types like `f32`, `f64`, `bool`, `i8` - `i64`, `u8` - `u64`, `Option<T: Mix>`, and tuples like `(Mix, Mix)`, `(Mix, Mix, Mix)`, etc.
+Mix trait is implemented for common types like `f32`, `f64`, `bool`, `i8` - `i64`, `u8` - `u64`, `Option<T: Mix>`,
+and tuples like `(Mix, Mix)`, `(Mix, Mix, Mix)`, etc. It's also implemented for some popular libraries:
+[`nalgebra`](https://crates.io/crates/nalgebra), [`euclid`](https://crates.io/crates/euclid), and
+[`palette`](https://crates.io/crates/palette). To make it work, you need to enable the corresponding feature
 
 Most of the methods receive `SystemTime` as a parameter to allow testing without mocks,
 and have a consistent behavior during a single animation frame. It's expected that time is received
@@ -43,7 +46,7 @@ use std::time::{Duration, SystemTime};
 // 1. from 0.0 to 10.0 in 1 second linearly,
 // 2. and then go to 5.0 with easing function.
 let transition = transition(0.0)
-    .linear_to(10.0, Duration::from_secs(1))
+    .go_to(10.0, Duration::from_secs(1))
     .ease_to(5.0, Duration::from_secs(2), Easing::QuadraticInOut);
 
 let now = SystemTime::now();
