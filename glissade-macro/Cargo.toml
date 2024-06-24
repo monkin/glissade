@@ -1,11 +1,11 @@
 [package]
 name = "glissade-macro"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Andrei Monkin <monkin.andrey@gmail.com>"]
 description = "Derive macro for implementing glissade::Mix trait"
 edition = "2021"
 publish = true
-readme = "../README.md"
+readme = "./README.md"
 license = "MIT"
 repository = "https://github.com/monkin/glissade"
 
