@@ -1,10 +1,10 @@
 use nalgebra::{
-    ClosedAdd, ClosedMul, ClosedSub, Isometry, Matrix1x2, Matrix1x3, Matrix1x4, Matrix1x5,
-    Matrix1x6, Matrix2, Matrix2x3, Matrix2x4, Matrix2x5, Matrix2x6, Matrix3, Matrix3x2, Matrix3x4,
-    Matrix3x5, Matrix3x6, Matrix4, Matrix4x2, Matrix4x3, Matrix4x5, Matrix4x6, Matrix5, Matrix5x2,
-    Matrix5x3, Matrix5x4, Matrix5x6, Matrix6, Matrix6x2, Matrix6x3, Matrix6x4, Matrix6x5, Point,
-    Quaternion, RealField, Rotation, Scalar, Scale, Translation, Vector1, Vector2, Vector3,
-    Vector4, Vector5, Vector6,
+    ClosedAddAssign, ClosedMulAssign, ClosedSubAssign, Isometry, Matrix1x2, Matrix1x3, Matrix1x4,
+    Matrix1x5, Matrix1x6, Matrix2, Matrix2x3, Matrix2x4, Matrix2x5, Matrix2x6, Matrix3, Matrix3x2,
+    Matrix3x4, Matrix3x5, Matrix3x6, Matrix4, Matrix4x2, Matrix4x3, Matrix4x5, Matrix4x6, Matrix5,
+    Matrix5x2, Matrix5x3, Matrix5x4, Matrix5x6, Matrix6, Matrix6x2, Matrix6x3, Matrix6x4,
+    Matrix6x5, Point, Quaternion, RealField, Rotation, Scalar, Scale, Translation, Vector1,
+    Vector2, Vector3, Vector4, Vector5, Vector6,
 };
 use num_traits::{One, Zero};
 
@@ -14,7 +14,13 @@ macro_rules! impl_mix_for_vector {
     ($vector:ident) => {
         impl<T> Mix for $vector<T>
         where
-            T: Scalar + Zero + One + ClosedAdd + ClosedSub + ClosedMul + From<f32>,
+            T: Scalar
+                + Zero
+                + One
+                + ClosedAddAssign
+                + ClosedSubAssign
+                + ClosedMulAssign
+                + From<f32>,
         {
             fn mix(self, other: Self, t: f32) -> Self {
                 self.lerp(&other, T::from(t))
@@ -80,7 +86,7 @@ impl_mix_for_matrix!(Matrix6);
 
 impl<T, const D: usize> Mix for Point<T, D>
 where
-    T: Scalar + From<f32> + Zero + One + ClosedAdd + ClosedSub + ClosedMul,
+    T: Scalar + From<f32> + Zero + One + ClosedAddAssign + ClosedSubAssign + ClosedMulAssign,
 {
     fn mix(self, other: Self, t: f32) -> Self {
         self.lerp(&other, T::from(t))
@@ -89,7 +95,7 @@ where
 
 impl<T, const D: usize> Mix for Scale<T, D>
 where
-    T: Scalar + Zero + One + ClosedAdd + ClosedSub + ClosedMul + From<f32>,
+    T: Scalar + Zero + One + ClosedAddAssign + ClosedSubAssign + ClosedMulAssign + From<f32>,
 {
     fn mix(self, other: Self, t: f32) -> Self {
         self.vector.lerp(&other.vector, T::from(t)).into()
@@ -98,7 +104,14 @@ where
 
 impl<T> Mix for Rotation<T, 2>
 where
-    T: Scalar + Zero + One + ClosedAdd + ClosedSub + ClosedMul + From<f32> + RealField,
+    T: Scalar
+        + Zero
+        + One
+        + ClosedAddAssign
+        + ClosedSubAssign
+        + ClosedMulAssign
+        + From<f32>
+        + RealField,
 {
     fn mix(self, other: Self, t: f32) -> Self {
         self.slerp(&other, T::from(t))
@@ -107,7 +120,14 @@ where
 
 impl<T> Mix for Rotation<T, 3>
 where
-    T: Scalar + Zero + One + ClosedAdd + ClosedSub + ClosedMul + From<f32> + RealField,
+    T: Scalar
+        + Zero
+        + One
+        + ClosedAddAssign
+        + ClosedSubAssign
+        + ClosedMulAssign
+        + From<f32>
+        + RealField,
 {
     fn mix(self, other: Self, t: f32) -> Self {
         self.slerp(&other, T::from(t))
@@ -116,7 +136,7 @@ where
 
 impl<T, const D: usize> Mix for Translation<T, D>
 where
-    T: Scalar + Zero + One + ClosedAdd + ClosedSub + ClosedMul + From<f32>,
+    T: Scalar + Zero + One + ClosedAddAssign + ClosedSubAssign + ClosedMulAssign + From<f32>,
 {
     fn mix(self, other: Self, t: f32) -> Self {
         self.vector.lerp(&other.vector, T::from(t)).into()
@@ -125,7 +145,14 @@ where
 
 impl<T> Mix for Quaternion<T>
 where
-    T: Scalar + Zero + One + ClosedAdd + ClosedSub + ClosedMul + From<f32> + RealField,
+    T: Scalar
+        + Zero
+        + One
+        + ClosedAddAssign
+        + ClosedSubAssign
+        + ClosedMulAssign
+        + From<f32>
+        + RealField,
 {
     fn mix(self, other: Self, t: f32) -> Self {
         self.lerp(&other, T::from(t))
@@ -134,7 +161,14 @@ where
 
 impl<T> Mix for Isometry<T, Rotation<T, 2>, 2>
 where
-    T: Scalar + Zero + One + ClosedAdd + ClosedSub + ClosedMul + From<f32> + RealField,
+    T: Scalar
+        + Zero
+        + One
+        + ClosedAddAssign
+        + ClosedSubAssign
+        + ClosedMulAssign
+        + From<f32>
+        + RealField,
 {
     fn mix(self, other: Self, t: f32) -> Self {
         self.lerp_slerp(&other, T::from(t))
@@ -143,7 +177,14 @@ where
 
 impl<T> Mix for Isometry<T, Rotation<T, 3>, 3>
 where
-    T: Scalar + Zero + One + ClosedAdd + ClosedSub + ClosedMul + From<f32> + RealField,
+    T: Scalar
+        + Zero
+        + One
+        + ClosedAddAssign
+        + ClosedSubAssign
+        + ClosedMulAssign
+        + From<f32>
+        + RealField,
 {
     fn mix(self, other: Self, t: f32) -> Self {
         self.lerp_slerp(&other, T::from(t))
