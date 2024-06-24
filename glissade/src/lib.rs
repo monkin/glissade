@@ -23,7 +23,7 @@
 //! ```
 //! # #[cfg(feature = "derive")]
 //! use glissade::Mix;
-//! 
+//!
 //! # #[cfg(feature = "derive")]
 //! #[derive(Mix, PartialEq, Debug)]
 //! struct Touch {
