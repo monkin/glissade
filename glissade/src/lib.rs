@@ -21,8 +21,10 @@
 //!
 //! The library contains a derive macro to implement the `Mix` trait for structs and tuples.
 //! ```
+//! # #[cfg(feature = "derive")]
 //! use glissade::Mix;
-//!
+//! 
+//! # #[cfg(feature = "derive")]
 //! #[derive(Mix, PartialEq, Debug)]
 //! struct Touch {
 //!    x: f32,
@@ -30,10 +32,13 @@
 //!    pressure: u8,
 //! }
 //!
-//! let touch1 = Touch { x: 0.0, y: 0.0, pressure: 0 };
-//! let touch2 = Touch { x: 100.0, y: 100.0, pressure: 200 };
-//! let touch_mix = touch1.mix(touch2, 0.5);
-//! assert_eq!(touch_mix, Touch { x: 50.0, y: 50.0, pressure: 100 });
+//! # #[cfg(feature = "derive")]
+//! {
+//!     let touch1 = Touch { x: 0.0, y: 0.0, pressure: 0 };
+//!     let touch2 = Touch { x: 100.0, y: 100.0, pressure: 200 };
+//!     let touch_mix = touch1.mix(touch2, 0.5);
+//!     assert_eq!(touch_mix, Touch { x: 50.0, y: 50.0, pressure: 100 });
+//! }
 //! ```
 //!
 //! # Examples
