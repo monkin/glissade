@@ -16,18 +16,35 @@ The lib contains two main types: `Animation` and `InertialValue`.
 
 It also contains a set of easing functions to make animations more natural. See the `Easing` enum for more details.
 
+Most of the methods receive `SystemTime` as a parameter to allow testing without mocks,
+and have a consistent behavior during a single animation frame. It's expected that time is received
+from `SystemTime::now()` once in the beginning of the frame, and used lately during the frame rendering.
+
 Animation can be applied to any type that implements `Mix` trait. This trait is used to interpolate between two values.
 Mix trait is implemented for common types like `f32`, `f64`, `bool`, `i8` - `i64`, `u8` - `u64`, `Option<T: Mix>`,
 and tuples like `(Mix, Mix)`, `(Mix, Mix, Mix)`, etc. It's also implemented for some popular libraries:
 [`nalgebra`](https://crates.io/crates/nalgebra), [`euclid`](https://crates.io/crates/euclid), and
 [`palette`](https://crates.io/crates/palette). To make it work, you need to enable the corresponding feature
 
-Most of the methods receive `SystemTime` as a parameter to allow testing without mocks,
-and have a consistent behavior during a single animation frame. It's expected that time is received
-from `SystemTime::now()` once in the beginning of the frame, and used lately during the frame rendering.
+# Derive macro
+The library contains a derive macro to implement the `Mix` trait for structs and tuples.
+```rust
+use glissade::Mix;
+#[derive(Mix, PartialEq, Debug)]
+struct Touch {
+   x: f32,
+   y: f32,
+   pressure: u8,
+}
+let touch1 = Touch { x: 0.0, y: 0.0, pressure: 0 };
+let touch2 = Touch { x: 100.0, y: 100.0, pressure: 200 };
+let touch_mix = touch1.mix(touch2, 0.5);
+assert_eq!(touch_mix, Touch { x: 50.0, y: 50.0, pressure: 100 });
+```
 
 ## Cargo features
 
+* `"derive"` - enables derive macro for `Mix` trait (enabled by default).
 * `"euclid"` - enables [euclid](https://crates.io/crates/euclid) vectors, rotations, etc. animation.
 * `"nalgebra"` - enables [nalgebra](https://crates.io/crates/nalgebra) vectors, matrices, transformations, etc. animation.
 * `"palette"` - enables [palette](https://crates.io/crates/palette) colors interpolation.

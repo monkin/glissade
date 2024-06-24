@@ -7,15 +7,34 @@
 //!
 //! It also contains a set of easing functions to make animations more natural. See the [`Easing`] enum for more details.
 //!
+//! Most of the methods receive `SystemTime` as a parameter to allow testing without mocks,
+//! and have a consistent behavior during a single animation frame. It's expected that time is received
+//! from `SystemTime::now()` once in the beginning of the frame, and used lately during the frame rendering.
+//!
 //! Animation can be applied to any type that implements [`Mix`] trait. This trait is used to interpolate between two values.
 //! Mix trait is implemented for common types like `f32`, `f64`, `bool`, `i8` - `i64`, `u8` - `u64`, `Option<T: Mix>`,
 //! and tuples like `(Mix, Mix)`, `(Mix, Mix, Mix)`, etc. It's also implemented for some popular libraries:
 //! [`nalgebra`](https://crates.io/crates/nalgebra), [`euclid`](https://crates.io/crates/euclid), and
 //! [`palette`](https://crates.io/crates/palette). To make it work, you need to enable the corresponding feature.
 //!
-//! Most of the methods receive `SystemTime` as a parameter to allow testing without mocks,
-//! and have a consistent behavior during a single animation frame. It's expected that time is received
-//! from `SystemTime::now()` once in the beginning of the frame, and used lately during the frame rendering.
+//! # Derive macro
+//!
+//! The library contains a derive macro to implement the `Mix` trait for structs and tuples.
+//! ```
+//! use glissade::Mix;
+//!
+//! #[derive(Mix, PartialEq, Debug)]
+//! struct Touch {
+//!    x: f32,
+//!    y: f32,
+//!    pressure: u8,
+//! }
+//!
+//! let touch1 = Touch { x: 0.0, y: 0.0, pressure: 0 };
+//! let touch2 = Touch { x: 100.0, y: 100.0, pressure: 200 };
+//! let touch_mix = touch1.mix(touch2, 0.5);
+//! assert_eq!(touch_mix, Touch { x: 50.0, y: 50.0, pressure: 100 });
+//! ```
 //!
 //! # Examples
 //!
@@ -95,6 +114,70 @@ mod palette;
 
 pub use animation::Animation;
 pub use easing::Easing;
+#[cfg(feature = "derive")]
+pub use glissade_macro::Mix;
 pub use inertial_value::InertialValue;
 pub use mix::Mix;
 pub use transition::{transition, Transition};
+
+#[cfg(test)]
+#[cfg(feature = "derive")]
+mod tests {
+
+    use crate as glissade;
+    use crate::Mix;
+
+    #[derive(Mix, PartialEq, Debug)]
+    struct Point {
+        x: f32,
+        y: f32,
+    }
+
+    #[test]
+    fn test_struct_derive() {
+        let p1 = Point { x: 0.0, y: 0.0 };
+        let p2 = Point { x: 1.0, y: 1.0 };
+        let p3 = p1.mix(p2, 0.5);
+        assert_eq!(p3, Point { x: 0.5, y: 0.5 });
+    }
+
+    #[derive(Mix, PartialEq, Debug)]
+    struct Color(f32, f32, f32);
+
+    #[test]
+    fn test_tuple_derive() {
+        let c1 = Color(0.0, 0.0, 0.0);
+        let c2 = Color(1.0, 1.0, 1.0);
+        let c3 = c1.mix(c2, 0.5);
+        assert_eq!(c3, Color(0.5, 0.5, 0.5));
+    }
+
+    #[derive(Mix, PartialEq, Debug)]
+    struct Size<T: Mix>
+    where
+        T: Clone + Copy,
+    {
+        width: T,
+        height: T,
+    }
+
+    #[test]
+    fn test_generics_derive() {
+        let s1 = Size {
+            width: 0.0,
+            height: 0.0,
+        };
+        let s2 = Size {
+            width: 1.0,
+            height: 1.0,
+        };
+        let s3 = s1.mix(s2, 0.5);
+        assert_eq!(
+            s3,
+            Size {
+                width: 0.5,
+                height: 0.5
+            }
+        );
+    }
+}
