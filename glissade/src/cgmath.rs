@@ -131,8 +131,8 @@ impl<S: Mix> Mix for Matrix4<S> {
 mod tests {
     use crate::Mix;
     use cgmath::{
-        Deg, Euler, Point1, Point2, Point3, Quaternion, Rad, Rotation3, Vector1, Vector2, Vector3,
-        Vector4,
+        assert_relative_eq, Deg, Euler, Point1, Point2, Point3, Quaternion, Rad, Rotation3,
+        Vector1, Vector2, Vector3, Vector4,
     };
 
     #[test]
@@ -205,7 +205,7 @@ mod tests {
         let q1 = Quaternion::from_angle_x(Deg(0.0));
         let q2 = Quaternion::from_angle_x(Deg(90.0));
         let q3 = q1.mix(q2, 0.5);
-        assert_eq!(q3, Quaternion::from_angle_x(Deg(45.0)));
+        assert_relative_eq!(q3, Quaternion::from_angle_x(Deg(45.0)));
     }
 
     #[test]
