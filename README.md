@@ -6,8 +6,9 @@
 ![Format Status](https://github.com/monkin/glissade/actions/workflows/format.yml/badge.svg)
 
 Glissade is a Rust animations and transitions library. It's framework-agnostic with optional
-[euclid](https://crates.io/crates/euclid), [nalgebra](https://crates.io/crates/nalgebra), and
-[palette](https://crates.io/crates/palette) support.
+[euclid](https://crates.io/crates/euclid), [nalgebra](https://crates.io/crates/nalgebra),
+[cgmath](https://crates.io/crates/cgmath), and [palette](https://crates.io/crates/palette) support.
+To make it work, you need to enable the corresponding feature.
 
 The lib contains two main types: `Animation` and `InertialValue`.
 * `Animation` can be used in cases when we know start, end, and in between keyframes.
@@ -49,6 +50,7 @@ assert_eq!(touch_mix, Touch { x: 50.0, y: 50.0, pressure: 100 });
 * `"derive"` - enables derive macro for `Mix` trait (enabled by default).
 * `"euclid"` - enables [euclid](https://crates.io/crates/euclid) vectors, rotations, etc. animation.
 * `"nalgebra"` - enables [nalgebra](https://crates.io/crates/nalgebra) vectors, matrices, transformations, etc. animation.
+* `"cgmath"` - enables [cgmath](https://crates.io/crates/cgmath) vectors, matrices, etc. animation.
 * `"palette"` - enables [palette](https://crates.io/crates/palette) colors interpolation.
 
 ## Examples

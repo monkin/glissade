@@ -14,8 +14,9 @@
 //! Animation can be applied to any type that implements [`Mix`] trait. This trait is used to interpolate between two values.
 //! Mix trait is implemented for common types like `f32`, `f64`, `bool`, `i8` - `i64`, `u8` - `u64`, `Option<T: Mix>`,
 //! and tuples like `(Mix, Mix)`, `(Mix, Mix, Mix)`, etc. It's also implemented for some popular libraries:
-//! [`nalgebra`](https://crates.io/crates/nalgebra), [`euclid`](https://crates.io/crates/euclid), and
-//! [`palette`](https://crates.io/crates/palette). To make it work, you need to enable the corresponding feature.
+//! [`nalgebra`](https://crates.io/crates/nalgebra), [`euclid`](https://crates.io/crates/euclid),
+//! [cgmath](https://crates.io/crates/cgmath), and [`palette`](https://crates.io/crates/palette).
+//! To make it work, you need to enable the corresponding feature.
 //!
 //! # Derive macro
 //!
@@ -110,6 +111,8 @@ mod mix;
 mod transition;
 mod transition_item;
 
+#[cfg(feature = "cgmath")]
+mod cgmath;
 #[cfg(feature = "euclid")]
 mod euclid;
 #[cfg(feature = "nalgebra")]
