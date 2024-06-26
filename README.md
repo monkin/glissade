@@ -1,9 +1,9 @@
 # Glissade
 
-![Tests Status](https://github.com/monkin/glissade/actions/workflows/tests.yml/badge.svg)
-![Build Status](https://github.com/monkin/glissade/actions/workflows/build.yml/badge.svg)
-![Clippy Status](https://github.com/monkin/glissade/actions/workflows/clippy.yml/badge.svg)
-![Format Status](https://github.com/monkin/glissade/actions/workflows/format.yml/badge.svg)
+[![Tests Status](https://github.com/monkin/glissade/actions/workflows/tests.yml/badge.svg)](https://github.com/monkin/glissade/actions/workflows/tests.yml)
+[![Build Status](https://github.com/monkin/glissade/actions/workflows/build.yml/badge.svg)](https://github.com/monkin/glissade/actions/workflows/build.yml)
+[![Clippy Status](https://github.com/monkin/glissade/actions/workflows/clippy.yml/badge.svg)](https://github.com/monkin/glissade/actions/workflows/clippy.yml)
+[![Format Status](https://github.com/monkin/glissade/actions/workflows/format.yml/badge.svg)](https://github.com/monkin/glissade/actions/workflows/format.yml)
 
 Glissade is a Rust animations and transitions library. It's framework-agnostic with optional
 [euclid](https://crates.io/crates/euclid), [nalgebra](https://crates.io/crates/nalgebra),
