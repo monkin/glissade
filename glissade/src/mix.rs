@@ -154,6 +154,16 @@ where
     }
 }
 
+impl<T: Mix + Default + Copy, const N: usize> Mix for [T; N] {
+    fn mix(self, other: Self, t: f32) -> Self {
+        let mut result = [T::default(); N];
+        for i in 0..N {
+            result[i] = self[i].mix(other[i], t);
+        }
+        result
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -182,5 +192,12 @@ mod tests {
         assert_eq!(1u64.mix(3, 0.5), 2);
         assert_eq!(1isize.mix(3, 0.5), 2);
         assert_eq!(1usize.mix(3, 0.5), 2);
+    }
+    
+    #[test]
+    fn test_slice_mix() {
+        let a = [1.0, 2.0, 3.0];
+        let b = [4.0, 5.0, 6.0];
+        assert_eq!(a.mix(b, 0.5), [2.5, 3.5, 4.5]);
     }
 }
