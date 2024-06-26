@@ -26,7 +26,6 @@ Mix trait is implemented for common types like `f32`, `f64`, `bool`, `i8` - `i64
 and tuples like `(Mix, Mix)`, `(Mix, Mix, Mix)`, etc. It's also implemented for some popular libraries:
 [`nalgebra`](https://crates.io/crates/nalgebra), [`euclid`](https://crates.io/crates/euclid),
 [`cgmath`](https://crates.io/crates/cgmath), and [`palette`](https://crates.io/crates/palette).
-To make it work, you need to enable the corresponding feature
 
 ## Derive macro
 
