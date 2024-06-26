@@ -193,7 +193,7 @@ mod tests {
         assert_eq!(1isize.mix(3, 0.5), 2);
         assert_eq!(1usize.mix(3, 0.5), 2);
     }
-    
+
     #[test]
     fn test_slice_mix() {
         let a = [1.0, 2.0, 3.0];
