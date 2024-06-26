@@ -118,4 +118,4 @@ assert_eq!(value.get(start_time + Duration::from_secs(4)), (1.0, 0.0, 0.0));
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE.md file for details.
+This project is licensed under the MIT License - see the [LICENSE.md](https://github.com/monkin/glissade/blob/master/LICENSE.md) file for details.
