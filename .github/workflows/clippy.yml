@@ -17,4 +17,4 @@ jobs:
           profile: minimal
           components: clippy
           override: true
-      - run: cd glissade && cargo clippy --all-targets --all-features
+      - run: cargo clippy --all-targets --all-features

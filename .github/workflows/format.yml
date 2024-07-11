@@ -17,4 +17,4 @@ jobs:
           profile: minimal
           components: rustfmt
           override: true
-      - run: cd glissade && cargo fmt --all -- --check
+      - run: cargo fmt --all -- --check

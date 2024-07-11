@@ -16,4 +16,4 @@ jobs:
           toolchain: stable
           profile: minimal
           override: true
-      - run: cd glissade && cargo test --all-features
+      - run: cargo test --all-features
