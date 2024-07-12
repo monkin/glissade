@@ -134,11 +134,19 @@ pub trait Transition<T: Clone + Debug + Sized>: Sized {
     }
 
     /// Concatenate two transitions.
-    fn concat<S: Transition<T>>(self, other: S) -> SequentialTransition<T, Self, S>
+    fn then<S: Transition<T>>(self, other: S) -> SequentialTransition<T, Self, S>
     where
         Self: Sized,
     {
         SequentialTransition::new(self, other)
+    }
+
+    /// Invert the direction of the transition.
+    fn invert(self) -> InvertedTransition<T, Self>
+    where
+        Self: Sized,
+    {
+        InvertedTransition::new(self)
     }
 
     /// Run the transition at a specific time.
@@ -506,6 +514,35 @@ impl<T: Clone + Debug + Sized, S: Transition<T>> Transition<T> for ScaleTransiti
 impl<T: Clone + Debug + Sized + Copy, S: Transition<T> + Copy> Copy for ScaleTransition<T, S> {}
 
 //----------------------------------------------------------------
+// InvertedTransition
+
+/// A transition that inverts the direction of another transition.
+#[derive(Clone, Debug)]
+pub struct InvertedTransition<T: Clone + Debug + Sized, S: Transition<T>> {
+    transition: S,
+    phantom: PhantomData<T>,
+}
+
+impl<T: Clone + Debug + Sized, S: Transition<T>> InvertedTransition<T, S> {
+    pub fn new(transition: S) -> Self {
+        Self {
+            transition,
+            phantom: Default::default(),
+        }
+    }
+}
+
+impl<T: Clone + Debug + Sized, S: Transition<T>> Transition<T> for InvertedTransition<T, S> {
+    fn get(&self, time: Duration) -> T {
+        self.transition.get(self.transition.duration() - time)
+    }
+
+    fn duration(&self) -> Duration {
+        self.transition.duration()
+    }
+}
+
+//----------------------------------------------------------------
 // Tests
 
 #[cfg(test)]
@@ -569,5 +606,14 @@ mod tests {
         assert_eq!(transition.get(ZERO_DURATION), TestItem(0.0));
         assert_eq!(transition.get(HALF_SECOND), TestItem(0.25));
         assert_eq!(transition.get(ONE_SECOND), TestItem(1.0));
+    }
+
+    #[test]
+    fn inverted_transition() {
+        let transition = transition(TestItem(0.0)).go_to(TestItem(1.0), ONE_SECOND).invert();
+
+        assert_eq!(transition.get(ZERO_DURATION), TestItem(1.0));
+        assert_eq!(transition.get(HALF_SECOND), TestItem(0.5));
+        assert_eq!(transition.get(ONE_SECOND), TestItem(0.0));
     }
 }
