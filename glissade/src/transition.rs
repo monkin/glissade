@@ -610,7 +610,9 @@ mod tests {
 
     #[test]
     fn inverted_transition() {
-        let transition = transition(TestItem(0.0)).go_to(TestItem(1.0), ONE_SECOND).invert();
+        let transition = transition(TestItem(0.0))
+            .go_to(TestItem(1.0), ONE_SECOND)
+            .invert();
 
         assert_eq!(transition.get(ZERO_DURATION), TestItem(1.0));
         assert_eq!(transition.get(HALF_SECOND), TestItem(0.5));
