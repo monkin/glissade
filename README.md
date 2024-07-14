@@ -59,7 +59,7 @@ assert_eq!(touch_mix, Touch { x: 50.0, y: 50.0, pressure: 100 });
 
 ```rust
 use glissade::{Easing, transition, Transition};
-use std::time::{Duration, SystemTime};
+use web_time::{Duration, SystemTime};
 
 // Create an animation template - a transition.
 //
@@ -85,7 +85,7 @@ assert_eq!(animation.get(now + Duration::from_secs(3)), 5.0);
 
 ```rust
 use glissade::{InertialValue, Easing};
-use std::time::{Duration, SystemTime};
+use web_time::{Duration, SystemTime};
 
 type Color = (f32, f32, f32);
 

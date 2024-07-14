@@ -48,7 +48,7 @@
 //!
 //! ```
 //! use glissade::{Easing, transition, Transition};
-//! use std::time::{Duration, SystemTime};
+//! use web_time::{Duration, SystemTime};
 //!
 //! // Create an animation template - a transition.
 //! //
@@ -74,7 +74,7 @@
 //!
 //!```
 //! use glissade::{InertialValue, Easing};
-//! use std::time::{Duration, SystemTime};
+//! use web_time::{Duration, SystemTime};
 //!
 //! type Color = (f32, f32, f32);
 //!

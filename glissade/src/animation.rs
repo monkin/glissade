@@ -1,7 +1,7 @@
 use crate::Transition;
 use std::fmt::Debug;
 use std::marker::PhantomData;
-use std::time::SystemTime;
+use web_time::SystemTime;
 
 /// Transition started at a specific time.
 #[derive(Clone, Debug)]
@@ -56,7 +56,7 @@ impl<I: Clone + Debug + Sized, T: Transition<I>> Animation<I, T> {
 mod tests {
     use super::*;
     use crate::transition::LinearTransition;
-    use std::time::Duration;
+    use web_time::Duration;
 
     #[test]
     fn it_works() {

@@ -1,13 +1,13 @@
 use crate::transition_item::TransitionItem;
 use crate::Easing;
-use std::time::{Duration, SystemTime};
+use web_time::{Duration, SystemTime};
 
 /// A value that smoothly goes to the target during a specific time.
 /// The target can be changed at any time. No jumps will occur.
 /// It's expected that time is always increasing.
 /// Every method receives `current_time` as a parameter to allow testing,
 /// and have a consistent behavior during a single animation frame.
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct InertialValue<T: TransitionItem> {
     target: T,
     start_time: SystemTime,
@@ -18,10 +18,10 @@ pub struct InertialValue<T: TransitionItem> {
 
 impl<T: TransitionItem> InertialValue<T> {
     /// Create a new inertial value at a specific time.
-    pub fn new(value: T, start_time: SystemTime) -> Self {
+    pub fn new(value: T) -> Self {
         Self {
             target: value,
-            start_time,
+            start_time: SystemTime::UNIX_EPOCH,
             duration: Duration::default(),
             easing: Easing::None,
             parent: None,
@@ -127,7 +127,7 @@ mod tests {
     #[test]
     fn new_at() {
         let start_time = SystemTime::now();
-        let inertial_value = InertialValue::new(5, start_time);
+        let inertial_value = InertialValue::new(5);
         assert_eq!(inertial_value.get(start_time), 5);
         assert_eq!(inertial_value.get(start_time + Duration::from_secs(1)), 5);
     }
@@ -135,7 +135,7 @@ mod tests {
     #[test]
     fn go_to_at() {
         let start_time = SystemTime::now();
-        let inertial_value = InertialValue::new(5.0, start_time);
+        let inertial_value = InertialValue::new(5.0);
 
         let new_start_time = start_time + Duration::from_millis(500);
         let new_duration = Duration::from_secs(1);
