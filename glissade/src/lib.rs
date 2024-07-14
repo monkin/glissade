@@ -81,7 +81,7 @@
 //! let start_time = SystemTime::now();
 //!
 //! // Create initial black value
-//! let value: InertialValue<Color> = InertialValue::new((0.0, 0.0, 0.0), start_time);
+//! let value: InertialValue<Color> = InertialValue::new((0.0, 0.0, 0.0));
 //!
 //! assert_eq!(value.get(start_time), (0.0, 0.0, 0.0));
 //! assert_eq!(value.get(start_time + Duration::from_secs(1)), (0.0, 0.0, 0.0));
