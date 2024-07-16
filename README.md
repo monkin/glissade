@@ -55,6 +55,10 @@ assert_eq!(touch_mix, Touch { x: 50.0, y: 50.0, pressure: 100 });
 
 ## Examples
 
+### Live
+
+* InertialValue [[Live](https://monkin.github.io/glissade/inertial/)] [[Source](https://github.com/monkin/glissade/tree/master/examples/inertial)]
+
 ### Simple two-step animation
 
 ```rust
