@@ -2,7 +2,7 @@ use js_sys::{Function, Reflect};
 use std::marker::PhantomData;
 use uuid::Uuid;
 use wasm_bindgen::JsCast;
-use web_sys::HtmlElement;
+use web_sys::{window, HtmlElement};
 use yew::prelude::*;
 
 #[derive(Clone, PartialEq, Properties)]
@@ -68,11 +68,17 @@ impl<V: Clone + PartialEq + ToString + 'static> Component for Radio<V> {
     }
 
     fn rendered(&mut self, ctx: &Context<Self>, first_render: bool) {
+        let node = self.node_ref.cast::<HtmlElement>().unwrap();
         if first_render {
+            let component_handler =
+                Reflect::get(&window().unwrap(), &"componentHandler".into()).unwrap();
+            let upgrade_element =
+                Reflect::get(&component_handler, &"upgradeElement".into()).unwrap();
+            let upgrade_element = upgrade_element.dyn_ref::<Function>().unwrap();
+            upgrade_element.call1(&component_handler, &node).unwrap();
             return;
         }
 
-        let node = self.node_ref.cast::<HtmlElement>().unwrap();
         let parent = Reflect::get(&node, &"parentNode".into()).unwrap();
         let mdl = Reflect::get(&parent, &"MaterialRadio".into()).unwrap();
         let function_name = if ctx.props().checked {
