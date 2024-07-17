@@ -63,8 +63,6 @@ assert_eq!(touch_mix, Touch { x: 50.0, y: 50.0, pressure: 100 });
 ### Simple two-step animation
 
 ```rust
-//! Two-step transition with easing function example.
-
 use glissade::{transition, Easing, Transition};
 use std::thread::sleep;
 use std::time::{Duration, SystemTime};
