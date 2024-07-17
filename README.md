@@ -84,7 +84,7 @@ fn main() {
     for _ in 0..STEPS_COUNT {
         println!(
             "{:.2}s: {:.4}",
-            start_time.elapsed().unwrap().as_secs_f64(),
+            start_time.elapsed().as_secs_f64(),
             animation.get(Instant::now())
         );
         sleep(STEP);
