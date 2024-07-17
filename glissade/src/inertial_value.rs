@@ -1,6 +1,6 @@
 use crate::transition_item::TransitionItem;
 use crate::Easing;
-use web_time::{Duration, SystemTime};
+use web_time::{Duration, Instant};
 
 /// A value that smoothly goes to the target during a specific time.
 /// The target can be changed at any time. No jumps will occur.
@@ -10,7 +10,7 @@ use web_time::{Duration, SystemTime};
 #[derive(Clone, Debug, PartialEq)]
 pub struct InertialValue<T: TransitionItem> {
     target: T,
-    start_time: SystemTime,
+    start_time: Instant,
     duration: Duration,
     easing: Easing,
     parent: Option<Box<InertialValue<T>>>,
@@ -21,7 +21,7 @@ impl<T: TransitionItem> InertialValue<T> {
     pub fn new(value: T) -> Self {
         Self {
             target: value,
-            start_time: SystemTime::UNIX_EPOCH,
+            start_time: Instant::now(),
             duration: Duration::default(),
             easing: Easing::None,
             parent: None,
@@ -29,7 +29,7 @@ impl<T: TransitionItem> InertialValue<T> {
     }
 
     /// Check if the inertial value reached the target.
-    pub fn is_finished(&self, current_time: SystemTime) -> bool {
+    pub fn is_finished(&self, current_time: Instant) -> bool {
         current_time > self.start_time + self.duration
     }
 
@@ -39,13 +39,13 @@ impl<T: TransitionItem> InertialValue<T> {
     }
 
     /// Get transition end time.
-    pub fn end_time(&self) -> SystemTime {
+    pub fn end_time(&self) -> Instant {
         self.start_time + self.duration
     }
 
     /// Get the value of the inertial value at a specific time.
-    /// * `current_time` - The time to get the value of the inertial value, usually `SystemTime::now()`.
-    pub fn get(&self, current_time: SystemTime) -> T {
+    /// * `current_time` - The time to get the value of the inertial value, usually `Instant::now()`.
+    pub fn get(&self, current_time: Instant) -> T {
         if current_time < self.start_time {
             if let Some(parent) = &self.parent {
                 parent.get(current_time)
@@ -55,9 +55,7 @@ impl<T: TransitionItem> InertialValue<T> {
         } else if self.is_finished(current_time) {
             self.target.clone()
         } else if let Some(parent) = &self.parent {
-            let elapsed = current_time
-                .duration_since(self.start_time)
-                .unwrap_or_default();
+            let elapsed = current_time.duration_since(self.start_time);
 
             let t = elapsed.as_secs_f32() / self.duration.as_secs_f32();
             let t = self.easing.ease(t);
@@ -71,20 +69,20 @@ impl<T: TransitionItem> InertialValue<T> {
     /// Create child inertial value with a new target at a specific time.
     /// Easing is set to default (`QuadraticInOut`).
     /// * `target` - The new target value.
-    /// * `current_time` - The time to start the transition, usually `SystemTime::now()`.
+    /// * `current_time` - The time to start the transition, usually `Instant::now()`.
     /// * `duration` - The duration of the transition.
-    pub fn go_to(self, target: T, current_time: SystemTime, duration: Duration) -> Self {
+    pub fn go_to(self, target: T, current_time: Instant, duration: Duration) -> Self {
         self.ease_to(target, current_time, duration, Easing::default())
     }
 
     /// Create child inertial value with a new target, easing and start time.
     /// * `target` - The new target value.
-    /// * `start_time` - The time to start the transition, usually `SystemTime::now()`.
+    /// * `start_time` - The time to start the transition, usually `Instant::now()`.
     /// * `duration` - The duration of the transition.
     pub fn ease_to(
         self,
         target: T,
-        current_time: SystemTime,
+        current_time: Instant,
         duration: Duration,
         easing: Easing,
     ) -> Self {
@@ -102,7 +100,7 @@ impl<T: TransitionItem> InertialValue<T> {
     }
 
     /// Remove all finished ancestors.
-    pub(self) fn clean_up_at(self, current_time: SystemTime) -> Option<Box<Self>> {
+    pub(self) fn clean_up_at(self, current_time: Instant) -> Option<Box<Self>> {
         let is_finished = self.is_finished(current_time);
 
         Some(Box::new(Self {
@@ -126,7 +124,7 @@ mod tests {
 
     #[test]
     fn new_at() {
-        let start_time = SystemTime::now();
+        let start_time = Instant::now();
         let inertial_value = InertialValue::new(5);
         assert_eq!(inertial_value.get(start_time), 5);
         assert_eq!(inertial_value.get(start_time + Duration::from_secs(1)), 5);
@@ -134,7 +132,7 @@ mod tests {
 
     #[test]
     fn go_to_at() {
-        let start_time = SystemTime::now();
+        let start_time = Instant::now();
         let inertial_value = InertialValue::new(5.0);
 
         let new_start_time = start_time + Duration::from_millis(500);

@@ -7,9 +7,9 @@
 //!
 //! It also contains a set of easing functions to make animations more natural. See the [`Easing`] enum for more details.
 //!
-//! Most of the methods receive `SystemTime` as a parameter to allow testing without mocks,
+//! Most of the methods receive `Instant` as a parameter to allow testing without mocks,
 //! and have a consistent behavior during a single animation frame. It's expected that time is received
-//! from `SystemTime::now()` once in the beginning of the frame, and used lately during the frame rendering.
+//! from `Instant::now()` once in the beginning of the frame, and used lately during the frame rendering.
 //!
 //! Animation can be applied to any type that implements [`Mix`] trait. This trait is used to interpolate between two values.
 //! Mix trait is implemented for common types like `f32`, `f64`, `bool`, `i8` - `i64`, `u8` - `u64`, `Option<T: Mix>`,
@@ -48,7 +48,7 @@
 //!
 //! ```
 //! use glissade::{Easing, transition, Transition};
-//! use web_time::{Duration, SystemTime};
+//! use web_time::{Duration, Instant};
 //!
 //! // Create an animation template - a transition.
 //! //
@@ -59,7 +59,7 @@
 //!     .go_to(10.0, Duration::from_secs(1))
 //!     .ease_to(5.0, Duration::from_secs(2), Easing::QuadraticInOut);
 //!
-//! let now = SystemTime::now();
+//! let now = Instant::now();
 //! // Create an animation from the transition and start time.
 //! let animation = transition.run(now);
 //!
@@ -74,11 +74,11 @@
 //!
 //!```
 //! use glissade::{InertialValue, Easing};
-//! use web_time::{Duration, SystemTime};
+//! use web_time::{Duration, Instant};
 //!
 //! type Color = (f32, f32, f32);
 //!
-//! let start_time = SystemTime::now();
+//! let start_time = Instant::now();
 //!
 //! // Create initial black value
 //! let value: InertialValue<Color> = InertialValue::new((0.0, 0.0, 0.0));

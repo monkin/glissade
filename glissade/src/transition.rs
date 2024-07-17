@@ -3,7 +3,7 @@ use crate::easing::Easing;
 use crate::transition_item::TransitionItem;
 use std::fmt::Debug;
 use std::marker::PhantomData;
-use web_time::{Duration, SystemTime};
+use web_time::{Duration, Instant};
 
 /// A transition of a value over time. It works like an animation template.
 /// A good point to start building transition is the [`transition`] function.
@@ -150,8 +150,8 @@ pub trait Transition<T: Clone + Debug + Sized>: Sized {
     }
 
     /// Run the transition at a specific time.
-    /// * `start_time` - The time to start the transition, usually `SystemTime::now()`.
-    fn run(self, start_time: SystemTime) -> Animation<T, Self> {
+    /// * `start_time` - The time to start the transition, usually `Instant::now()`.
+    fn run(self, start_time: Instant) -> Animation<T, Self> {
         Animation::start(self, start_time)
     }
 }

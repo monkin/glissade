@@ -2,13 +2,13 @@
 
 use glissade::{transition, Easing, Transition};
 use std::thread::sleep;
-use std::time::{Duration, SystemTime};
+use std::time::{Duration, Instant};
 
 const STEPS_COUNT: u32 = 10;
 const STEP: Duration = Duration::from_millis(3500 / STEPS_COUNT as u64);
 
 fn main() {
-    let start_time = SystemTime::now();
+    let start_time = Instant::now();
 
     // Transition consists of two steps:
     // 1. from 0.0 to 10.0 in 1 second linearly,
@@ -21,8 +21,8 @@ fn main() {
     for _ in 0..STEPS_COUNT {
         println!(
             "{:.2}s: {:.4}",
-            start_time.elapsed().unwrap().as_secs_f64(),
-            animation.get(SystemTime::now())
+            start_time.elapsed().as_secs_f64(),
+            animation.get(Instant::now())
         );
         sleep(STEP);
     }

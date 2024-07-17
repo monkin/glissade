@@ -18,9 +18,9 @@ The lib contains two main types: `Animation` and `InertialValue`.
 
 It also contains a set of easing functions to make animations more natural. See the `Easing` enum for more details.
 
-Most of the methods receive `SystemTime` as a parameter to allow testing without mocks,
+Most of the methods receive `std::time::Instant` (or `web_time::Instant` depending on a platform) as a parameter to allow testing without mocks,
 and have a consistent behavior during a single animation frame. It's expected that time is received
-from `SystemTime::now()` once in the beginning of the frame, and used lately during the frame rendering.
+from `Instant::now()` once in the beginning of the frame, and used lately during the frame rendering.
 
 Animation can be applied to any type that implements `Mix` trait. This trait is used to interpolate between two values.
 Mix trait is implemented for common types like `f32`, `f64`, `bool`, `i8` - `i64`, `u8` - `u64`, `Option<T: Mix>`,
@@ -65,13 +65,13 @@ assert_eq!(touch_mix, Touch { x: 50.0, y: 50.0, pressure: 100 });
 ```rust
 use glissade::{transition, Easing, Transition};
 use std::thread::sleep;
-use std::time::{Duration, SystemTime};
+use std::time::{Duration, Instant};
 
 const STEPS_COUNT: u32 = 10;
 const STEP: Duration = Duration::from_millis(3500 / STEPS_COUNT as u64);
 
 fn main() {
-    let start_time = SystemTime::now();
+    let start_time = Instant::now();
 
     // Transition consists of two steps:
     // 1. from 0.0 to 10.0 in 1 second linearly,
@@ -85,7 +85,7 @@ fn main() {
         println!(
             "{:.2}s: {:.4}",
             start_time.elapsed().unwrap().as_secs_f64(),
-            animation.get(SystemTime::now())
+            animation.get(Instant::now())
         );
         sleep(STEP);
     }
@@ -112,11 +112,11 @@ Try it yourself with `cargo run examples/console-transition`, or view the source
 
 ```rust
 use glissade::{InertialValue, Easing};
-use web_time::{Duration, SystemTime};
+use web_time::{Duration, Instant};
 
 type Color = (f32, f32, f32);
 
-let start_time = SystemTime::now();
+let start_time = Instant::now();
 
 // Create initial black value
 let value: InertialValue<Color> = InertialValue::new((0.0, 0.0, 0.0));

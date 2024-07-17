@@ -3,7 +3,7 @@ use glissade::{InertialValue, Mix};
 use std::fmt::Debug;
 use std::ops::Deref;
 use std::rc::Rc;
-use web_time::{Duration, SystemTime};
+use web_time::{Duration, Instant};
 use yew::prelude::*;
 
 #[hook]
@@ -11,7 +11,7 @@ pub fn use_inertial<T>(new_value: &T, duration: Duration) -> T
 where
     T: Mix + Clone + Debug + PartialEq + 'static,
 {
-    let now = SystemTime::now();
+    let now = Instant::now();
 
     let inertial = use_state_eq({
         let new_value = new_value.clone();
@@ -35,7 +35,7 @@ where
         let current = current.clone();
         move |inertial: &Rc<InertialValue<T>>| {
             let inertial = inertial.clone();
-            AnimationLoop::new(move || current.set(inertial.get(SystemTime::now())))
+            AnimationLoop::new(move || current.set(inertial.get(Instant::now())))
         }
     });
 
