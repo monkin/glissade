@@ -63,28 +63,50 @@ assert_eq!(touch_mix, Touch { x: 50.0, y: 50.0, pressure: 100 });
 ### Simple two-step animation
 
 ```rust
-use glissade::{Easing, transition, Transition};
-use web_time::{Duration, SystemTime};
+//! Two-step transition with easing function example.
 
-// Create an animation template - a transition.
-//
-// This transition consists of two steps:
-// 1. from 0.0 to 10.0 in 1 second linearly,
-// 2. and then go to 5.0 with easing function.
-let transition = transition(0.0)
-    .go_to(10.0, Duration::from_secs(1))
-    .ease_to(5.0, Duration::from_secs(2), Easing::QuadraticInOut);
+use glissade::{transition, Easing, Transition};
+use std::thread::sleep;
+use std::time::{Duration, SystemTime};
 
-let now = SystemTime::now();
-// Create an animation from the transition and start time.
-let animation = transition.run(now);
+const STEPS_COUNT: u32 = 10;
+const STEP: Duration = Duration::from_millis(3500 / STEPS_COUNT as u64);
 
-assert_eq!(animation.get(now), 0.0);
-assert_eq!(animation.get(now + Duration::from_millis(500)), 5.0);
-assert_eq!(animation.get(now + Duration::from_secs(1)), 10.0);
-assert_eq!(animation.get(now + Duration::from_secs(2)), 7.5);
-assert_eq!(animation.get(now + Duration::from_secs(3)), 5.0);
+fn main() {
+    // Transition consists of two steps:
+    // 1. from 0.0 to 10.0 in 1 second linearly,
+    // 2. and then go to 5.0 with easing function.
+    let animation = transition(0.0)
+        .go_to(10.0, Duration::from_secs(1))
+        .ease_to(5.0, Duration::from_secs(2), Easing::QuadraticInOut)
+        .run(SystemTime::now());
+
+    for i in 0..STEPS_COUNT {
+        println!(
+            "{:.2}s: {:.4}",
+            (STEP * i).as_secs_f64(),
+            animation.get(SystemTime::now())
+        );
+        sleep(STEP);
+    }
+}
 ```
+
+Prints the following output:
+```text
+0.00s: 0.0000
+0.35s: 3.5100
+0.70s: 7.0200
+1.05s: 9.9932
+1.40s: 9.5940
+1.75s: 8.5787
+2.10s: 7.0070
+2.45s: 5.7426
+2.80s: 5.0951
+3.15s: 5.0000
+```
+
+Try it yourself with `cargo run examples/console-transition`, or view the source code in https://github.com/monkin/glissade/tree/master/examples/console-transition.
 
 ### Smoothly change color
 

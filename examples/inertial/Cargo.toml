@@ -18,4 +18,4 @@ wasm-bindgen = "0.2"
 web-time = "1.1"
 rand = "0.8"
 
-glissade = { path = "../../glissade", version = "0.1.17", features = ["palette", "cgmath"] }
+glissade = { path = "../../glissade", version = "0.1.19", features = ["palette", "cgmath"] }
