@@ -73,18 +73,20 @@ const STEPS_COUNT: u32 = 10;
 const STEP: Duration = Duration::from_millis(3500 / STEPS_COUNT as u64);
 
 fn main() {
+    let start_time = SystemTime::now();
+
     // Transition consists of two steps:
     // 1. from 0.0 to 10.0 in 1 second linearly,
     // 2. and then go to 5.0 with easing function.
     let animation = transition(0.0)
         .go_to(10.0, Duration::from_secs(1))
         .ease_to(5.0, Duration::from_secs(2), Easing::QuadraticInOut)
-        .run(SystemTime::now());
+        .run(start_time);
 
-    for i in 0..STEPS_COUNT {
+    for _ in 0..STEPS_COUNT {
         println!(
             "{:.2}s: {:.4}",
-            (STEP * i).as_secs_f64(),
+            start_time.elapsed().unwrap().as_secs_f64(),
             animation.get(SystemTime::now())
         );
         sleep(STEP);
@@ -95,14 +97,14 @@ fn main() {
 Prints the following output:
 ```text
 0.00s: 0.0000
-0.35s: 3.5100
-0.70s: 7.0200
-1.05s: 9.9932
-1.40s: 9.5940
-1.75s: 8.5787
-2.10s: 7.0070
-2.45s: 5.7426
-2.80s: 5.0951
+0.35s: 3.5000
+0.70s: 7.0000
+1.05s: 9.9935
+1.40s: 9.5980
+1.75s: 8.5862
+2.10s: 7.0160
+2.45s: 5.7480
+2.80s: 5.0970
 3.15s: 5.0000
 ```
 
