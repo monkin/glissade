@@ -240,16 +240,24 @@ impl Component for App {
         };
 
         html! {
-            <div class={classes!("mdl-layout", "mdl-js-layout", "mdl-layout--fixed-drawer")}>
-                <div class={classes!("mdl-layout__drawer", "control-panel")}>
+            <div class="mdl-layout mdl-js-layout mdl-layout--fixed-drawer">
+                <div class="mdl-layout__drawer control-panel">
                     <Button label="Random" on_click={ctx.link().callback(|_| AppMessage::Random)} />
                     <EnumInput<Shape> label="Shape:" value={self.shape} on_change={on_shape_change} />
                     <EnumInput<Size> label="Size:" value={self.size} on_change={on_size_change} />
                     <EnumInput<HorizontalPosition> label="Horizontal Position:" value={self.horizontal_position} on_change={on_horizontal_position_change} />
                     <EnumInput<VerticalPosition> label="Vertical Position:" value={self.vertical_position} on_change={on_vertical_position_change} />
                     <EnumInput<Color> label="Color:" value={self.color} on_change={on_color_change} />
+                    <div class="source-link">
+                        <a href="https://github.com/monkin/glissade/tree/master/examples/inertial" target="_blank">
+                            <button class="mdl-button mdl-js-ripple-effect">
+                                { "Go to Source " }
+                                <span class="material-icons">{"open_in_new"}</span>
+                            </button>
+                        </a>
+                    </div>
                 </div>
-                <main class={classes!("mdl-layout__content")}>
+                <main class="mdl-layout__content">
                     <AnimatedView ..animated_props />
                 </main>
             </div>

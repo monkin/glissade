@@ -1,8 +1,8 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
     <meta charset="utf-8"/>
-    <title>Yew App</title>
+    <title>Glissade InertialValue Example</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" type="text/css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
@@ -30,6 +30,24 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
+        }
+        .source-link {
+            display: flex;
+            flex-grow: 1;
+            width: 100%;
+            justify-content: flex-end;
+        }
+        .source-link, .source-link > a {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .source-link > a, .source-link button {
+            text-decoration: none;
+        }
+        .source-link .material-icons {
+            margin-left: 0.5rem;
+            font-size: 1.4rem;
         }
     </style>
 </head>
