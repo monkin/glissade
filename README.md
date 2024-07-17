@@ -4,6 +4,7 @@
 [![Build Status](https://github.com/monkin/glissade/actions/workflows/build.yml/badge.svg)](https://github.com/monkin/glissade/actions/workflows/build.yml)
 [![Clippy Status](https://github.com/monkin/glissade/actions/workflows/clippy.yml/badge.svg)](https://github.com/monkin/glissade/actions/workflows/clippy.yml)
 [![Format Status](https://github.com/monkin/glissade/actions/workflows/format.yml/badge.svg)](https://github.com/monkin/glissade/actions/workflows/format.yml)
+[![Pages Status](https://github.com/monkin/glissade/actions/workflows/pages.yml/badge.svg)](https://github.com/monkin/glissade/actions/workflows/pages.yml)
 
 Glissade is a Rust animations and transitions library. It's framework-agnostic with optional
 [euclid](https://crates.io/crates/euclid), [nalgebra](https://crates.io/crates/nalgebra),
@@ -96,7 +97,7 @@ type Color = (f32, f32, f32);
 let start_time = SystemTime::now();
 
 // Create initial black value
-let value: InertialValue<Color> = InertialValue::new((0.0, 0.0, 0.0), start_time);
+let value: InertialValue<Color> = InertialValue::new((0.0, 0.0, 0.0));
 
 assert_eq!(value.get(start_time), (0.0, 0.0, 0.0));
 assert_eq!(value.get(start_time + Duration::from_secs(1)), (0.0, 0.0, 0.0));
