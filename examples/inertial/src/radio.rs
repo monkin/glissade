@@ -1,8 +1,7 @@
-use js_sys::{Function, Reflect};
+use crate::mdl;
 use std::marker::PhantomData;
 use uuid::Uuid;
-use wasm_bindgen::JsCast;
-use web_sys::{window, HtmlElement};
+use web_sys::Element;
 use yew::prelude::*;
 
 #[derive(Clone, PartialEq, Properties)]
@@ -68,27 +67,11 @@ impl<V: Clone + PartialEq + ToString + 'static> Component for Radio<V> {
     }
 
     fn rendered(&mut self, ctx: &Context<Self>, first_render: bool) {
-        let node = self.node_ref.cast::<HtmlElement>().unwrap();
+        let node = self.node_ref.cast::<Element>().unwrap();
         if first_render {
-            let component_handler =
-                Reflect::get(&window().unwrap(), &"componentHandler".into()).unwrap();
-            let upgrade_element =
-                Reflect::get(&component_handler, &"upgradeElement".into()).unwrap();
-            let upgrade_element = upgrade_element.dyn_ref::<Function>().unwrap();
-            upgrade_element.call1(&component_handler, &node).unwrap();
-            return;
-        }
-
-        let parent = Reflect::get(&node, &"parentNode".into()).unwrap();
-        let mdl = Reflect::get(&parent, &"MaterialRadio".into()).unwrap();
-        let function_name = if ctx.props().checked {
-            "check"
+            mdl::upgrade_element(&node);
         } else {
-            "uncheck"
-        };
-
-        let method_object = Reflect::get(&mdl, &function_name.into()).unwrap();
-        let method = method_object.dyn_ref::<Function>().unwrap();
-        method.call0(&mdl).unwrap();
+            mdl::set_radio_checked(&node, ctx.props().checked);
+        }
     }
 }

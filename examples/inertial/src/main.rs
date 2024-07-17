@@ -2,6 +2,7 @@ mod animated_view;
 mod animation_loop;
 mod button;
 mod enum_input;
+mod mdl;
 mod radio;
 mod use_inertial;
 
@@ -9,12 +10,9 @@ use crate::animated_view::{AnimatedView, AnimatedViewProps};
 use crate::button::Button;
 use crate::enum_input::EnumInput;
 use cgmath::Vector2;
-use js_sys::{Function, Reflect};
 use palette::LinSrgb;
 use rand::rngs::ThreadRng;
 use rand::Rng;
-use wasm_bindgen::JsCast;
-use web_sys::window;
 use yew::prelude::*;
 
 #[derive(Clone, PartialEq, Copy, Default, strum_macros::Display, strum_macros::EnumIter)]
@@ -260,11 +258,7 @@ impl Component for App {
 
     fn rendered(&mut self, _ctx: &Context<Self>, first_render: bool) {
         if first_render {
-            let component_handler =
-                Reflect::get(&window().unwrap(), &"componentHandler".into()).unwrap();
-            let upgrade_dom = Reflect::get(&component_handler, &"upgradeDom".into()).unwrap();
-            let upgrade_dom = upgrade_dom.dyn_ref::<Function>().unwrap();
-            upgrade_dom.call0(&component_handler).unwrap();
+            mdl::upgrade_dom();
         }
     }
 }
