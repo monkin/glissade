@@ -8,6 +8,7 @@
       <sourceFolder url="file://$MODULE_DIR$/examples/console-transition/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/examples/inertial/dist" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
+      <excludeFolder url="file://$MODULE_DIR$/.git" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

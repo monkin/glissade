@@ -1,5 +1,6 @@
-use crate::transition_item::TransitionItem;
+use crate::animated_item::AnimatedItem;
 use crate::Easing;
+use std::fmt::Debug;
 use web_time::{Duration, Instant};
 
 /// A value that smoothly goes to the target during a specific time.
@@ -7,8 +8,8 @@ use web_time::{Duration, Instant};
 /// It's expected that time is always increasing.
 /// Every method receives `current_time` as a parameter to allow testing,
 /// and have a consistent behavior during a single animation frame.
-#[derive(Clone, Debug, PartialEq)]
-pub struct InertialValue<T: TransitionItem> {
+#[derive(Clone, PartialEq)]
+pub struct InertialValue<T: AnimatedItem> {
     target: T,
     start_time: Option<Instant>,
     duration: Duration,
@@ -16,13 +17,25 @@ pub struct InertialValue<T: TransitionItem> {
     parent: Option<Box<InertialValue<T>>>,
 }
 
-impl<T: TransitionItem> From<T> for InertialValue<T> {
+impl<T: AnimatedItem + Debug> Debug for InertialValue<T> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("InertialValue")
+            .field("target", &self.target)
+            .field("start_time", &self.start_time)
+            .field("duration", &self.duration)
+            .field("easing", &self.easing)
+            .field("parent", &self.parent)
+            .finish()
+    }
+}
+
+impl<T: AnimatedItem> From<T> for InertialValue<T> {
     fn from(value: T) -> Self {
         Self::new(value)
     }
 }
 
-impl<T: TransitionItem + Default> Default for InertialValue<T> {
+impl<T: AnimatedItem + Default> Default for InertialValue<T> {
     fn default() -> Self {
         Self {
             target: Default::default(),
@@ -34,7 +47,7 @@ impl<T: TransitionItem + Default> Default for InertialValue<T> {
     }
 }
 
-impl<T: TransitionItem> InertialValue<T> {
+impl<T: AnimatedItem> InertialValue<T> {
     /// Create a new inertial value at a specific time.
     pub fn new(value: T) -> Self {
         Self {

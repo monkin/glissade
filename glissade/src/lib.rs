@@ -47,7 +47,7 @@
 //! ## Simple two-step animation
 //!
 //! ```
-//! use glissade::{Easing, transition, Transition};
+//! use glissade::{Easing, keyframes, Keyframes};
 //! use web_time::{Duration, Instant};
 //!
 //! // Create an animation template - a transition.
@@ -55,7 +55,7 @@
 //! // This transition consists of two steps:
 //! // 1. from 0.0 to 10.0 in 1 second linearly,
 //! // 2. and then go to 5.0 with easing function.
-//! let transition = transition(0.0)
+//! let transition = keyframes(0.0)
 //!     .go_to(10.0, Duration::from_secs(1))
 //!     .ease_to(5.0, Duration::from_secs(2), Easing::QuadraticInOut);
 //!
@@ -104,12 +104,12 @@
 //! assert_eq!(value.get(start_time + Duration::from_secs(4)), (1.0, 0.0, 0.0));
 //! ```
 
+mod animated_item;
 mod animation;
 mod easing;
 mod inertial_value;
+mod keyframes;
 mod mix;
-mod transition;
-mod transition_item;
 
 #[cfg(feature = "cgmath")]
 mod cgmath;
@@ -125,8 +125,8 @@ pub use easing::Easing;
 #[cfg(feature = "derive")]
 pub use glissade_macro::Mix;
 pub use inertial_value::InertialValue;
+pub use keyframes::{keyframes, Keyframes};
 pub use mix::Mix;
-pub use transition::{transition, Transition};
 
 #[cfg(test)]
 #[cfg(feature = "derive")]

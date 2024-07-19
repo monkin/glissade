@@ -1,6 +1,6 @@
 [package]
 name = "glissade-macro"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["Andrei Monkin <monkin.andrey@gmail.com>"]
 description = "Derive macro for implementing glissade::Mix trait"
 edition = "2021"
@@ -14,5 +14,5 @@ name = "glissade_macro"
 proc-macro = true
 
 [dependencies]
-syn = { version = "^2.0.67", features = ["extra-traits"]}
-quote = "^1.0.36"
+syn = { version = "^2.0", features = ["extra-traits"]}
+quote = "^1.0"
