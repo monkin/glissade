@@ -10,10 +10,22 @@ use web_time::{Duration, Instant};
 #[derive(Clone, Debug, PartialEq)]
 pub struct InertialValue<T: TransitionItem> {
     target: T,
-    start_time: Instant,
+    start_time: Option<Instant>,
     duration: Duration,
     easing: Easing,
     parent: Option<Box<InertialValue<T>>>,
+}
+
+impl<T: TransitionItem + Default> Default for InertialValue<T> {
+    fn default() -> Self {
+        Self {
+            target: Default::default(),
+            start_time: Default::default(),
+            duration: Default::default(),
+            easing: Easing::None,
+            parent: None,
+        }
+    }
 }
 
 impl<T: TransitionItem> InertialValue<T> {
@@ -21,8 +33,8 @@ impl<T: TransitionItem> InertialValue<T> {
     pub fn new(value: T) -> Self {
         Self {
             target: value,
-            start_time: Instant::now(),
-            duration: Duration::default(),
+            start_time: Default::default(),
+            duration: Default::default(),
             easing: Easing::None,
             parent: None,
         }
@@ -30,7 +42,9 @@ impl<T: TransitionItem> InertialValue<T> {
 
     /// Check if the inertial value reached the target.
     pub fn is_finished(&self, current_time: Instant) -> bool {
-        current_time > self.start_time + self.duration
+        self.end_time()
+            .map(|end_time| current_time > end_time)
+            .unwrap_or(true)
     }
 
     /// Get the target value.
@@ -39,28 +53,32 @@ impl<T: TransitionItem> InertialValue<T> {
     }
 
     /// Get transition end time.
-    pub fn end_time(&self) -> Instant {
-        self.start_time + self.duration
+    pub fn end_time(&self) -> Option<Instant> {
+        self.start_time.map(|start_time| start_time + self.duration)
     }
 
     /// Get the value of the inertial value at a specific time.
     /// * `current_time` - The time to get the value of the inertial value, usually `Instant::now()`.
     pub fn get(&self, current_time: Instant) -> T {
-        if current_time < self.start_time {
-            if let Some(parent) = &self.parent {
-                parent.get(current_time)
+        if let Some(start_time) = self.start_time {
+            if current_time < start_time {
+                if let Some(parent) = &self.parent {
+                    parent.get(current_time)
+                } else {
+                    self.target.clone()
+                }
+            } else if self.is_finished(current_time) {
+                self.target.clone()
+            } else if let Some(parent) = &self.parent {
+                let elapsed = current_time.duration_since(start_time);
+
+                let t = elapsed.as_secs_f32() / self.duration.as_secs_f32();
+                let t = self.easing.ease(t);
+
+                parent.get(current_time).mix(self.target.clone(), t)
             } else {
                 self.target.clone()
             }
-        } else if self.is_finished(current_time) {
-            self.target.clone()
-        } else if let Some(parent) = &self.parent {
-            let elapsed = current_time.duration_since(self.start_time);
-
-            let t = elapsed.as_secs_f32() / self.duration.as_secs_f32();
-            let t = self.easing.ease(t);
-
-            parent.get(current_time).mix(self.target.clone(), t)
         } else {
             self.target.clone()
         }
@@ -91,7 +109,7 @@ impl<T: TransitionItem> InertialValue<T> {
         } else {
             Self {
                 target,
-                start_time: current_time,
+                start_time: Some(current_time),
                 duration,
                 easing,
                 parent: self.clean_up_at(current_time),
