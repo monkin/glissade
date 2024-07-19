@@ -28,6 +28,8 @@ and tuples like `(Mix, Mix)`, `(Mix, Mix, Mix)`, etc. It's also implemented for 
 [`nalgebra`](https://crates.io/crates/nalgebra), [`euclid`](https://crates.io/crates/euclid),
 [`cgmath`](https://crates.io/crates/cgmath), and [`palette`](https://crates.io/crates/palette).
 
+The full documentation is available on [docs.rs](https://docs.rs/glissade).
+
 ## Derive macro
 
 The library contains a derive macro to implement the `Mix` trait for structs and tuples.
