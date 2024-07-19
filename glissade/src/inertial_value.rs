@@ -16,6 +16,12 @@ pub struct InertialValue<T: TransitionItem> {
     parent: Option<Box<InertialValue<T>>>,
 }
 
+impl<T: TransitionItem> From<T> for InertialValue<T> {
+    fn from(value: T) -> Self {
+        Self::new(value)
+    }
+}
+
 impl<T: TransitionItem + Default> Default for InertialValue<T> {
     fn default() -> Self {
         Self {
