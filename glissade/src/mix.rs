@@ -35,8 +35,20 @@ where
     fn mix(self, other: Self, t: f32) -> Self {
         match (self, other) {
             (Some(a), Some(b)) => Some(a.mix(b, t)),
-            (Some(a), None) => Some(a),
-            (None, Some(b)) => Some(b),
+            (Some(a), None) => {
+                if t > 0.5 {
+                    None
+                } else {
+                    Some(a)
+                }
+            }
+            (None, Some(b)) => {
+                if t > 0.5 {
+                    Some(b)
+                } else {
+                    None
+                }
+            }
             (None, None) => None,
         }
     }
@@ -199,5 +211,18 @@ mod tests {
         let a = [1.0, 2.0, 3.0];
         let b = [4.0, 5.0, 6.0];
         assert_eq!(a.mix(b, 0.5), [2.5, 3.5, 4.5]);
+    }
+
+    #[test]
+    fn test_option_mix() {
+        assert_eq!(Some(1).mix(Some(3), 0.5), Some(2));
+        assert_eq!(Some(1).mix(None, 0.25), Some(1));
+        assert_eq!(None.mix(Some(2), 0.25), None);
+        assert_eq!(Some(1).mix(None, 0.75), None);
+        assert_eq!(None.mix(Some(2), 0.75), Some(2));
+
+        let v1: Option<f32> = None;
+        let v2: Option<f32> = None;
+        assert_eq!(v1.mix(v2, 0.5), None);
     }
 }
