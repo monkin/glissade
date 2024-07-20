@@ -7,9 +7,13 @@
 //!
 //! It also contains a set of easing functions to make animations more natural. See the [`Easing`] enum for more details.
 //!
-//! Most of the methods receive `Instant` as a parameter to allow testing without mocks,
-//! and have a consistent behavior during a single animation frame. It's expected that time is received
+//! Most of the methods receive time as a parameter to allow testing without mocks,
+//! and have a consistent behavior during a single animation frame. It's expected that time is received, for example,
 //! from `Instant::now()` once in the beginning of the frame, and used lately during the frame rendering.
+//!
+//! Any type that implements `Time` trait can be used as a time type. By default, it's implemented for `std::time::Instant`,
+//! `std::time::SystemTime`, f32, and f64. It's also implemented for `web_time::*` if `"web-time"` feature is enabled.
+//! It's recommended to use `web_time::Instant` and `web_time::Duration` as a time type in most cases.
 //!
 //! Animation can be applied to any type that implements [`Mix`] trait. This trait is used to interpolate between two values.
 //! Mix trait is implemented for common types like `f32`, `f64`, `bool`, `i8` - `i64`, `u8` - `u64`, `Option<T: Mix>`,
