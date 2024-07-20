@@ -1,17 +1,19 @@
-use crate::Keyframes;
+use crate::{Keyframes, Time};
 use std::fmt::Debug;
 use std::marker::PhantomData;
-use web_time::Instant;
 
 /// Running keyframes animation started at a specific time.
 #[derive(Clone)]
-pub struct Animation<I: Clone + Sized, T: Keyframes<I>> {
+pub struct Animation<I: Clone + Sized, X: Time, T: Keyframes<I, X>> {
     keyframes: T,
-    start_time: Instant,
+    start_time: X,
     phantom: PhantomData<I>,
 }
 
-impl<I: Clone + Sized, T: Keyframes<I> + Debug> Debug for Animation<I, T> {
+impl<I: Clone + Sized, X: Time, T: Keyframes<I, X> + Debug> Debug for Animation<I, X, T>
+where
+    X: Debug,
+{
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("Animation")
             .field("keyframes", &self.keyframes)
@@ -20,12 +22,12 @@ impl<I: Clone + Sized, T: Keyframes<I> + Debug> Debug for Animation<I, T> {
     }
 }
 
-impl<I: Clone + Sized, T: Keyframes<I>> Animation<I, T> {
+impl<I: Clone + Sized, X: Time, T: Keyframes<I, X>> Animation<I, X, T> {
     /// Start the animation at a specific time.
     ///
     /// * `keyframes` - The transition to animate.
     /// * `start_time` - The time to start the animation, usually `Instant::now()`.
-    pub fn start(keyframes: T, start_time: Instant) -> Self {
+    pub fn start(keyframes: T, start_time: X) -> Self {
         Self {
             keyframes,
             start_time,
@@ -34,26 +36,26 @@ impl<I: Clone + Sized, T: Keyframes<I>> Animation<I, T> {
     }
 
     /// Check if the animation is finished at a specific time.
-    pub fn is_finished(&self, current_time: Instant) -> bool {
+    pub fn is_finished(&self, current_time: X) -> bool {
         self.keyframes
-            .is_finished(current_time.duration_since(self.start_time))
+            .is_finished(current_time.since(self.start_time))
     }
 
     /// Get the start time of the animation.
-    pub fn start_time(&self) -> Instant {
+    pub fn start_time(&self) -> X {
         self.start_time
     }
 
     /// Get the end time of the animation.
     /// Infinite animations will panic.
-    pub fn end_time(&self) -> Instant {
-        self.start_time + self.keyframes.duration()
+    pub fn end_time(&self) -> X {
+        self.start_time.advance(self.keyframes.duration())
     }
 
     /// Get the value of the animation at a specific time.
     /// * `time` - The time to get the value of the animation, usually `Instant::now()`.
-    pub fn get(&self, time: Instant) -> I {
-        self.keyframes.get(time.duration_since(self.start_time))
+    pub fn get(&self, time: X) -> I {
+        self.keyframes.get(time.since(self.start_time))
     }
 }
 
@@ -61,6 +63,7 @@ impl<I: Clone + Sized, T: Keyframes<I>> Animation<I, T> {
 mod tests {
     use super::*;
     use crate::keyframes::LinearKeyframes;
+    use std::time::Instant;
     use web_time::Duration;
 
     #[test]

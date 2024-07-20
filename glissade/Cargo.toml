@@ -12,18 +12,19 @@ edition = "2021"
 publish = true
 
 [features]
-default = ["derive"]
+default = ["derive", "web-time"]
 nalgebra = ["dep:nalgebra", "dep:num-traits"]
 euclid = ["dep:euclid"]
 palette = ["dep:palette"]
 derive = ["dep:glissade-macro"]
 cgmath = ["dep:cgmath"]
+web-time = ["dep:web-time"]
 
 [dependencies]
-nalgebra = { version = "^0.33.0", optional = true }
-euclid = { version = "^0.22.10", optional = true }
-num-traits = { version = "^0.2.19", optional = true }
-palette = { version = "^0.7.6", optional = true }
-cgmath = { version = "^0.18.0", optional = true }
-glissade-macro = { version = "0.1.1", optional = true, path = "../glissade-macro" }
-web-time = { version = "^1.1.0" }
+nalgebra = { version = "^0.33", optional = true }
+euclid = { version = "^0.22", optional = true }
+num-traits = { version = "^0.2", optional = true }
+palette = { version = "^0.7", optional = true }
+cgmath = { version = "^0.18", optional = true }
+glissade-macro = { version = "0.1", optional = true, path = "../glissade-macro" }
+web-time = { version = "^1.1", optional = true }

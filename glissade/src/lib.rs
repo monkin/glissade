@@ -81,7 +81,7 @@
 //! let start_time = Instant::now();
 //!
 //! // Create initial black value
-//! let value: InertialValue<Color> = InertialValue::new((0.0, 0.0, 0.0));
+//! let value = InertialValue::new((0.0, 0.0, 0.0));
 //!
 //! assert_eq!(value.get(start_time), (0.0, 0.0, 0.0));
 //! assert_eq!(value.get(start_time + Duration::from_secs(1)), (0.0, 0.0, 0.0));
@@ -110,6 +110,7 @@ mod easing;
 mod inertial_value;
 mod keyframes;
 mod mix;
+mod time;
 
 #[cfg(feature = "cgmath")]
 mod cgmath;
@@ -119,19 +120,24 @@ mod euclid;
 mod nalgebra;
 #[cfg(feature = "palette")]
 mod palette;
+#[cfg(not(feature = "web-time"))]
+mod std_time_impl;
+#[cfg(feature = "web-time")]
+mod web_time_impl;
 
 pub use animation::Animation;
 pub use easing::Easing;
-#[cfg(feature = "derive")]
-pub use glissade_macro::Mix;
 pub use inertial_value::InertialValue;
 pub use keyframes::{keyframes, Keyframes};
 pub use mix::Mix;
+pub use time::{Time, TimeDiff};
+
+#[cfg(feature = "derive")]
+pub use glissade_macro::Mix;
 
 #[cfg(test)]
 #[cfg(feature = "derive")]
 mod tests {
-
     use crate as glissade;
     use crate::Mix;
 
@@ -184,7 +190,7 @@ mod tests {
             s3,
             Size {
                 width: 0.5,
-                height: 0.5
+                height: 0.5,
             }
         );
     }

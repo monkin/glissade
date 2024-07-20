@@ -12,15 +12,19 @@ Glissade is a Rust animations and transitions library. It's framework-agnostic w
 To make it work, you need to enable the corresponding feature.
 
 The lib contains two main types: `Animation` and `InertialValue`.
-* `Animation` can be used in cases when we know start, end, and in between keyframes.
+* `Animation` contains `Keyframes` and can be used in cases when we know start, end, and in between points.
 * `InertialValue` can be used to make an object smoothly follow a target value.
   For example, a particle following a cursor. Background color changing smoothly on theme change.
 
 It also contains a set of easing functions to make animations more natural. See the `Easing` enum for more details.
 
-Most of the methods receive `std::time::Instant` (or `web_time::Instant` depending on a platform) as a parameter to allow testing without mocks,
-and have a consistent behavior during a single animation frame. It's expected that time is received
+Most of the methods receive time as a parameter to allow testing without mocks,
+and have a consistent behavior during a single animation frame. It's expected that time is received, for example,
 from `Instant::now()` once in the beginning of the frame, and used lately during the frame rendering.
+
+Any type that implements `Time` trait can be used as a time type. By default, it's implemented for `std::time::Instant`,
+`std::time::SystemTime`, f32, and f64. It's also implemented for `web_time::*` if `"web-time"` feature is enabled.
+It's recommended to use `web_time::Instant` and `web_time::Duration` as a time type in most cases.
 
 Animation can be applied to any type that implements `Mix` trait. This trait is used to interpolate between two values.
 Mix trait is implemented for common types like `f32`, `f64`, `bool`, `i8` - `i64`, `u8` - `u64`, `Option<T: Mix>`,
@@ -50,17 +54,19 @@ assert_eq!(touch_mix, Touch { x: 50.0, y: 50.0, pressure: 100 });
 
 ## Cargo features
 
-* `"derive"` - enables derive macro for `Mix` trait (enabled by default).
+* `"derive"` - enables derive macro for `Mix` trait. Enabled by default.
 * `"euclid"` - enables [euclid](https://crates.io/crates/euclid) vectors, rotations, etc. animation.
 * `"nalgebra"` - enables [nalgebra](https://crates.io/crates/nalgebra) vectors, matrices, transformations, etc. animation.
 * `"cgmath"` - enables [cgmath](https://crates.io/crates/cgmath) vectors, matrices, etc. animation.
 * `"palette"` - enables [palette](https://crates.io/crates/palette) colors interpolation.
+* `"web-time"` - use `web_time::*` instead of `std::time::*` for `Instant` and `Duration` types. It doesn't change
+  anything for desktop platforms, but allows to use the same code for WASM. Enabled by default.
 
 ## Examples
 
 ### Live
 
-* InertialValue [[Live](https://monkin.github.io/glissade/inertial/)] [[Source](https://github.com/monkin/glissade/tree/master/examples/inertial)]
+* Animating a shape using InertialValue [[Live](https://monkin.github.io/glissade/inertial/)] [[Source](https://github.com/monkin/glissade/tree/master/examples/inertial)]
 
 ### Simple two-step animation
 

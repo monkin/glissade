@@ -1,7 +1,7 @@
 use crate::animated_item::AnimatedItem;
-use crate::Easing;
+use crate::Time;
+use crate::{Easing, TimeDiff};
 use std::fmt::Debug;
-use web_time::{Duration, Instant};
 
 /// A value that smoothly goes to the target during a specific time.
 /// The target can be changed at any time. No jumps will occur.
@@ -9,15 +9,18 @@ use web_time::{Duration, Instant};
 /// Every method receives `current_time` as a parameter to allow testing,
 /// and have a consistent behavior during a single animation frame.
 #[derive(Clone, PartialEq)]
-pub struct InertialValue<T: AnimatedItem> {
-    target: T,
-    start_time: Option<Instant>,
-    duration: Duration,
+pub struct InertialValue<Item: AnimatedItem, X: Time> {
+    target: Item,
+    start_time: Option<X>,
+    duration: X::Duration,
     easing: Easing,
-    parent: Option<Box<InertialValue<T>>>,
+    parent: Option<Box<InertialValue<Item, X>>>,
 }
 
-impl<T: AnimatedItem + Debug> Debug for InertialValue<T> {
+impl<Item: AnimatedItem + Debug, X: Time + Debug> Debug for InertialValue<Item, X>
+where
+    X::Duration: Debug,
+{
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("InertialValue")
             .field("target", &self.target)
@@ -29,13 +32,16 @@ impl<T: AnimatedItem + Debug> Debug for InertialValue<T> {
     }
 }
 
-impl<T: AnimatedItem> From<T> for InertialValue<T> {
-    fn from(value: T) -> Self {
+impl<Item: AnimatedItem, X: Time> From<Item> for InertialValue<Item, X> {
+    fn from(value: Item) -> Self {
         Self::new(value)
     }
 }
 
-impl<T: AnimatedItem + Default> Default for InertialValue<T> {
+impl<Item: AnimatedItem + Default, X: Time> Default for InertialValue<Item, X>
+where
+    X::Duration: Default,
+{
     fn default() -> Self {
         Self {
             target: Default::default(),
@@ -47,9 +53,9 @@ impl<T: AnimatedItem + Default> Default for InertialValue<T> {
     }
 }
 
-impl<T: AnimatedItem> InertialValue<T> {
+impl<Item: AnimatedItem, X: Time> InertialValue<Item, X> {
     /// Create a new inertial value at a specific time.
-    pub fn new(value: T) -> Self {
+    pub fn new(value: Item) -> Self {
         Self {
             target: value,
             start_time: Default::default(),
@@ -60,25 +66,26 @@ impl<T: AnimatedItem> InertialValue<T> {
     }
 
     /// Check if the inertial value reached the target.
-    pub fn is_finished(&self, current_time: Instant) -> bool {
+    pub fn is_finished(&self, current_time: X) -> bool {
         self.end_time()
             .map(|end_time| current_time > end_time)
             .unwrap_or(true)
     }
 
     /// Get the target value.
-    pub fn target(&self) -> T {
+    pub fn target(&self) -> Item {
         self.target.clone()
     }
 
     /// Get transition end time.
-    pub fn end_time(&self) -> Option<Instant> {
-        self.start_time.map(|start_time| start_time + self.duration)
+    pub fn end_time(&self) -> Option<X> {
+        self.start_time
+            .map(|start_time| start_time.advance(self.duration))
     }
 
     /// Get the value of the inertial value at a specific time.
     /// * `current_time` - The time to get the value of the inertial value, usually `Instant::now()`.
-    pub fn get(&self, current_time: Instant) -> T {
+    pub fn get(&self, current_time: X) -> Item {
         if let Some(start_time) = self.start_time {
             if current_time < start_time {
                 if let Some(parent) = &self.parent {
@@ -89,9 +96,9 @@ impl<T: AnimatedItem> InertialValue<T> {
             } else if self.is_finished(current_time) {
                 self.target.clone()
             } else if let Some(parent) = &self.parent {
-                let elapsed = current_time.duration_since(start_time);
+                let elapsed = current_time.since(start_time);
 
-                let t = elapsed.as_secs_f32() / self.duration.as_secs_f32();
+                let t = elapsed.as_f32() / self.duration.as_f32();
                 let t = self.easing.ease(t);
 
                 parent.get(current_time).mix(self.target.clone(), t)
@@ -108,7 +115,7 @@ impl<T: AnimatedItem> InertialValue<T> {
     /// * `target` - The new target value.
     /// * `current_time` - The time to start the transition, usually `Instant::now()`.
     /// * `duration` - The duration of the transition.
-    pub fn go_to(self, target: T, current_time: Instant, duration: Duration) -> Self {
+    pub fn go_to(self, target: Item, current_time: X, duration: X::Duration) -> Self {
         self.ease_to(target, current_time, duration, Easing::default())
     }
 
@@ -118,9 +125,9 @@ impl<T: AnimatedItem> InertialValue<T> {
     /// * `duration` - The duration of the transition.
     pub fn ease_to(
         self,
-        target: T,
-        current_time: Instant,
-        duration: Duration,
+        target: Item,
+        current_time: X,
+        duration: X::Duration,
         easing: Easing,
     ) -> Self {
         if target == self.target {
@@ -137,7 +144,7 @@ impl<T: AnimatedItem> InertialValue<T> {
     }
 
     /// Remove all finished ancestors.
-    pub(self) fn clean_up_at(self, current_time: Instant) -> Option<Box<Self>> {
+    pub(self) fn clean_up_at(self, current_time: X) -> Option<Box<Self>> {
         let is_finished = self.is_finished(current_time);
 
         Some(Box::new(Self {
@@ -158,6 +165,7 @@ impl<T: AnimatedItem> InertialValue<T> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::time::{Duration, Instant};
 
     #[test]
     fn new_at() {

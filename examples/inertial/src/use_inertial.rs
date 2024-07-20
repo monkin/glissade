@@ -33,7 +33,7 @@ where
 
     use_effect_with(inertial.deref().clone(), {
         let current = current.clone();
-        move |inertial: &Rc<InertialValue<T>>| {
+        move |inertial: &Rc<InertialValue<T, Instant>>| {
             let inertial = inertial.clone();
             AnimationLoop::new(move || current.set(inertial.get(Instant::now())))
         }

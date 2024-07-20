@@ -1,23 +1,21 @@
 use crate::animated_item::AnimatedItem;
-use crate::animation::Animation;
-use crate::easing::Easing;
+use crate::{Animation, Easing, Time, TimeDiff};
 use std::fmt::Debug;
 use std::marker::PhantomData;
-use web_time::{Duration, Instant};
 
 /// A transition of a value over time. It works like an animation template.
 /// A good point to start building transition is the [`keyframes`] function.
-pub trait Keyframes<T: Clone + Sized>: Sized {
+pub trait Keyframes<T: Clone + Sized, X: Time>: Sized {
     /// Get the value of the transition at a specific time offset from the start.
     /// If the offset is greater than the duration, the value at the end of the transition is returned.
-    fn get(&self, offset: Duration) -> T;
+    fn get(&self, offset: X::Duration) -> T;
 
     /// Get the duration of the transition.
     /// If the transition is infinite, it will panic.
-    fn duration(&self) -> Duration;
+    fn duration(&self) -> X::Duration;
 
     /// Check if the transition is finished at the given offset.
-    fn is_finished(&self, offset: Duration) -> bool {
+    fn is_finished(&self, offset: X::Duration) -> bool {
         offset >= self.duration()
     }
 
@@ -28,7 +26,7 @@ pub trait Keyframes<T: Clone + Sized>: Sized {
 
     /// Get the value of the transition at the start.
     fn start_value(&self) -> T {
-        self.get(Duration::default())
+        self.get(Default::default())
     }
 
     /// Get the value of the transition at the end.
@@ -38,7 +36,7 @@ pub trait Keyframes<T: Clone + Sized>: Sized {
     }
 
     /// Create a transition that stays at the end value for the given duration.
-    fn stay(self, duration: Duration) -> SequentialKeyframes<T, Self, NoneKeyframes<T>>
+    fn stay(self, duration: X::Duration) -> SequentialKeyframes<T, X, Self, NoneKeyframes<T, X>>
     where
         Self: Sized,
         T: AnimatedItem,
@@ -51,8 +49,8 @@ pub trait Keyframes<T: Clone + Sized>: Sized {
     fn go_to(
         self,
         target: T,
-        duration: Duration,
-    ) -> SequentialKeyframes<T, Self, LinearKeyframes<T>>
+        duration: X::Duration,
+    ) -> SequentialKeyframes<T, X, Self, LinearKeyframes<T, X>>
     where
         Self: Sized,
         T: AnimatedItem,
@@ -65,9 +63,9 @@ pub trait Keyframes<T: Clone + Sized>: Sized {
     fn ease_to(
         self,
         target: T,
-        duration: Duration,
+        duration: X::Duration,
         easing: Easing,
-    ) -> SequentialKeyframes<T, Self, EasingKeyframes<T>>
+    ) -> SequentialKeyframes<T, X, Self, EasingKeyframes<T, X>>
     where
         Self: Sized,
         T: AnimatedItem,
@@ -80,7 +78,7 @@ pub trait Keyframes<T: Clone + Sized>: Sized {
     }
 
     /// Create a transition that repeats the given transition indefinitely.
-    fn repeat(self) -> RepeatKeyframes<T, Self>
+    fn repeat(self) -> RepeatKeyframes<T, X, Self>
     where
         Self: Sized,
     {
@@ -88,7 +86,7 @@ pub trait Keyframes<T: Clone + Sized>: Sized {
     }
 
     /// Create a transition that repeats the given transition n times.
-    fn repeat_n(self, n: f32) -> RepeatNKeyframes<T, Self>
+    fn repeat_n(self, n: f32) -> RepeatNKeyframes<T, X, Self>
     where
         Self: Sized,
     {
@@ -96,7 +94,7 @@ pub trait Keyframes<T: Clone + Sized>: Sized {
     }
 
     /// Create a transition that reverses the given transition.
-    fn reverse(self) -> ReverseKeyframes<T, Self>
+    fn reverse(self) -> ReverseKeyframes<T, X, Self>
     where
         Self: Sized,
     {
@@ -104,7 +102,7 @@ pub trait Keyframes<T: Clone + Sized>: Sized {
     }
 
     /// Scale the time of the transition by the given factor.
-    fn scale(self, scale: f32) -> ScaleKeyframes<T, Self>
+    fn scale(self, scale: f32) -> ScaleKeyframes<T, X, Self>
     where
         Self: Sized,
     {
@@ -112,21 +110,21 @@ pub trait Keyframes<T: Clone + Sized>: Sized {
     }
 
     /// Scale the time of the transition to the given duration.
-    fn scale_to(self, new_duration: Duration) -> ScaleKeyframes<T, Self>
+    fn scale_to(self, new_duration: X::Duration) -> ScaleKeyframes<T, X, Self>
     where
         Self: Sized,
     {
-        let scale = if self.duration().is_zero() {
+        let scale = if self.duration() == Default::default() {
             1.0
         } else {
-            new_duration.as_secs_f32() / self.duration().as_secs_f32()
+            new_duration.as_f32() / self.duration().as_f32()
         };
 
         ScaleKeyframes::new(self, scale)
     }
 
     /// Similar to Vec::map, creates a transition that applies the given function to the value at each point in time.
-    fn map<F: Fn(T) -> T>(self, map: F) -> MapKeyframes<T, Self, F>
+    fn map<F: Fn(T) -> T>(self, map: F) -> MapKeyframes<T, X, Self, F>
     where
         Self: Sized,
     {
@@ -134,7 +132,7 @@ pub trait Keyframes<T: Clone + Sized>: Sized {
     }
 
     /// Concatenate two transitions.
-    fn then<S: Keyframes<T>>(self, other: S) -> SequentialKeyframes<T, Self, S>
+    fn then<S: Keyframes<T, X>>(self, other: S) -> SequentialKeyframes<T, X, Self, S>
     where
         Self: Sized,
     {
@@ -143,7 +141,7 @@ pub trait Keyframes<T: Clone + Sized>: Sized {
 
     /// Run keyframes at a specific time.
     /// * `start_time` - The time to start the transition, usually `Instant::now()`.
-    fn run(self, start_time: Instant) -> Animation<T, Self> {
+    fn run(self, start_time: X) -> Animation<T, X, Self> {
         Animation::start(self, start_time)
     }
 }
@@ -156,10 +154,11 @@ pub trait Keyframes<T: Clone + Sized>: Sized {
 /// # Examples
 ///
 /// ```
+/// use std::time::Instant;
 /// use glissade::{keyframes, Keyframes};
 /// use web_time::Duration;
 ///
-/// let transition = keyframes(5.0)
+/// let transition = keyframes::<f64, Instant>(5.0)
 ///     .stay(Duration::from_secs(1))
 ///     .go_to(9.0, Duration::from_secs(4))
 ///     .repeat_n(2.0);
@@ -173,8 +172,8 @@ pub trait Keyframes<T: Clone + Sized>: Sized {
 /// assert_eq!(transition.get(Duration::from_secs(6)), 5.0);
 /// assert_eq!(transition.get(Duration::from_secs(74)), 9.0);
 /// ```
-pub fn keyframes<T: AnimatedItem>(start_value: T) -> NoneKeyframes<T> {
-    NoneKeyframes::new(start_value, Duration::default())
+pub fn keyframes<T: AnimatedItem, X: Time>(start_value: T) -> NoneKeyframes<T, X> {
+    NoneKeyframes::new(start_value, Default::default())
 }
 
 //----------------------------------------------------------------
@@ -182,12 +181,15 @@ pub fn keyframes<T: AnimatedItem>(start_value: T) -> NoneKeyframes<T> {
 
 /// A transition that stays at a single value.
 #[derive(Clone)]
-pub struct NoneKeyframes<T: Clone + Sized> {
+pub struct NoneKeyframes<T: Clone + Sized, X: Time> {
     value: T,
-    duration: Duration,
+    duration: X::Duration,
 }
 
-impl<T: Clone + Sized + Debug> Debug for NoneKeyframes<T> {
+impl<T: Clone + Sized + Debug, X: Time> Debug for NoneKeyframes<T, X>
+where
+    X::Duration: Debug,
+{
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("NoneKeyframes")
             .field("value", &self.value)
@@ -196,36 +198,39 @@ impl<T: Clone + Sized + Debug> Debug for NoneKeyframes<T> {
     }
 }
 
-impl<T: Clone + Sized> NoneKeyframes<T> {
-    pub fn new(value: T, duration: Duration) -> Self {
+impl<T: Clone + Sized, X: Time> NoneKeyframes<T, X> {
+    pub fn new(value: T, duration: X::Duration) -> Self {
         Self { value, duration }
     }
 }
 
-impl<T: Clone + Sized> Keyframes<T> for NoneKeyframes<T> {
-    fn get(&self, _offset: Duration) -> T {
+impl<T: Clone + Sized, X: Time> Keyframes<T, X> for NoneKeyframes<T, X> {
+    fn get(&self, _offset: X::Duration) -> T {
         self.value.clone()
     }
 
-    fn duration(&self) -> Duration {
+    fn duration(&self) -> X::Duration {
         self.duration
     }
 }
 
-impl<T: Clone + Sized + Copy> Copy for NoneKeyframes<T> {}
+impl<T: Clone + Sized + Copy, X: Time> Copy for NoneKeyframes<T, X> {}
 
 //----------------------------------------------------------------
 // LinearKeyframes
 
 /// A transition that linearly interpolates between two values.
 #[derive(Clone)]
-pub struct LinearKeyframes<T: AnimatedItem> {
+pub struct LinearKeyframes<T: AnimatedItem, X: Time> {
     v1: T,
     v2: T,
-    duration: Duration,
+    duration: X::Duration,
 }
 
-impl<T: AnimatedItem + Debug> Debug for LinearKeyframes<T> {
+impl<T: AnimatedItem + Debug, X: Time> Debug for LinearKeyframes<T, X>
+where
+    X::Duration: Debug,
+{
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("LinearKeyframes")
             .field("v1", &self.v1)
@@ -235,38 +240,41 @@ impl<T: AnimatedItem + Debug> Debug for LinearKeyframes<T> {
     }
 }
 
-impl<T: AnimatedItem> LinearKeyframes<T> {
-    pub fn new(v1: T, v2: T, duration: Duration) -> Self {
+impl<T: AnimatedItem, X: Time> LinearKeyframes<T, X> {
+    pub fn new(v1: T, v2: T, duration: X::Duration) -> Self {
         Self { v1, v2, duration }
     }
 }
 
-impl<T: AnimatedItem> Keyframes<T> for LinearKeyframes<T> {
-    fn get(&self, offset: Duration) -> T {
-        let t = offset.as_millis() as f32 / self.duration.as_millis() as f32;
+impl<T: AnimatedItem, X: Time> Keyframes<T, X> for LinearKeyframes<T, X> {
+    fn get(&self, offset: X::Duration) -> T {
+        let t = offset.as_f32() / self.duration.as_f32();
         self.v1.clone().mix(self.v2.clone(), t)
     }
 
-    fn duration(&self) -> Duration {
+    fn duration(&self) -> X::Duration {
         self.duration
     }
 }
 
-impl<T: AnimatedItem + Copy> Copy for LinearKeyframes<T> {}
+impl<T: AnimatedItem + Copy, X: Time> Copy for LinearKeyframes<T, X> {}
 
 //----------------------------------------------------------------
 // SequentialKeyframes
 
 /// A sequence of two transitions.
 #[derive(Clone)]
-pub struct SequentialKeyframes<T: Clone + Sized, S1: Keyframes<T>, S2: Keyframes<T>> {
+pub struct SequentialKeyframes<T: Clone + Sized, X: Time, S1: Keyframes<T, X>, S2: Keyframes<T, X>>
+{
     t1: S1,
     t2: S2,
-    phantom: PhantomData<T>,
+    phantom: PhantomData<(T, X)>,
 }
 
-impl<T: Clone + Sized, S1: Keyframes<T> + Debug, S2: Keyframes<T> + Debug> Debug
-    for SequentialKeyframes<T, S1, S2>
+impl<T: Clone + Sized, X: Time, S1: Keyframes<T, X> + Debug, S2: Keyframes<T, X> + Debug> Debug
+    for SequentialKeyframes<T, X, S1, S2>
+where
+    X::Duration: Debug,
 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("SequentialKeyframes")
@@ -276,24 +284,26 @@ impl<T: Clone + Sized, S1: Keyframes<T> + Debug, S2: Keyframes<T> + Debug> Debug
     }
 }
 
-impl<T: Clone + Sized, S1: Keyframes<T>, S2: Keyframes<T>> Keyframes<T>
-    for SequentialKeyframes<T, S1, S2>
+impl<T: Clone + Sized, X: Time, S1: Keyframes<T, X>, S2: Keyframes<T, X>> Keyframes<T, X>
+    for SequentialKeyframes<T, X, S1, S2>
 {
-    fn get(&self, offset: Duration) -> T {
+    fn get(&self, offset: X::Duration) -> T {
         let t1 = self.t1.duration();
         if offset < t1 {
             self.t1.get(offset)
         } else {
-            self.t2.get(offset - t1)
+            self.t2.get(offset.sub(t1))
         }
     }
 
-    fn duration(&self) -> Duration {
-        self.t1.duration() + self.t2.duration()
+    fn duration(&self) -> X::Duration {
+        self.t1.duration().add(self.t2.duration())
     }
 }
 
-impl<T: Clone + Sized, S1: Keyframes<T>, S2: Keyframes<T>> SequentialKeyframes<T, S1, S2> {
+impl<T: Clone + Sized, X: Time, S1: Keyframes<T, X>, S2: Keyframes<T, X>>
+    SequentialKeyframes<T, X, S1, S2>
+{
     pub fn new(t1: S1, t2: S2) -> Self {
         Self {
             t1,
@@ -303,8 +313,8 @@ impl<T: Clone + Sized, S1: Keyframes<T>, S2: Keyframes<T>> SequentialKeyframes<T
     }
 }
 
-impl<T: Clone + Sized + Copy, S1: Keyframes<T> + Copy, S2: Keyframes<T> + Copy> Copy
-    for SequentialKeyframes<T, S1, S2>
+impl<T: Clone + Sized + Copy, X: Time, S1: Keyframes<T, X> + Copy, S2: Keyframes<T, X> + Copy> Copy
+    for SequentialKeyframes<T, X, S1, S2>
 {
 }
 
@@ -313,14 +323,17 @@ impl<T: Clone + Sized + Copy, S1: Keyframes<T> + Copy, S2: Keyframes<T> + Copy> 
 
 /// A transition that eases between two values.
 #[derive(Clone)]
-pub struct EasingKeyframes<T: AnimatedItem> {
+pub struct EasingKeyframes<T: AnimatedItem, X: Time> {
     v1: T,
     v2: T,
-    duration: Duration,
+    duration: X::Duration,
     easing: Easing,
 }
 
-impl<T: AnimatedItem + Debug> Debug for EasingKeyframes<T> {
+impl<T: AnimatedItem + Debug, X: Time> Debug for EasingKeyframes<T, X>
+where
+    X::Duration: Debug,
+{
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("EasingKeyframes")
             .field("v1", &self.v1)
@@ -331,8 +344,8 @@ impl<T: AnimatedItem + Debug> Debug for EasingKeyframes<T> {
     }
 }
 
-impl<T: AnimatedItem> EasingKeyframes<T> {
-    pub fn new(v1: T, v2: T, duration: Duration, easing: Easing) -> Self {
+impl<T: AnimatedItem, X: Time> EasingKeyframes<T, X> {
+    pub fn new(v1: T, v2: T, duration: X::Duration, easing: Easing) -> Self {
         Self {
             v1,
             v2,
@@ -342,15 +355,13 @@ impl<T: AnimatedItem> EasingKeyframes<T> {
     }
 }
 
-impl<T: AnimatedItem> Keyframes<T> for EasingKeyframes<T> {
-    fn get(&self, offset: Duration) -> T {
-        let t = self
-            .easing
-            .ease(offset.as_millis() as f32 / self.duration.as_millis() as f32);
+impl<T: AnimatedItem, X: Time> Keyframes<T, X> for EasingKeyframes<T, X> {
+    fn get(&self, offset: X::Duration) -> T {
+        let t = self.easing.ease(offset.as_f32() / self.duration.as_f32());
         self.v1.clone().mix(self.v2.clone(), t)
     }
 
-    fn duration(&self) -> Duration {
+    fn duration(&self) -> X::Duration {
         self.duration
     }
 }
@@ -360,12 +371,15 @@ impl<T: AnimatedItem> Keyframes<T> for EasingKeyframes<T> {
 
 /// A transition that repeats another transition indefinitely.
 #[derive(Clone)]
-pub struct RepeatKeyframes<T: Clone + Sized, S: Keyframes<T>> {
+pub struct RepeatKeyframes<T: Clone + Sized, X: Time, S: Keyframes<T, X>> {
     keyframes: S,
-    phantom: PhantomData<T>,
+    phantom: PhantomData<(T, X)>,
 }
 
-impl<T: Clone + Sized, S: Keyframes<T> + Debug> Debug for RepeatKeyframes<T, S> {
+impl<T: Clone + Sized, X: Time, S: Keyframes<T, X> + Debug> Debug for RepeatKeyframes<T, X, S>
+where
+    X::Duration: Debug,
+{
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("RepeatKeyframes")
             .field("transition", &self.keyframes)
@@ -373,7 +387,7 @@ impl<T: Clone + Sized, S: Keyframes<T> + Debug> Debug for RepeatKeyframes<T, S> 
     }
 }
 
-impl<T: Clone + Sized, S: Keyframes<T>> RepeatKeyframes<T, S> {
+impl<T: Clone + Sized, X: Time, S: Keyframes<T, X>> RepeatKeyframes<T, X, S> {
     pub fn new(keyframes: S) -> Self {
         Self {
             keyframes,
@@ -382,18 +396,17 @@ impl<T: Clone + Sized, S: Keyframes<T>> RepeatKeyframes<T, S> {
     }
 }
 
-impl<T: Clone + Sized, S: Keyframes<T>> Keyframes<T> for RepeatKeyframes<T, S> {
-    fn get(&self, offset: Duration) -> T {
-        self.keyframes.get(Duration::from_millis(
-            offset.as_millis() as u64 % self.keyframes.duration().as_millis() as u64,
-        ))
+impl<T: Clone + Sized, X: Time, S: Keyframes<T, X>> Keyframes<T, X> for RepeatKeyframes<T, X, S> {
+    fn get(&self, offset: X::Duration) -> T {
+        let scale = offset.as_f32() / self.keyframes.duration().as_f32();
+        self.keyframes.get(self.keyframes.duration().scale(scale))
     }
 
-    fn duration(&self) -> Duration {
+    fn duration(&self) -> X::Duration {
         panic!("RepeatTransition has infinite duration");
     }
 
-    fn is_finished(&self, _offset: Duration) -> bool {
+    fn is_finished(&self, _offset: X::Duration) -> bool {
         false
     }
 
@@ -406,20 +419,26 @@ impl<T: Clone + Sized, S: Keyframes<T>> Keyframes<T> for RepeatKeyframes<T, S> {
     }
 }
 
-impl<T: Clone + Sized + Copy, S: Keyframes<T> + Copy> Copy for RepeatKeyframes<T, S> {}
+impl<T: Clone + Sized + Copy, X: Time, S: Keyframes<T, X> + Copy> Copy
+    for RepeatKeyframes<T, X, S>
+{
+}
 
 //----------------------------------------------------------------
 // RepeatNKeyframes
 
 /// A transition that repeats another transition n times.
 #[derive(Clone)]
-pub struct RepeatNKeyframes<T: Clone + Sized, S: Keyframes<T>> {
+pub struct RepeatNKeyframes<T: Clone + Sized, X: Time, S: Keyframes<T, X>> {
     keyframes: S,
     n: f32,
-    phantom: PhantomData<T>,
+    phantom: PhantomData<(T, X)>,
 }
 
-impl<T: Clone + Sized, S: Keyframes<T> + Debug> Debug for RepeatNKeyframes<T, S> {
+impl<T: Clone + Sized, X: Time, S: Keyframes<T, X> + Debug> Debug for RepeatNKeyframes<T, X, S>
+where
+    X::Duration: Debug,
+{
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("RepeatNKeyframes")
             .field("transition", &self.keyframes)
@@ -428,7 +447,7 @@ impl<T: Clone + Sized, S: Keyframes<T> + Debug> Debug for RepeatNKeyframes<T, S>
     }
 }
 
-impl<T: Clone + Sized, S: Keyframes<T>> RepeatNKeyframes<T, S> {
+impl<T: Clone + Sized, X: Time, S: Keyframes<T, X>> RepeatNKeyframes<T, X, S> {
     pub fn new(keyframes: S, n: f32) -> Self {
         Self {
             keyframes,
@@ -438,36 +457,39 @@ impl<T: Clone + Sized, S: Keyframes<T>> RepeatNKeyframes<T, S> {
     }
 }
 
-impl<T: Clone + Sized, S: Keyframes<T>> Keyframes<T> for RepeatNKeyframes<T, S> {
-    fn get(&self, offset: Duration) -> T {
-        let n = (offset.as_millis() as f64 / self.keyframes.duration().as_millis() as f64) as f32;
+impl<T: Clone + Sized, X: Time, S: Keyframes<T, X>> Keyframes<T, X> for RepeatNKeyframes<T, X, S> {
+    fn get(&self, offset: X::Duration) -> T {
+        let duration = self.keyframes.duration().as_f32();
+        let n = offset.as_f32() / duration;
         if n < self.n {
-            self.keyframes.get(Duration::from_millis(
-                offset.as_millis() as u64 % self.keyframes.duration().as_millis() as u64,
-            ))
+            self.keyframes
+                .get(offset.sub(self.keyframes.duration().scale(n.floor())))
         } else {
             self.keyframes.end_value()
         }
     }
 
-    fn duration(&self) -> Duration {
-        Duration::from_millis((self.keyframes.duration().as_millis() as f32 * self.n) as u64)
+    fn duration(&self) -> X::Duration {
+        self.keyframes.duration().scale(self.n)
     }
 }
 
-impl<T: Clone + Sized + Copy, S: Keyframes<T> + Copy> Copy for RepeatNKeyframes<T, S> {}
+impl<T: Clone + Sized + Copy, X: Time, S: Keyframes<T, X> + Copy> Copy
+    for RepeatNKeyframes<T, X, S>
+{
+}
 
 //----------------------------------------------------------------
 // ReverseKeyframes
 
 /// A transition that reverses the value of another transition.
 #[derive(Clone)]
-pub struct ReverseKeyframes<T: Clone + Sized, S: Keyframes<T>> {
+pub struct ReverseKeyframes<T: Clone + Sized, X: Time, S: Keyframes<T, X>> {
     keyframes: S,
-    phantom: PhantomData<T>,
+    phantom: PhantomData<(T, X)>,
 }
 
-impl<T: Clone + Sized, S: Keyframes<T> + Debug> Debug for ReverseKeyframes<T, S> {
+impl<T: Clone + Sized, X: Time, S: Keyframes<T, X> + Debug> Debug for ReverseKeyframes<T, X, S> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("ReverseKeyframes")
             .field("transition", &self.keyframes)
@@ -475,7 +497,7 @@ impl<T: Clone + Sized, S: Keyframes<T> + Debug> Debug for ReverseKeyframes<T, S>
     }
 }
 
-impl<T: Clone + Sized, S: Keyframes<T>> ReverseKeyframes<T, S> {
+impl<T: Clone + Sized, X: Time, S: Keyframes<T, X>> ReverseKeyframes<T, X, S> {
     pub fn new(keyframes: S) -> Self {
         Self {
             keyframes,
@@ -484,31 +506,31 @@ impl<T: Clone + Sized, S: Keyframes<T>> ReverseKeyframes<T, S> {
     }
 }
 
-impl<T: Clone + Sized, S: Keyframes<T>> Keyframes<T> for ReverseKeyframes<T, S> {
-    fn get(&self, time: Duration) -> T {
-        self.keyframes.get(self.keyframes.duration() - time)
+impl<T: Clone + Sized, X: Time, S: Keyframes<T, X>> Keyframes<T, X> for ReverseKeyframes<T, X, S> {
+    fn get(&self, offset: X::Duration) -> T {
+        self.keyframes.get(self.keyframes.duration().sub(offset))
     }
 
-    fn duration(&self) -> Duration {
+    fn duration(&self) -> X::Duration {
         self.keyframes.duration()
     }
 }
 
-impl<T: Clone + Sized + Copy, S: Keyframes<T> + Copy> Copy for ReverseKeyframes<T, S> {}
+impl<T: Clone + Sized, X: Time, S: Keyframes<T, X> + Copy> Copy for ReverseKeyframes<T, X, S> {}
 
 //----------------------------------------------------------------
 // MapKeyframes
 
 /// A transition that maps the value of another transition.
 #[derive(Clone)]
-pub struct MapKeyframes<T: Clone + Sized, S: Keyframes<T>, F: Fn(T) -> T> {
+pub struct MapKeyframes<T: Clone + Sized, X: Time, S: Keyframes<T, X>, F: Fn(T) -> T> {
     keyframes: S,
     map: F,
-    phantom: PhantomData<T>,
+    phantom: PhantomData<(T, X)>,
 }
 
-impl<T: Clone + Sized, S: Keyframes<T> + Debug, F: Debug + Fn(T) -> T> Debug
-    for MapKeyframes<T, S, F>
+impl<T: Clone + Sized, X: Time, S: Keyframes<T, X> + Debug, F: Debug + Fn(T) -> T> Debug
+    for MapKeyframes<T, X, S, F>
 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("MapKeyframes")
@@ -518,7 +540,7 @@ impl<T: Clone + Sized, S: Keyframes<T> + Debug, F: Debug + Fn(T) -> T> Debug
     }
 }
 
-impl<T: Clone + Sized, S: Keyframes<T>, F: Fn(T) -> T> MapKeyframes<T, S, F> {
+impl<T: Clone + Sized, X: Time, S: Keyframes<T, X>, F: Fn(T) -> T> MapKeyframes<T, X, S, F> {
     pub fn new(keyframes: S, map: F) -> Self {
         Self {
             keyframes,
@@ -528,18 +550,20 @@ impl<T: Clone + Sized, S: Keyframes<T>, F: Fn(T) -> T> MapKeyframes<T, S, F> {
     }
 }
 
-impl<T: Clone + Sized, S: Keyframes<T>, F: Fn(T) -> T> Keyframes<T> for MapKeyframes<T, S, F> {
-    fn get(&self, time: Duration) -> T {
+impl<T: Clone + Sized, X: Time, S: Keyframes<T, X>, F: Fn(T) -> T> Keyframes<T, X>
+    for MapKeyframes<T, X, S, F>
+{
+    fn get(&self, time: X::Duration) -> T {
         (self.map)(self.keyframes.get(time))
     }
 
-    fn duration(&self) -> Duration {
+    fn duration(&self) -> X::Duration {
         self.keyframes.duration()
     }
 }
 
-impl<T: Clone + Sized + Copy, S: Keyframes<T> + Copy, F: Copy + Fn(T) -> T> Copy
-    for MapKeyframes<T, S, F>
+impl<T: Clone + Sized + Copy, X: Time, S: Keyframes<T, X> + Copy, F: Copy + Fn(T) -> T> Copy
+    for MapKeyframes<T, X, S, F>
 {
 }
 
@@ -548,13 +572,13 @@ impl<T: Clone + Sized + Copy, S: Keyframes<T> + Copy, F: Copy + Fn(T) -> T> Copy
 
 /// A transition that scales the time of another transition.
 #[derive(Clone)]
-pub struct ScaleKeyframes<T: Clone + Sized, S: Keyframes<T>> {
+pub struct ScaleKeyframes<T: Clone + Sized, X: Time, S: Keyframes<T, X>> {
     keyframes: S,
     scale: f32,
-    phantom: PhantomData<T>,
+    phantom: PhantomData<(T, X)>,
 }
 
-impl<T: Clone + Sized, S: Keyframes<T> + Debug> Debug for ScaleKeyframes<T, S> {
+impl<T: Clone + Sized, X: Time, S: Keyframes<T, X> + Debug> Debug for ScaleKeyframes<T, X, S> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("ScaleKeyframes")
             .field("transition", &self.keyframes)
@@ -563,7 +587,7 @@ impl<T: Clone + Sized, S: Keyframes<T> + Debug> Debug for ScaleKeyframes<T, S> {
     }
 }
 
-impl<T: Clone + Sized, S: Keyframes<T>> ScaleKeyframes<T, S> {
+impl<T: Clone + Sized, X: Time, S: Keyframes<T, X>> ScaleKeyframes<T, X, S> {
     pub fn new(keyframes: S, scale: f32) -> Self {
         Self {
             keyframes,
@@ -573,19 +597,17 @@ impl<T: Clone + Sized, S: Keyframes<T>> ScaleKeyframes<T, S> {
     }
 }
 
-impl<T: Clone + Sized, S: Keyframes<T>> Keyframes<T> for ScaleKeyframes<T, S> {
-    fn get(&self, time: Duration) -> T {
-        self.keyframes.get(Duration::from_millis(
-            (time.as_millis() as f32 * self.scale) as u64,
-        ))
+impl<T: Clone + Sized, X: Time, S: Keyframes<T, X>> Keyframes<T, X> for ScaleKeyframes<T, X, S> {
+    fn get(&self, offset: X::Duration) -> T {
+        self.keyframes.get(offset.scale(self.scale))
     }
 
-    fn duration(&self) -> Duration {
-        Duration::from_millis((self.keyframes.duration().as_millis() as f32 * self.scale) as u64)
+    fn duration(&self) -> X::Duration {
+        self.keyframes.duration().scale(self.scale)
     }
 }
 
-impl<T: Clone + Sized + Copy, S: Keyframes<T> + Copy> Copy for ScaleKeyframes<T, S> {}
+impl<T: Clone + Sized + Copy, X: Time, S: Keyframes<T, X> + Copy> Copy for ScaleKeyframes<T, X, S> {}
 
 //----------------------------------------------------------------
 // Tests
@@ -595,6 +617,7 @@ mod tests {
     use super::*;
     use crate::easing::Easing;
     use crate::mix::Mix;
+    use std::time::{Duration, Instant};
 
     #[derive(Clone, Copy, Debug, PartialEq)]
     struct TestItem(f32);
@@ -613,7 +636,8 @@ mod tests {
 
     #[test]
     fn none_transition() {
-        let keyframes = NoneKeyframes::new(TestItem(0.0), Duration::from_secs(1));
+        let keyframes: NoneKeyframes<TestItem, Instant> =
+            NoneKeyframes::new(TestItem(0.0), Duration::from_secs(1));
         assert_eq!(keyframes.get(ZERO_DURATION), TestItem(0.0));
         assert_eq!(keyframes.get(HALF_SECOND), TestItem(0.0));
         assert_eq!(keyframes.get(ONE_SECOND), TestItem(0.0));
@@ -621,7 +645,8 @@ mod tests {
 
     #[test]
     fn linear_transition() {
-        let keyframes = LinearKeyframes::new(TestItem(0.0), TestItem(1.0), ONE_SECOND);
+        let keyframes =
+            LinearKeyframes::<TestItem, Instant>::new(TestItem(0.0), TestItem(1.0), ONE_SECOND);
         assert_eq!(keyframes.get(ZERO_DURATION), TestItem(0.0));
         assert_eq!(keyframes.get(HALF_SECOND), TestItem(0.5));
         assert_eq!(keyframes.get(ONE_SECOND), TestItem(1.0));
@@ -630,7 +655,7 @@ mod tests {
     #[test]
     fn sequential_transition() {
         let keyframes = SequentialKeyframes::new(
-            LinearKeyframes::new(TestItem(0.0), TestItem(1.0), ONE_SECOND),
+            LinearKeyframes::<TestItem, Instant>::new(TestItem(0.0), TestItem(1.0), ONE_SECOND),
             LinearKeyframes::new(TestItem(1.0), TestItem(0.0), ONE_SECOND),
         );
         assert_eq!(keyframes.get(ZERO_DURATION), TestItem(0.0));
@@ -642,7 +667,7 @@ mod tests {
 
     #[test]
     fn easing_transition() {
-        let keyframes = EasingKeyframes::new(
+        let keyframes = EasingKeyframes::<TestItem, Instant>::new(
             TestItem(0.0),
             TestItem(1.0),
             ONE_SECOND,
@@ -655,7 +680,7 @@ mod tests {
 
     #[test]
     fn reversed_transition() {
-        let keyframes = keyframes(TestItem(0.0))
+        let keyframes = keyframes::<TestItem, Instant>(TestItem(0.0))
             .go_to(TestItem(1.0), ONE_SECOND)
             .reverse();
 
