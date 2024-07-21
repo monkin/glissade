@@ -71,7 +71,7 @@ assert_eq!(touch_mix, Touch { x: 50.0, y: 50.0, pressure: 100 });
 
 ### Simple two-step animation
 
-```rust
+```no_run
 use glissade::{keyframes, Easing, Keyframes};
 use std::thread::sleep;
 use std::time::{Duration, Instant};
