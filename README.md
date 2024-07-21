@@ -119,37 +119,59 @@ Try it yourself with `cargo run examples/console-transition`, or view the source
 
 ### Smoothly change color
 
-```rust
-use glissade::{InertialValue, Easing};
-use web_time::{Duration, Instant};
+```compile_fail
+use color::Color;
+use glissade::InertialValue;
 
-type Color = (f32, f32, f32);
+let mut color = InertialValue::new(Color::red());
 
-let start_time = Instant::now();
+println!("Static color for one second.");
+for time in [0.0, 0.25, 0.5, 0.75, 1.0].iter().copied() {
+    println!("{} at {:.2}s", color.get(time), time);
+}
 
-// Create initial black value
-let value = InertialValue::new((0.0, 0.0, 0.0));
+println!("\nThen go to green in 2 seconds.");
+color = color.go_to(Color::green(), 1.0, 2.0);
+for time in [1.25, 1.5, 1.75, 2.0].iter().copied() {
+    println!("{} at {:.2}s", color.get(time), time);
+}
 
-assert_eq!(value.get(start_time), (0.0, 0.0, 0.0));
-assert_eq!(value.get(start_time + Duration::from_secs(1)), (0.0, 0.0, 0.0));
-
-// Change color to white in one second
-let value = value.go_to((1.0, 1.0, 1.0), start_time, Duration::from_secs(1));
-
-assert_eq!(value.get(start_time), (0.0, 0.0, 0.0));
-assert_eq!(value.get(start_time + Duration::from_millis(500)), (0.5, 0.5, 0.5));
-assert_eq!(value.get(start_time + Duration::from_secs(1)), (1.0, 1.0, 1.0));
-assert_eq!(value.get(start_time + Duration::from_secs(2)), (1.0, 1.0, 1.0));
-
-// Change color to red in between the transition
-let value = value.ease_to((1.0, 0.0, 0.0), start_time + Duration::from_millis(500), Duration::from_secs(2), Easing::Linear);
-
-assert_eq!(value.get(start_time + Duration::from_millis(500)), (0.5, 0.5, 0.5));
-assert_eq!(value.get(start_time + Duration::from_secs(1)), (1.0, 0.75, 0.75));
-assert_eq!(value.get(start_time + Duration::from_secs(2)), (1.0, 0.25, 0.25));
-assert_eq!(value.get(start_time + Duration::from_millis(2500)), (1.0, 0.0, 0.0));
-assert_eq!(value.get(start_time + Duration::from_secs(4)), (1.0, 0.0, 0.0));
+println!("\nIn the middle of the transition change direction to blue.");
+color = color.go_to(Color::blue(), 2.0, 2.0);
+for time in [2.25, 2.5, 2.75, 3.0, 3.25, 3.5, 3.75, 4.0, 4.25, 4.5].iter().copied() {
+    println!("{} at {:.2}s", color.get(time), time);
+}
 ```
+
+Prints the following output:
+```text
+Static color for one second.
+#FF0000 at 0.00s
+#FF0000 at 0.25s
+#FF0000 at 0.50s
+#FF0000 at 0.75s
+#FF0000 at 1.00s
+
+Then go to green in 2 seconds.
+#F70800 at 1.25s
+#DF2000 at 1.50s
+#B74800 at 1.75s
+#808000 at 2.00s
+
+In the middle of the transition change direction to blue.
+#46B108 at 2.25s
+#1CC320 at 2.50s
+#06B248 at 2.75s
+#008080 at 3.00s
+#0048B7 at 3.25s
+#0020DF at 3.50s
+#0008F7 at 3.75s
+#0000FF at 4.00s
+#0000FF at 4.25s
+#0000FF at 4.50s
+```
+
+Try it yourself with `cargo run examples/console-inertial`, or view the source code in [./examples/console-inertial](https://github.com/monkin/glissade/tree/master/examples/console-transition).
 
 ## License
 
