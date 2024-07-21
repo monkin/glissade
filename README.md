@@ -66,7 +66,8 @@ assert_eq!(touch_mix, Touch { x: 50.0, y: 50.0, pressure: 100 });
 
 ### Live
 
-* Animating a shape using InertialValue [[Live](https://monkin.github.io/glissade/inertial/)] [[Source](https://github.com/monkin/glissade/tree/master/examples/inertial)]
+* Animating a shape using InertialValue [[Live](https://monkin.github.io/glissade/shape-animation/)] [[Source](https://github.com/monkin/glissade/tree/master/examples/shape-animation)]
+* A set of particles following the cursor made with InertialValue [[Live](https://monkin.github.io/glissade/follow-cursor/)] [[Source](https://github.com/monkin/glissade/tree/master/examples/follow-cursor)]
 
 ### Simple two-step animation
 

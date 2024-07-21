@@ -249,7 +249,7 @@ impl Component for App {
                     <EnumInput<VerticalPosition> label="Vertical Position:" value={self.vertical_position} on_change={on_vertical_position_change} />
                     <EnumInput<Color> label="Color:" value={self.color} on_change={on_color_change} />
                     <div class="source-link">
-                        <a href="https://github.com/monkin/glissade/tree/master/examples/inertial" target="_blank">
+                        <a href="https://github.com/monkin/glissade/tree/master/examples/shape-animation" target="_blank">
                             <button class="mdl-button mdl-js-ripple-effect">
                                 { "Go to Source " }
                                 <span class="material-icons">{"open_in_new"}</span>
