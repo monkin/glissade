@@ -115,7 +115,7 @@ Prints the following output:
 3.15s: 5.0000
 ```
 
-Try it yourself with `cargo run examples/console-transition`, or view the source code in [./examples/console-transition](https://github.com/monkin/glissade/tree/master/examples/console-transition).
+Try it yourself with `cargo run -p console-transition`, or view the source code in [./examples/console-transition](https://github.com/monkin/glissade/tree/master/examples/console-transition).
 
 ### Smoothly change color
 
@@ -171,7 +171,7 @@ In the middle of the transition change direction to blue.
 #0000FF at 4.50s
 ```
 
-Try it yourself with `cargo run examples/console-inertial`, or view the source code in [./examples/console-inertial](https://github.com/monkin/glissade/tree/master/examples/console-transition).
+Try it yourself with `cargo run -p console-inertial`, or view the source code in [./examples/console-inertial](https://github.com/monkin/glissade/tree/master/examples/console-transition).
 
 ## License
 
