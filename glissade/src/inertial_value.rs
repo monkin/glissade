@@ -93,7 +93,7 @@ impl<Item: AnimatedItem, X: Time> InertialValue<Item, X> {
                 } else {
                     self.target.clone()
                 }
-            } else if self.is_finished(current_time) {
+            } else if self.is_finished(current_time) || self.duration == Default::default() {
                 self.target.clone()
             } else if let Some(parent) = &self.parent {
                 let elapsed = current_time.since(start_time);
