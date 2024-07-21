@@ -128,7 +128,7 @@ type Color = (f32, f32, f32);
 let start_time = Instant::now();
 
 // Create initial black value
-let value: InertialValue<Color> = InertialValue::new((0.0, 0.0, 0.0));
+let value = InertialValue::new((0.0, 0.0, 0.0));
 
 assert_eq!(value.get(start_time), (0.0, 0.0, 0.0));
 assert_eq!(value.get(start_time + Duration::from_secs(1)), (0.0, 0.0, 0.0));
