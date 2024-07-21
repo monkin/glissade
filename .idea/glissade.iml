@@ -4,13 +4,13 @@
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/glissade-macro/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/glissade/src" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/examples/inertial/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/examples/console-transition/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/examples/follow-cursor/src" isTestSource="false" />
-      <excludeFolder url="file://$MODULE_DIR$/examples/inertial/dist" />
+      <sourceFolder url="file://$MODULE_DIR$/examples/shape-animation/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
       <excludeFolder url="file://$MODULE_DIR$/.git" />
       <excludeFolder url="file://$MODULE_DIR$/examples/follow-cursor/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/examples/shape-animation/dist" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
