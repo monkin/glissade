@@ -1,21 +1,52 @@
 <!doctype html>
 <html lang="en">
 <head>
+    <meta charset="utf-8">
     <title>Particles Following Cursor with InertialValue</title>
     <style>
         body {
             margin: 0;
             overflow: hidden;
         }
+
         .circle {
             position: absolute;
             width: 5vmin;
             height: 5vmin;
             border-radius: 50%;
             background-color: rgba(29, 145, 167, 0.2);
+            pointer-events: none;
+        }
+
+        .go-to-sources {
+            position: fixed;
+            display: block;
+            top: 1rem;
+            left: 1rem;
+            padding: 0.5rem 1rem;
+            color: #222;
+            background-color: rgba(220, 220, 220, 0.9);
+            text-decoration: none;
+            font-family: 'Roboto', 'Helvetica', sans-serif;
+            z-index: 1;
+            border-radius: 0.25rem;
+            transition: background-color 0.3s;
+            box-shadow: 1px 1px 3px 0 rgba(0, 0, 0, 0.12);
+        }
+
+        .go-to-sources:hover {
+            background-color: rgb(240, 240, 240);
+        }
+
+        .go-to-sources:active {
+            transition: background-color 0.15s;
+            background-color: rgb(200, 200, 200);
         }
     </style>
 </head>
 <body>
+<a class="go-to-sources" href="https://github.com/monkin/glissade/tree/master/examples/follow-cursor" target="_blank">
+    Go to Sources 🡵
+</a>
 </body>
 </html>
