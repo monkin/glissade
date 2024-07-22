@@ -71,7 +71,7 @@ assert_eq!(touch_mix, Touch { x: 50.0, y: 50.0, pressure: 100 });
 
 ### Simple two-step animation
 
-```no_run
+```rust
 use glissade::{keyframes, Easing, Keyframes};
 use std::thread::sleep;
 use std::time::{Duration, Instant};
@@ -119,56 +119,66 @@ Try it yourself with `cargo run -p console-transition`, or view the source code 
 
 ### Smoothly change color
 
-```compile_fail
-use color::Color;
+```rust
 use glissade::Inertial;
 
-let mut color = Inertial::new(Color::red());
+type Color = (u8, u8, u8);
 
-println!("Static color for one second.");
-for time in [0.0, 0.25, 0.5, 0.75, 1.0].iter().copied() {
-    println!("{} at {:.2}s", color.get(time), time);
-}
+const RED: Color = (255, 0, 0);
+const GREEN: Color = (0, 255, 0);
+const BLUE: Color = (0, 0, 255);
 
-println!("\nThen go to green in 2 seconds.");
-color = color.go_to(Color::green(), 1.0, 2.0);
-for time in [1.25, 1.5, 1.75, 2.0].iter().copied() {
-    println!("{} at {:.2}s", color.get(time), time);
-}
+fn main() {
+    let mut color = Inertial::new(RED);
 
-println!("\nIn the middle of the transition change direction to blue.");
-color = color.go_to(Color::blue(), 2.0, 2.0);
-for time in [2.25, 2.5, 2.75, 3.0, 3.25, 3.5, 3.75, 4.0, 4.25, 4.5].iter().copied() {
-    println!("{} at {:.2}s", color.get(time), time);
+    println!("Static color for one second.");
+    for time in [0.0, 0.25, 0.5, 0.75, 1.0].iter().copied() {
+        println!("{:.2}s: {:?}", time, color.get(time));
+    }
+
+    println!("\nThen go to green in 2 seconds.");
+    color = color.go_to(GREEN, 1.0, 2.0);
+    for time in [1.25, 1.5, 1.75, 2.0].iter().copied() {
+        println!("{:.2}s: {:?}", time, color.get(time));
+    }
+
+    println!("\nIn the middle of the transition change direction to blue.");
+    color = color.go_to(BLUE, 2.0, 2.0);
+    for time in [2.25, 2.5, 2.75, 3.0, 3.25, 3.5, 3.75, 4.0, 4.25, 4.5]
+        .iter()
+        .copied()
+    {
+        println!("{:.2}s: {:?}", time, color.get(time));
+    }
 }
 ```
 
 Prints the following output:
 ```text
 Static color for one second.
-#FF0000 at 0.00s
-#FF0000 at 0.25s
-#FF0000 at 0.50s
-#FF0000 at 0.75s
-#FF0000 at 1.00s
+0.00s: (255, 0, 0)
+0.25s: (255, 0, 0)
+0.50s: (255, 0, 0)
+0.75s: (255, 0, 0)
+1.00s: (255, 0, 0)
 
 Then go to green in 2 seconds.
-#F70800 at 1.25s
-#DF2000 at 1.50s
-#B74800 at 1.75s
-#808000 at 2.00s
+1.25s: (247, 8, 0)
+1.50s: (223, 32, 0)
+1.75s: (183, 72, 0)
+2.00s: (128, 128, 0)
 
 In the middle of the transition change direction to blue.
-#46B108 at 2.25s
-#1CC320 at 2.50s
-#06B248 at 2.75s
-#008080 at 3.00s
-#0048B7 at 3.25s
-#0020DF at 3.50s
-#0008F7 at 3.75s
-#0000FF at 4.00s
-#0000FF at 4.25s
-#0000FF at 4.50s
+2.25s: (70, 177, 8)
+2.50s: (28, 195, 32)
+2.75s: (6, 178, 72)
+3.00s: (0, 128, 128)
+3.25s: (0, 72, 183)
+3.50s: (0, 32, 223)
+3.75s: (0, 8, 247)
+4.00s: (0, 0, 255)
+4.25s: (0, 0, 255)
+4.50s: (0, 0, 255)
 ```
 
 Try it yourself with `cargo run -p console-inertial`, or view the source code in [./examples/console-inertial](https://github.com/monkin/glissade/tree/master/examples/console-transition).
