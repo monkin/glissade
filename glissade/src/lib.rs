@@ -3,7 +3,7 @@
 mod animated_item;
 mod animation;
 mod easing;
-mod inertial_value;
+mod inertial;
 mod keyframes;
 mod mix;
 mod time;
@@ -23,7 +23,7 @@ mod web_time_impl;
 
 pub use animation::Animation;
 pub use easing::Easing;
-pub use inertial_value::InertialValue;
+pub use inertial::Inertial;
 pub use keyframes::{keyframes, Keyframes};
 pub use mix::Mix;
 pub use time::{Time, TimeDiff};

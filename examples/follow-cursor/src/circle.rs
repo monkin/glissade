@@ -1,12 +1,12 @@
 use crate::dom::document;
 use euclid::default::Point2D;
-use glissade::InertialValue;
+use glissade::Inertial;
 use web_sys::{Element, HtmlElement};
 
 pub struct Circle {
     node: Element,
     delay: f64,
-    position: Option<InertialValue<Point2D<f32>, f64>>,
+    position: Option<Inertial<Point2D<f32>, f64>>,
 }
 
 impl Circle {

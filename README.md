@@ -11,9 +11,9 @@ Glissade is a Rust animations and transitions library. It's framework-agnostic w
 [cgmath](https://crates.io/crates/cgmath), and [palette](https://crates.io/crates/palette) support.
 To make it work, you need to enable the corresponding feature.
 
-The lib contains two main types: `Animation` and `InertialValue`.
+The lib contains two main types: `Animation` and `Inertial`.
 * `Animation` contains `Keyframes` and can be used in cases when we know start, end, and in between points.
-* `InertialValue` can be used to make an object smoothly follow a target value.
+* `Inertial` can be used to make an object smoothly follow a target value.
   For example, a particle following a cursor. Background color changing smoothly on theme change.
 
 It also contains a set of easing functions to make animations more natural. See the `Easing` enum for more details.
@@ -66,8 +66,8 @@ assert_eq!(touch_mix, Touch { x: 50.0, y: 50.0, pressure: 100 });
 
 ### Live
 
-* Animating a shape using InertialValue [[Live](https://monkin.github.io/glissade/shape-animation/)] [[Source](https://github.com/monkin/glissade/tree/master/examples/shape-animation)]
-* A set of particles following the cursor made with InertialValue [[Live](https://monkin.github.io/glissade/follow-cursor/)] [[Source](https://github.com/monkin/glissade/tree/master/examples/follow-cursor)]
+* Animating a shape using Inertial [[Live](https://monkin.github.io/glissade/shape-animation/)] [[Source](https://github.com/monkin/glissade/tree/master/examples/shape-animation)]
+* A set of particles following the cursor made with Inertial [[Live](https://monkin.github.io/glissade/follow-cursor/)] [[Source](https://github.com/monkin/glissade/tree/master/examples/follow-cursor)]
 
 ### Simple two-step animation
 
@@ -121,9 +121,9 @@ Try it yourself with `cargo run -p console-transition`, or view the source code 
 
 ```compile_fail
 use color::Color;
-use glissade::InertialValue;
+use glissade::Inertial;
 
-let mut color = InertialValue::new(Color::red());
+let mut color = Inertial::new(Color::red());
 
 println!("Static color for one second.");
 for time in [0.0, 0.25, 0.5, 0.75, 1.0].iter().copied() {

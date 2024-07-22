@@ -1,10 +1,10 @@
 use color::Color;
-use glissade::InertialValue;
+use glissade::Inertial;
 
 mod color;
 
 fn main() {
-    let mut color = InertialValue::new(Color::red());
+    let mut color = Inertial::new(Color::red());
 
     println!("Static color for one second.");
     for time in [0.0, 0.25, 0.5, 0.75, 1.0].iter().copied() {

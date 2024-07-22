@@ -1,5 +1,5 @@
 use crate::animation_loop::AnimationLoop;
-use glissade::{InertialValue, Mix};
+use glissade::{Inertial, Mix};
 use std::fmt::Debug;
 use std::ops::Deref;
 use std::rc::Rc;
@@ -15,7 +15,7 @@ where
 
     let inertial = use_state_eq({
         let new_value = new_value.clone();
-        move || Rc::new(InertialValue::new(new_value))
+        move || Rc::new(Inertial::new(new_value))
     });
 
     let current = use_state_eq(|| inertial.get(now));
@@ -33,7 +33,7 @@ where
 
     use_effect_with(inertial.deref().clone(), {
         let current = current.clone();
-        move |inertial: &Rc<InertialValue<T, Instant>>| {
+        move |inertial: &Rc<Inertial<T, Instant>>| {
             let inertial = inertial.clone();
             AnimationLoop::new(move || current.set(inertial.get(Instant::now())))
         }

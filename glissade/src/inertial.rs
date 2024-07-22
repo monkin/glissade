@@ -9,20 +9,20 @@ use std::fmt::Debug;
 /// Every method receives `current_time` as a parameter to allow testing,
 /// and have a consistent behavior during a single animation frame.
 #[derive(Clone, PartialEq)]
-pub struct InertialValue<Item: AnimatedItem, X: Time> {
+pub struct Inertial<Item: AnimatedItem, X: Time> {
     target: Item,
     start_time: Option<X>,
     duration: X::Duration,
     easing: Easing,
-    parent: Option<Box<InertialValue<Item, X>>>,
+    parent: Option<Box<Inertial<Item, X>>>,
 }
 
-impl<Item: AnimatedItem + Debug, X: Time + Debug> Debug for InertialValue<Item, X>
+impl<Item: AnimatedItem + Debug, X: Time + Debug> Debug for Inertial<Item, X>
 where
     X::Duration: Debug,
 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("InertialValue")
+        f.debug_struct("Inertial")
             .field("target", &self.target)
             .field("start_time", &self.start_time)
             .field("duration", &self.duration)
@@ -32,13 +32,13 @@ where
     }
 }
 
-impl<Item: AnimatedItem, X: Time> From<Item> for InertialValue<Item, X> {
+impl<Item: AnimatedItem, X: Time> From<Item> for Inertial<Item, X> {
     fn from(value: Item) -> Self {
         Self::new(value)
     }
 }
 
-impl<Item: AnimatedItem + Default, X: Time> Default for InertialValue<Item, X>
+impl<Item: AnimatedItem + Default, X: Time> Default for Inertial<Item, X>
 where
     X::Duration: Default,
 {
@@ -53,7 +53,7 @@ where
     }
 }
 
-impl<Item: AnimatedItem, X: Time> InertialValue<Item, X> {
+impl<Item: AnimatedItem, X: Time> Inertial<Item, X> {
     /// Create a new inertial value at a specific time.
     pub fn new(value: Item) -> Self {
         Self {
@@ -170,26 +170,26 @@ mod tests {
     #[test]
     fn new_at() {
         let start_time = Instant::now();
-        let inertial_value = InertialValue::new(5);
-        assert_eq!(inertial_value.get(start_time), 5);
-        assert_eq!(inertial_value.get(start_time + Duration::from_secs(1)), 5);
+        let inertial = Inertial::new(5);
+        assert_eq!(inertial.get(start_time), 5);
+        assert_eq!(inertial.get(start_time + Duration::from_secs(1)), 5);
     }
 
     #[test]
     fn go_to_at() {
         let start_time = Instant::now();
-        let inertial_value = InertialValue::new(5.0);
+        let inertial = Inertial::new(5.0);
 
         let new_start_time = start_time + Duration::from_millis(500);
         let new_duration = Duration::from_secs(1);
-        let new_inertial_value = inertial_value.go_to(10.0, new_start_time, new_duration);
+        let new_inertial = inertial.go_to(10.0, new_start_time, new_duration);
 
-        assert_eq!(new_inertial_value.get(start_time), 5.0);
-        assert_eq!(new_inertial_value.get(new_start_time), 5.0);
+        assert_eq!(new_inertial.get(start_time), 5.0);
+        assert_eq!(new_inertial.get(new_start_time), 5.0);
         assert_eq!(
-            new_inertial_value.get(new_start_time + Duration::from_millis(500)),
+            new_inertial.get(new_start_time + Duration::from_millis(500)),
             7.5
         );
-        assert_eq!(new_inertial_value.get(new_start_time + new_duration), 10.0);
+        assert_eq!(new_inertial.get(new_start_time + new_duration), 10.0);
     }
 }
