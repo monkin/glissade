@@ -84,6 +84,8 @@ where
     }
 }
 
+// Animated implementation for arrays of animated items
+
 impl<T: Clone + Copy + Default, X: Time, I: Animated<T, X>, const S: usize> Animated<[T; S], X>
     for [I; S]
 {
