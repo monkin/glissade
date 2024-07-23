@@ -105,7 +105,7 @@ fn main() {
 }
 ```
 
-Prints the following output:
+It prints the following output:
 ```text
 0.00s: 0.0000
 0.35s: 3.5000
@@ -157,7 +157,7 @@ fn main() {
 }
 ```
 
-Prints the following output:
+It prints the following output:
 ```text
 Static color for one second.
 0.00s: (255, 0, 0)
