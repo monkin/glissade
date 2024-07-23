@@ -39,7 +39,7 @@ impl Circle {
                 .set_attribute(
                     "style",
                     &format!(
-                        "transform: translate(-50%, -50%) translate({:.2}px, {:.2}px);",
+                        "transform: translate(-50%, -50%) translate({:.2}px, {:.2}px); opacity: 1;",
                         position.x, position.y
                     ),
                 )
