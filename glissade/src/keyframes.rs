@@ -4,7 +4,7 @@ use std::marker::PhantomData;
 
 /// A transition of a value over time. It works like an animation template, or set of keyframes.
 /// A good point to start building `Animation` is the [`keyframes`] function.
-pub trait Keyframes<T: Clone, X: Time> {
+pub trait Keyframes<T: Clone + Mix + PartialEq, X: Time> {
     /// Get the value at a specific time offset from the start.
     /// If the offset is greater than the duration, the value at the end of the animation is returned.
     fn get(&self, offset: X::Duration) -> T;
@@ -43,7 +43,6 @@ pub trait Keyframes<T: Clone, X: Time> {
     fn stay(self, duration: X::Duration) -> SequentialKeyframes<T, X, Self, NoneKeyframes<T, X>>
     where
         Self: Sized,
-        T: Mix + Clone + PartialEq,
     {
         let end_value = self.end_value();
         SequentialKeyframes::new(self, NoneKeyframes::new(end_value, duration))
@@ -57,7 +56,6 @@ pub trait Keyframes<T: Clone, X: Time> {
     ) -> SequentialKeyframes<T, X, Self, LinearKeyframes<T, X>>
     where
         Self: Sized,
-        T: Mix + Clone + PartialEq,
     {
         let end_value = self.end_value();
         SequentialKeyframes::new(self, LinearKeyframes::new(end_value, target, duration))
@@ -72,7 +70,6 @@ pub trait Keyframes<T: Clone, X: Time> {
     ) -> SequentialKeyframes<T, X, Self, EasingKeyframes<T, X>>
     where
         Self: Sized,
-        T: Mix + Clone + PartialEq,
     {
         let end_value = self.end_value();
         SequentialKeyframes::new(
@@ -180,13 +177,13 @@ pub fn keyframes<T: Mix + Clone + PartialEq, X: Time>(start_value: T) -> NoneKey
 // NoneKeyframes
 
 /// An animation that stays at a single value.
-#[derive(Clone)]
-pub struct NoneKeyframes<T: Clone, X: Time> {
+#[derive(Clone, PartialEq)]
+pub struct NoneKeyframes<T: Clone + Mix + PartialEq, X: Time> {
     value: T,
     duration: X::Duration,
 }
 
-impl<T: Clone + Debug, X: Time> Debug for NoneKeyframes<T, X>
+impl<T: Clone + Mix + PartialEq + Debug, X: Time> Debug for NoneKeyframes<T, X>
 where
     X::Duration: Debug,
 {
@@ -198,13 +195,13 @@ where
     }
 }
 
-impl<T: Clone, X: Time> NoneKeyframes<T, X> {
+impl<T: Clone + Mix + PartialEq, X: Time> NoneKeyframes<T, X> {
     pub fn new(value: T, duration: X::Duration) -> Self {
         Self { value, duration }
     }
 }
 
-impl<T: Clone, X: Time> Keyframes<T, X> for NoneKeyframes<T, X> {
+impl<T: Clone + Mix + PartialEq, X: Time> Keyframes<T, X> for NoneKeyframes<T, X> {
     fn get(&self, _offset: X::Duration) -> T {
         self.value.clone()
     }
@@ -214,13 +211,13 @@ impl<T: Clone, X: Time> Keyframes<T, X> for NoneKeyframes<T, X> {
     }
 }
 
-impl<T: Clone + Copy, X: Time> Copy for NoneKeyframes<T, X> {}
+impl<T: Clone + Mix + PartialEq + Copy, X: Time> Copy for NoneKeyframes<T, X> {}
 
 //----------------------------------------------------------------
 // LinearKeyframes
 
 /// An animation that linearly interpolates between two values.
-#[derive(Clone)]
+#[derive(Clone, PartialEq)]
 pub struct LinearKeyframes<T: Mix + Clone + PartialEq, X: Time> {
     v1: T,
     v2: T,
@@ -263,15 +260,24 @@ impl<T: Mix + Clone + PartialEq + Copy, X: Time> Copy for LinearKeyframes<T, X> 
 // SequentialKeyframes
 
 /// A sequence of two keyframes set.
-#[derive(Clone)]
-pub struct SequentialKeyframes<T: Clone, X: Time, S1: Keyframes<T, X>, S2: Keyframes<T, X>> {
+#[derive(Clone, PartialEq)]
+pub struct SequentialKeyframes<
+    T: Clone + Mix + PartialEq,
+    X: Time,
+    S1: Keyframes<T, X>,
+    S2: Keyframes<T, X>,
+> {
     t1: S1,
     t2: S2,
     phantom: PhantomData<(T, X)>,
 }
 
-impl<T: Clone, X: Time, S1: Keyframes<T, X> + Debug, S2: Keyframes<T, X> + Debug> Debug
-    for SequentialKeyframes<T, X, S1, S2>
+impl<
+        T: Clone + Mix + PartialEq,
+        X: Time,
+        S1: Keyframes<T, X> + Debug,
+        S2: Keyframes<T, X> + Debug,
+    > Debug for SequentialKeyframes<T, X, S1, S2>
 where
     X::Duration: Debug,
 {
@@ -283,7 +289,7 @@ where
     }
 }
 
-impl<T: Clone, X: Time, S1: Keyframes<T, X>, S2: Keyframes<T, X>> Keyframes<T, X>
+impl<T: Clone + Mix + PartialEq, X: Time, S1: Keyframes<T, X>, S2: Keyframes<T, X>> Keyframes<T, X>
     for SequentialKeyframes<T, X, S1, S2>
 {
     fn get(&self, offset: X::Duration) -> T {
@@ -300,7 +306,7 @@ impl<T: Clone, X: Time, S1: Keyframes<T, X>, S2: Keyframes<T, X>> Keyframes<T, X
     }
 }
 
-impl<T: Clone, X: Time, S1: Keyframes<T, X>, S2: Keyframes<T, X>>
+impl<T: Clone + Mix + PartialEq, X: Time, S1: Keyframes<T, X>, S2: Keyframes<T, X>>
     SequentialKeyframes<T, X, S1, S2>
 {
     pub fn new(t1: S1, t2: S2) -> Self {
@@ -312,8 +318,12 @@ impl<T: Clone, X: Time, S1: Keyframes<T, X>, S2: Keyframes<T, X>>
     }
 }
 
-impl<T: Clone + Copy, X: Time, S1: Keyframes<T, X> + Copy, S2: Keyframes<T, X> + Copy> Copy
-    for SequentialKeyframes<T, X, S1, S2>
+impl<
+        T: Clone + Mix + PartialEq,
+        X: Time,
+        S1: Keyframes<T, X> + Copy,
+        S2: Keyframes<T, X> + Copy,
+    > Copy for SequentialKeyframes<T, X, S1, S2>
 {
 }
 
@@ -321,7 +331,7 @@ impl<T: Clone + Copy, X: Time, S1: Keyframes<T, X> + Copy, S2: Keyframes<T, X> +
 // EasingKeyframes
 
 /// An animation that eases between two values.
-#[derive(Clone)]
+#[derive(Clone, PartialEq)]
 pub struct EasingKeyframes<T: Mix + Clone + PartialEq, X: Time> {
     v1: T,
     v2: T,
@@ -369,13 +379,14 @@ impl<T: Mix + Clone + PartialEq, X: Time> Keyframes<T, X> for EasingKeyframes<T,
 // RepeatKeyframes
 
 /// An animation that repeats keyframes indefinitely.
-#[derive(Clone)]
-pub struct RepeatKeyframes<T: Clone, X: Time, S: Keyframes<T, X>> {
+#[derive(Clone, PartialEq)]
+pub struct RepeatKeyframes<T: Clone + Mix + PartialEq, X: Time, S: Keyframes<T, X>> {
     keyframes: S,
     phantom: PhantomData<(T, X)>,
 }
 
-impl<T: Clone, X: Time, S: Keyframes<T, X> + Debug> Debug for RepeatKeyframes<T, X, S>
+impl<T: Clone + Mix + PartialEq, X: Time, S: Keyframes<T, X> + Debug> Debug
+    for RepeatKeyframes<T, X, S>
 where
     X::Duration: Debug,
 {
@@ -386,7 +397,7 @@ where
     }
 }
 
-impl<T: Clone, X: Time, S: Keyframes<T, X>> RepeatKeyframes<T, X, S> {
+impl<T: Clone + Mix + PartialEq, X: Time, S: Keyframes<T, X>> RepeatKeyframes<T, X, S> {
     pub fn new(keyframes: S) -> Self {
         Self {
             keyframes,
@@ -395,7 +406,9 @@ impl<T: Clone, X: Time, S: Keyframes<T, X>> RepeatKeyframes<T, X, S> {
     }
 }
 
-impl<T: Clone, X: Time, S: Keyframes<T, X>> Keyframes<T, X> for RepeatKeyframes<T, X, S> {
+impl<T: Clone + Mix + PartialEq, X: Time, S: Keyframes<T, X>> Keyframes<T, X>
+    for RepeatKeyframes<T, X, S>
+{
     fn get(&self, offset: X::Duration) -> T {
         let scale = offset.as_f32() / self.keyframes.duration().as_f32();
         self.keyframes.get(self.keyframes.duration().scale(scale))
@@ -418,20 +431,24 @@ impl<T: Clone, X: Time, S: Keyframes<T, X>> Keyframes<T, X> for RepeatKeyframes<
     }
 }
 
-impl<T: Clone + Copy, X: Time, S: Keyframes<T, X> + Copy> Copy for RepeatKeyframes<T, X, S> {}
+impl<T: Clone + Copy + Mix + PartialEq, X: Time, S: Keyframes<T, X> + Copy> Copy
+    for RepeatKeyframes<T, X, S>
+{
+}
 
 //----------------------------------------------------------------
 // RepeatNKeyframes
 
 /// An animation that repeats another keyframes n times.
-#[derive(Clone)]
-pub struct RepeatNKeyframes<T: Clone, X: Time, S: Keyframes<T, X>> {
+#[derive(Clone, PartialEq)]
+pub struct RepeatNKeyframes<T: Clone + Mix + PartialEq, X: Time, S: Keyframes<T, X>> {
     keyframes: S,
     n: f32,
     phantom: PhantomData<(T, X)>,
 }
 
-impl<T: Clone, X: Time, S: Keyframes<T, X> + Debug> Debug for RepeatNKeyframes<T, X, S>
+impl<T: Clone + Mix + PartialEq, X: Time, S: Keyframes<T, X> + Debug> Debug
+    for RepeatNKeyframes<T, X, S>
 where
     X::Duration: Debug,
 {
@@ -443,7 +460,7 @@ where
     }
 }
 
-impl<T: Clone, X: Time, S: Keyframes<T, X>> RepeatNKeyframes<T, X, S> {
+impl<T: Clone + Mix + PartialEq, X: Time, S: Keyframes<T, X>> RepeatNKeyframes<T, X, S> {
     pub fn new(keyframes: S, n: f32) -> Self {
         Self {
             keyframes,
@@ -453,7 +470,9 @@ impl<T: Clone, X: Time, S: Keyframes<T, X>> RepeatNKeyframes<T, X, S> {
     }
 }
 
-impl<T: Clone, X: Time, S: Keyframes<T, X>> Keyframes<T, X> for RepeatNKeyframes<T, X, S> {
+impl<T: Clone + Mix + PartialEq, X: Time, S: Keyframes<T, X>> Keyframes<T, X>
+    for RepeatNKeyframes<T, X, S>
+{
     fn get(&self, offset: X::Duration) -> T {
         let duration = self.keyframes.duration().as_f32();
         let n = offset.as_f32() / duration;
@@ -470,19 +489,24 @@ impl<T: Clone, X: Time, S: Keyframes<T, X>> Keyframes<T, X> for RepeatNKeyframes
     }
 }
 
-impl<T: Clone + Copy, X: Time, S: Keyframes<T, X> + Copy> Copy for RepeatNKeyframes<T, X, S> {}
+impl<T: Clone + Copy + Mix + PartialEq, X: Time, S: Keyframes<T, X> + Copy> Copy
+    for RepeatNKeyframes<T, X, S>
+{
+}
 
 //----------------------------------------------------------------
 // ReverseKeyframes
 
 /// An animation that reverses the order of keyframes.
-#[derive(Clone)]
-pub struct ReverseKeyframes<T: Clone, X: Time, S: Keyframes<T, X>> {
+#[derive(Clone, PartialEq)]
+pub struct ReverseKeyframes<T: Clone + Mix + PartialEq, X: Time, S: Keyframes<T, X>> {
     keyframes: S,
     phantom: PhantomData<(T, X)>,
 }
 
-impl<T: Clone, X: Time, S: Keyframes<T, X> + Debug> Debug for ReverseKeyframes<T, X, S> {
+impl<T: Clone + Mix + PartialEq, X: Time, S: Keyframes<T, X> + Debug> Debug
+    for ReverseKeyframes<T, X, S>
+{
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("ReverseKeyframes")
             .field("keyframes", &self.keyframes)
@@ -490,7 +514,7 @@ impl<T: Clone, X: Time, S: Keyframes<T, X> + Debug> Debug for ReverseKeyframes<T
     }
 }
 
-impl<T: Clone, X: Time, S: Keyframes<T, X>> ReverseKeyframes<T, X, S> {
+impl<T: Clone + Mix + PartialEq, X: Time, S: Keyframes<T, X>> ReverseKeyframes<T, X, S> {
     pub fn new(keyframes: S) -> Self {
         Self {
             keyframes,
@@ -499,7 +523,9 @@ impl<T: Clone, X: Time, S: Keyframes<T, X>> ReverseKeyframes<T, X, S> {
     }
 }
 
-impl<T: Clone, X: Time, S: Keyframes<T, X>> Keyframes<T, X> for ReverseKeyframes<T, X, S> {
+impl<T: Clone + Mix + PartialEq, X: Time, S: Keyframes<T, X>> Keyframes<T, X>
+    for ReverseKeyframes<T, X, S>
+{
     fn get(&self, offset: X::Duration) -> T {
         self.keyframes.get(self.keyframes.duration().sub(offset))
     }
@@ -509,20 +535,25 @@ impl<T: Clone, X: Time, S: Keyframes<T, X>> Keyframes<T, X> for ReverseKeyframes
     }
 }
 
-impl<T: Clone, X: Time, S: Keyframes<T, X> + Copy> Copy for ReverseKeyframes<T, X, S> {}
+impl<T: Clone + Mix + PartialEq, X: Time, S: Keyframes<T, X> + Copy> Copy
+    for ReverseKeyframes<T, X, S>
+{
+}
 
 //----------------------------------------------------------------
 // ScaleKeyframes
 
 /// An animation that scales the time of keyframes.
-#[derive(Clone)]
-pub struct ScaleKeyframes<T: Clone, X: Time, S: Keyframes<T, X>> {
+#[derive(Clone, PartialEq)]
+pub struct ScaleKeyframes<T: Clone + Mix + PartialEq, X: Time, S: Keyframes<T, X>> {
     keyframes: S,
     scale: f32,
     phantom: PhantomData<(T, X)>,
 }
 
-impl<T: Clone, X: Time, S: Keyframes<T, X> + Debug> Debug for ScaleKeyframes<T, X, S> {
+impl<T: Clone + Mix + PartialEq, X: Time, S: Keyframes<T, X> + Debug> Debug
+    for ScaleKeyframes<T, X, S>
+{
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("ScaleKeyframes")
             .field("keyframes", &self.keyframes)
@@ -531,7 +562,7 @@ impl<T: Clone, X: Time, S: Keyframes<T, X> + Debug> Debug for ScaleKeyframes<T, 
     }
 }
 
-impl<T: Clone, X: Time, S: Keyframes<T, X>> ScaleKeyframes<T, X, S> {
+impl<T: Clone + Mix + PartialEq, X: Time, S: Keyframes<T, X>> ScaleKeyframes<T, X, S> {
     pub fn new(keyframes: S, scale: f32) -> Self {
         Self {
             keyframes,
@@ -541,7 +572,9 @@ impl<T: Clone, X: Time, S: Keyframes<T, X>> ScaleKeyframes<T, X, S> {
     }
 }
 
-impl<T: Clone, X: Time, S: Keyframes<T, X>> Keyframes<T, X> for ScaleKeyframes<T, X, S> {
+impl<T: Clone + Mix + PartialEq, X: Time, S: Keyframes<T, X>> Keyframes<T, X>
+    for ScaleKeyframes<T, X, S>
+{
     fn get(&self, offset: X::Duration) -> T {
         self.keyframes.get(offset.scale(self.scale))
     }
@@ -551,7 +584,10 @@ impl<T: Clone, X: Time, S: Keyframes<T, X>> Keyframes<T, X> for ScaleKeyframes<T
     }
 }
 
-impl<T: Clone + Copy, X: Time, S: Keyframes<T, X> + Copy> Copy for ScaleKeyframes<T, X, S> {}
+impl<T: Clone + Mix + PartialEq + Copy, X: Time, S: Keyframes<T, X> + Copy> Copy
+    for ScaleKeyframes<T, X, S>
+{
+}
 
 //----------------------------------------------------------------
 // Tests
