@@ -5,13 +5,13 @@ use std::marker::PhantomData;
 
 /// Running keyframes animation started at a specific time.
 #[derive(Clone)]
-pub struct Animation<I: Clone + Sized, X: Time, T: Keyframes<I, X>> {
+pub struct Animation<I: Clone, X: Time, T: Keyframes<I, X>> {
     keyframes: T,
     start_time: X,
     phantom: PhantomData<I>,
 }
 
-impl<I: Clone + Sized, X: Time, T: Keyframes<I, X> + Debug> Debug for Animation<I, X, T>
+impl<I: Clone, X: Time, T: Keyframes<I, X> + Debug> Debug for Animation<I, X, T>
 where
     X: Debug,
 {
@@ -23,7 +23,7 @@ where
     }
 }
 
-impl<I: Clone + Sized, X: Time, T: Keyframes<I, X>> Animation<I, X, T> {
+impl<I: Clone, X: Time, T: Keyframes<I, X>> Animation<I, X, T> {
     /// Start the animation at a specific time.
     ///
     /// * `keyframes` - The transition to animate.
@@ -48,7 +48,7 @@ impl<I: Clone + Sized, X: Time, T: Keyframes<I, X>> Animation<I, X, T> {
     }
 }
 
-impl<I: Clone + Sized, X: Time, T: Keyframes<I, X>> Animated<I, X> for Animation<I, X, T> {
+impl<I: Clone, X: Time, T: Keyframes<I, X>> Animated<I, X> for Animation<I, X, T> {
     fn get(&self, time: X) -> I {
         self.keyframes.get(time.since(self.start_time))
     }
