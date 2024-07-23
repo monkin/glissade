@@ -1,7 +1,7 @@
 use crate::{Animated, Time};
 
 /// A value that doesn't change over time.
-/// It allows to use a static value as an always finished animation.
+/// It allows using a static value as an always finished animation.
 pub trait Stationary: Clone {}
 
 impl<T: Stationary, X: Time> Animated<T, X> for T {
