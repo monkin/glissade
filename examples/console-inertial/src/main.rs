@@ -1,4 +1,4 @@
-use glissade::Inertial;
+use glissade::{Animated, Inertial};
 
 type Color = (u8, u8, u8);
 

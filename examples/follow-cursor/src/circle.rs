@@ -1,6 +1,6 @@
 use crate::dom::document;
 use euclid::default::Point2D;
-use glissade::Inertial;
+use glissade::{Animated, Inertial};
 use web_sys::{Element, HtmlElement};
 
 pub struct Circle {

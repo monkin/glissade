@@ -1,3 +1,4 @@
+use crate::animated::Animated;
 use crate::{Keyframes, Time};
 use std::fmt::Debug;
 use std::marker::PhantomData;
@@ -35,12 +36,6 @@ impl<I: Clone + Sized, X: Time, T: Keyframes<I, X>> Animation<I, X, T> {
         }
     }
 
-    /// Check if the animation is finished at a specific time.
-    pub fn is_finished(&self, current_time: X) -> bool {
-        self.keyframes
-            .is_finished(current_time.since(self.start_time))
-    }
-
     /// Get the start time of the animation.
     pub fn start_time(&self) -> X {
         self.start_time
@@ -51,11 +46,15 @@ impl<I: Clone + Sized, X: Time, T: Keyframes<I, X>> Animation<I, X, T> {
     pub fn end_time(&self) -> X {
         self.start_time.advance(self.keyframes.duration())
     }
+}
 
-    /// Get the value of the animation at a specific time.
-    /// * `time` - The time to get the value of the animation, usually `Instant::now()`.
-    pub fn get(&self, time: X) -> I {
+impl<I: Clone + Sized, X: Time, T: Keyframes<I, X>> Animated<I, X> for Animation<I, X, T> {
+    fn get(&self, time: X) -> I {
         self.keyframes.get(time.since(self.start_time))
+    }
+
+    fn is_finished(&self, time: X) -> bool {
+        self.keyframes.is_finished(time.since(self.start_time))
     }
 }
 

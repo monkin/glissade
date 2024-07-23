@@ -72,7 +72,7 @@ assert_eq!(touch_mix, Touch { x: 50.0, y: 50.0, pressure: 100 });
 ### Simple two-step animation
 
 ```rust
-use glissade::{keyframes, Easing, Keyframes};
+use glissade::{keyframes, Animated, Easing, Keyframes};
 use std::thread::sleep;
 use std::time::{Duration, Instant};
 
@@ -120,7 +120,7 @@ Try it yourself with `cargo run -p console-transition`, or view the source code 
 ### Smoothly change color
 
 ```rust
-use glissade::Inertial;
+use glissade::{Animated, Inertial};
 
 type Color = (u8, u8, u8);
 

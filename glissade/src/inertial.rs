@@ -1,3 +1,4 @@
+use crate::animated::Animated;
 use crate::{Easing, TimeDiff};
 use crate::{Mix, Time};
 use std::fmt::Debug;
@@ -14,6 +15,40 @@ pub struct Inertial<Item: Mix + Clone + PartialEq, X: Time> {
     duration: X::Duration,
     easing: Easing,
     parent: Option<Box<Inertial<Item, X>>>,
+}
+
+impl<Item: Mix + Clone + PartialEq, X: Time> Animated<Item, X> for Inertial<Item, X> {
+    fn get(&self, current_time: X) -> Item {
+        if let Some(start_time) = self.start_time {
+            if current_time < start_time {
+                if let Some(parent) = &self.parent {
+                    parent.get(current_time)
+                } else {
+                    self.target.clone()
+                }
+            } else if self.is_finished(current_time) || self.duration == Default::default() {
+                self.target.clone()
+            } else if let Some(parent) = &self.parent {
+                let elapsed = current_time.since(start_time);
+
+                let t = elapsed.as_f32() / self.duration.as_f32();
+                let t = self.easing.ease(t);
+
+                parent.get(current_time).mix(self.target.clone(), t)
+            } else {
+                self.target.clone()
+            }
+        } else {
+            self.target.clone()
+        }
+    }
+
+    /// Check if the inertial value reached the target.
+    fn is_finished(&self, current_time: X) -> bool {
+        self.end_time()
+            .map(|end_time| current_time > end_time)
+            .unwrap_or(true)
+    }
 }
 
 impl<Item: Mix + Clone + PartialEq + Debug, X: Time + Debug> Debug for Inertial<Item, X>
@@ -64,13 +99,6 @@ impl<Item: Mix + Clone + PartialEq, X: Time> Inertial<Item, X> {
         }
     }
 
-    /// Check if the inertial value reached the target.
-    pub fn is_finished(&self, current_time: X) -> bool {
-        self.end_time()
-            .map(|end_time| current_time > end_time)
-            .unwrap_or(true)
-    }
-
     /// Get the target value.
     pub fn target(&self) -> Item {
         self.target.clone()
@@ -80,33 +108,6 @@ impl<Item: Mix + Clone + PartialEq, X: Time> Inertial<Item, X> {
     pub fn end_time(&self) -> Option<X> {
         self.start_time
             .map(|start_time| start_time.advance(self.duration))
-    }
-
-    /// Get the value of the inertial value at a specific time.
-    /// * `current_time` - The time to get the value of the inertial value, usually `Instant::now()`.
-    pub fn get(&self, current_time: X) -> Item {
-        if let Some(start_time) = self.start_time {
-            if current_time < start_time {
-                if let Some(parent) = &self.parent {
-                    parent.get(current_time)
-                } else {
-                    self.target.clone()
-                }
-            } else if self.is_finished(current_time) || self.duration == Default::default() {
-                self.target.clone()
-            } else if let Some(parent) = &self.parent {
-                let elapsed = current_time.since(start_time);
-
-                let t = elapsed.as_f32() / self.duration.as_f32();
-                let t = self.easing.ease(t);
-
-                parent.get(current_time).mix(self.target.clone(), t)
-            } else {
-                self.target.clone()
-            }
-        } else {
-            self.target.clone()
-        }
     }
 
     /// Create child inertial value with a new target at a specific time.

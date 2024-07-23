@@ -7,6 +7,7 @@ mod keyframes;
 mod mix;
 mod time;
 
+mod animated;
 #[cfg(feature = "cgmath")]
 mod cgmath;
 #[cfg(feature = "euclid")]
@@ -20,6 +21,7 @@ mod std_time_impl;
 #[cfg(feature = "web-time")]
 mod web_time_impl;
 
+pub use animated::Animated;
 pub use animation::Animation;
 pub use easing::Easing;
 pub use inertial::Inertial;

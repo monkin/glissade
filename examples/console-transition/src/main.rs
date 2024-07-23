@@ -1,6 +1,6 @@
 //! Two-step transition with easing function example.
 
-use glissade::{keyframes, Easing, Keyframes};
+use glissade::{keyframes, Animated, Easing, Keyframes};
 use std::thread::sleep;
 use std::time::{Duration, Instant};
 

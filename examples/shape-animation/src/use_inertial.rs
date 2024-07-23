@@ -1,5 +1,5 @@
 use crate::animation_loop::AnimationLoop;
-use glissade::{Inertial, Mix};
+use glissade::{Animated, Inertial, Mix};
 use std::fmt::Debug;
 use std::ops::Deref;
 use std::rc::Rc;
