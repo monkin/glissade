@@ -33,5 +33,4 @@ impl Stationary for usize {}
 impl Stationary for bool {}
 impl Stationary for char {}
 impl Stationary for String {}
-impl Stationary for () {}
 impl Stationary for &str {}
