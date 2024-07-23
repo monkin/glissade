@@ -5,6 +5,7 @@ mod easing;
 mod inertial;
 mod keyframes;
 mod mix;
+mod stationary;
 mod time;
 
 mod animated;
@@ -27,6 +28,7 @@ pub use easing::Easing;
 pub use inertial::Inertial;
 pub use keyframes::{keyframes, Keyframes};
 pub use mix::Mix;
+pub use stationary::Stationary;
 pub use time::{Time, TimeDiff};
 
 #[cfg(feature = "derive")]
