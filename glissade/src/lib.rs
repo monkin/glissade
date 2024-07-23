@@ -1,6 +1,5 @@
 #![doc = include_str!("../README.md")]
 
-mod animated_item;
 mod animation;
 mod easing;
 mod inertial;

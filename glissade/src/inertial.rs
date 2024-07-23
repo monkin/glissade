@@ -1,6 +1,5 @@
-use crate::animated_item::AnimatedItem;
-use crate::Time;
 use crate::{Easing, TimeDiff};
+use crate::{Mix, Time};
 use std::fmt::Debug;
 
 /// A value that smoothly goes to the target during a specific time.
@@ -9,7 +8,7 @@ use std::fmt::Debug;
 /// Every method receives `current_time` as a parameter to allow testing,
 /// and have a consistent behavior during a single animation frame.
 #[derive(Clone, PartialEq)]
-pub struct Inertial<Item: AnimatedItem, X: Time> {
+pub struct Inertial<Item: Mix + Clone + PartialEq, X: Time> {
     target: Item,
     start_time: Option<X>,
     duration: X::Duration,
@@ -17,7 +16,7 @@ pub struct Inertial<Item: AnimatedItem, X: Time> {
     parent: Option<Box<Inertial<Item, X>>>,
 }
 
-impl<Item: AnimatedItem + Debug, X: Time + Debug> Debug for Inertial<Item, X>
+impl<Item: Mix + Clone + PartialEq + Debug, X: Time + Debug> Debug for Inertial<Item, X>
 where
     X::Duration: Debug,
 {
@@ -32,13 +31,13 @@ where
     }
 }
 
-impl<Item: AnimatedItem, X: Time> From<Item> for Inertial<Item, X> {
+impl<Item: Mix + Clone + PartialEq, X: Time> From<Item> for Inertial<Item, X> {
     fn from(value: Item) -> Self {
         Self::new(value)
     }
 }
 
-impl<Item: AnimatedItem + Default, X: Time> Default for Inertial<Item, X>
+impl<Item: Mix + Clone + PartialEq + Default, X: Time> Default for Inertial<Item, X>
 where
     X::Duration: Default,
 {
@@ -53,7 +52,7 @@ where
     }
 }
 
-impl<Item: AnimatedItem, X: Time> Inertial<Item, X> {
+impl<Item: Mix + Clone + PartialEq, X: Time> Inertial<Item, X> {
     /// Create a new inertial value at a specific time.
     pub fn new(value: Item) -> Self {
         Self {

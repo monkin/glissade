@@ -1,5 +1,4 @@
-use crate::animated_item::AnimatedItem;
-use crate::{Animation, Easing, Time, TimeDiff};
+use crate::{Animation, Easing, Mix, Time, TimeDiff};
 use std::fmt::Debug;
 use std::marker::PhantomData;
 
@@ -39,7 +38,7 @@ pub trait Keyframes<T: Clone + Sized, X: Time>: Sized {
     fn stay(self, duration: X::Duration) -> SequentialKeyframes<T, X, Self, NoneKeyframes<T, X>>
     where
         Self: Sized,
-        T: AnimatedItem,
+        T: Mix + Clone + PartialEq,
     {
         let end_value = self.end_value();
         SequentialKeyframes::new(self, NoneKeyframes::new(end_value, duration))
@@ -53,7 +52,7 @@ pub trait Keyframes<T: Clone + Sized, X: Time>: Sized {
     ) -> SequentialKeyframes<T, X, Self, LinearKeyframes<T, X>>
     where
         Self: Sized,
-        T: AnimatedItem,
+        T: Mix + Clone + PartialEq,
     {
         let end_value = self.end_value();
         SequentialKeyframes::new(self, LinearKeyframes::new(end_value, target, duration))
@@ -68,7 +67,7 @@ pub trait Keyframes<T: Clone + Sized, X: Time>: Sized {
     ) -> SequentialKeyframes<T, X, Self, EasingKeyframes<T, X>>
     where
         Self: Sized,
-        T: AnimatedItem,
+        T: Mix + Clone + PartialEq,
     {
         let end_value = self.end_value();
         SequentialKeyframes::new(
@@ -172,7 +171,7 @@ pub trait Keyframes<T: Clone + Sized, X: Time>: Sized {
 /// assert_eq!(transition.get(Duration::from_secs(6)), 5.0);
 /// assert_eq!(transition.get(Duration::from_secs(74)), 9.0);
 /// ```
-pub fn keyframes<T: AnimatedItem, X: Time>(start_value: T) -> NoneKeyframes<T, X> {
+pub fn keyframes<T: Mix + Clone + PartialEq, X: Time>(start_value: T) -> NoneKeyframes<T, X> {
     NoneKeyframes::new(start_value, Default::default())
 }
 
@@ -221,13 +220,13 @@ impl<T: Clone + Sized + Copy, X: Time> Copy for NoneKeyframes<T, X> {}
 
 /// A transition that linearly interpolates between two values.
 #[derive(Clone)]
-pub struct LinearKeyframes<T: AnimatedItem, X: Time> {
+pub struct LinearKeyframes<T: Mix + Clone + PartialEq, X: Time> {
     v1: T,
     v2: T,
     duration: X::Duration,
 }
 
-impl<T: AnimatedItem + Debug, X: Time> Debug for LinearKeyframes<T, X>
+impl<T: Mix + Clone + PartialEq + Debug, X: Time> Debug for LinearKeyframes<T, X>
 where
     X::Duration: Debug,
 {
@@ -240,13 +239,13 @@ where
     }
 }
 
-impl<T: AnimatedItem, X: Time> LinearKeyframes<T, X> {
+impl<T: Mix + Clone + PartialEq, X: Time> LinearKeyframes<T, X> {
     pub fn new(v1: T, v2: T, duration: X::Duration) -> Self {
         Self { v1, v2, duration }
     }
 }
 
-impl<T: AnimatedItem, X: Time> Keyframes<T, X> for LinearKeyframes<T, X> {
+impl<T: Mix + Clone + PartialEq, X: Time> Keyframes<T, X> for LinearKeyframes<T, X> {
     fn get(&self, offset: X::Duration) -> T {
         let t = offset.as_f32() / self.duration.as_f32();
         self.v1.clone().mix(self.v2.clone(), t)
@@ -257,7 +256,7 @@ impl<T: AnimatedItem, X: Time> Keyframes<T, X> for LinearKeyframes<T, X> {
     }
 }
 
-impl<T: AnimatedItem + Copy, X: Time> Copy for LinearKeyframes<T, X> {}
+impl<T: Mix + Clone + PartialEq + Copy, X: Time> Copy for LinearKeyframes<T, X> {}
 
 //----------------------------------------------------------------
 // SequentialKeyframes
@@ -323,14 +322,14 @@ impl<T: Clone + Sized + Copy, X: Time, S1: Keyframes<T, X> + Copy, S2: Keyframes
 
 /// A transition that eases between two values.
 #[derive(Clone)]
-pub struct EasingKeyframes<T: AnimatedItem, X: Time> {
+pub struct EasingKeyframes<T: Mix + Clone + PartialEq, X: Time> {
     v1: T,
     v2: T,
     duration: X::Duration,
     easing: Easing,
 }
 
-impl<T: AnimatedItem + Debug, X: Time> Debug for EasingKeyframes<T, X>
+impl<T: Mix + Clone + PartialEq + Debug, X: Time> Debug for EasingKeyframes<T, X>
 where
     X::Duration: Debug,
 {
@@ -344,7 +343,7 @@ where
     }
 }
 
-impl<T: AnimatedItem, X: Time> EasingKeyframes<T, X> {
+impl<T: Mix + Clone + PartialEq, X: Time> EasingKeyframes<T, X> {
     pub fn new(v1: T, v2: T, duration: X::Duration, easing: Easing) -> Self {
         Self {
             v1,
@@ -355,7 +354,7 @@ impl<T: AnimatedItem, X: Time> EasingKeyframes<T, X> {
     }
 }
 
-impl<T: AnimatedItem, X: Time> Keyframes<T, X> for EasingKeyframes<T, X> {
+impl<T: Mix + Clone + PartialEq, X: Time> Keyframes<T, X> for EasingKeyframes<T, X> {
     fn get(&self, offset: X::Duration) -> T {
         let t = self.easing.ease(offset.as_f32() / self.duration.as_f32());
         self.v1.clone().mix(self.v2.clone(), t)
