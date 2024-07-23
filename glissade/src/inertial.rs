@@ -7,7 +7,7 @@ use std::fmt::Debug;
 /// The target can be changed at any time. No jumps will occur.
 /// It's expected that time is always increasing.
 /// Every method receives `current_time` as a parameter to allow testing,
-/// and have a consistent behavior during a single animation frame.
+/// and has a consistent behavior during a single animation frame.
 #[derive(Clone, PartialEq)]
 pub struct Inertial<Item: Mix + Clone + PartialEq, X: Time> {
     target: Item,
