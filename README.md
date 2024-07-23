@@ -12,11 +12,15 @@ Glissade is a Rust animations and transitions library. It's framework-agnostic w
 To make it work, you need to enable the corresponding feature.
 
 The lib contains two main types: `Animation` and `Inertial`.
-* `Animation` contains `Keyframes` and can be used in cases when we know start, end, and in between points.
-* `Inertial` can be used to make an object smoothly follow a target value.
+* `Animation` contains `Keyframes` and can be used in cases when we know start, end, and in between points. It's similar to [CSS animations/keyframes](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_animations/Using_CSS_animations).
+* `Inertial` can be used to make an object smoothly follow a target value. It's similar to [CSS transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_transitions/Using_CSS_transitions).
   For example, a particle following a cursor. Background color changing smoothly on theme change.
 
 It also contains a set of easing functions to make animations more natural. See the `Easing` enum for more details.
+
+To make code mo general, the library contains `Animated` trait which is implemented for both `Animation` and `Inertial`.
+To make it easier to work with both animated/static values, the library provides `Stationary` trait which works as always finished
+animation which doesn't change the value. By default, it's implemented for all primitive types like numbers or strings.
 
 Most of the methods receive time as a parameter to allow testing without mocks,
 and have a consistent behavior during a single animation frame. It's expected that time is received, for example,
