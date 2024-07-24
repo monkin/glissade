@@ -4,6 +4,17 @@ use cgmath::{
     Vector1, Vector2, Vector3, Vector4,
 };
 
+macro_rules! impl_stationary {
+    ($($t:ident),*) => {
+        $(impl<S: Mix + Clone> crate::Stationary for $t <S> {})*
+    };
+}
+
+impl_stationary!(
+    Deg, Euler, Matrix2, Matrix3, Matrix4, Point1, Point2, Point3, Quaternion, Rad, Vector1,
+    Vector2, Vector3, Vector4
+);
+
 impl<S: Mix> Mix for Vector1<S> {
     fn mix(self, other: Self, t: f32) -> Self {
         Vector1 {
@@ -169,7 +180,7 @@ mod tests {
             Vector3 {
                 x: 0.5,
                 y: 0.5,
-                z: 0.5
+                z: 0.5,
             }
         );
     }
@@ -195,7 +206,7 @@ mod tests {
                 x: 0.5,
                 y: 0.5,
                 z: 0.5,
-                w: 0.5
+                w: 0.5,
             }
         );
     }
@@ -266,7 +277,7 @@ mod tests {
             Point3 {
                 x: 0.5,
                 y: 0.5,
-                z: 0.5
+                z: 0.5,
             }
         );
     }
