@@ -14,23 +14,13 @@ impl<T: Stationary, X: Time> Animated<T, X> for T {
     }
 }
 
-// implement `Static` for all numeric types
-impl Stationary for f32 {}
-impl Stationary for f64 {}
-impl Stationary for i8 {}
-impl Stationary for i16 {}
-impl Stationary for i32 {}
-impl Stationary for i64 {}
-impl Stationary for i128 {}
-impl Stationary for isize {}
-impl Stationary for u8 {}
-impl Stationary for u16 {}
-impl Stationary for u32 {}
-impl Stationary for u64 {}
-impl Stationary for u128 {}
-impl Stationary for usize {}
+macro_rules! impl_stationary {
+    ($($t:ty),*) => {
+        $(impl Stationary for $t {})*
+    };
+}
 
-impl Stationary for bool {}
-impl Stationary for char {}
-impl Stationary for String {}
-impl Stationary for &str {}
+impl_stationary!(
+    f32, f64, i8, i16, i32, i64, i128, isize, u8, u16, u32, u64, u128, usize, bool, char, String,
+    &str
+);

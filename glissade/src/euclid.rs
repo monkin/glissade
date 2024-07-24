@@ -1,9 +1,50 @@
-use crate::Mix;
+use crate::{Mix, Stationary};
 use euclid::{
     Angle, BoolVector2D, BoolVector3D, Box2D, Box3D, Length, Point2D, Point3D, Rect,
     RigidTransform3D, Rotation2D, Rotation3D, Scale, Size2D, Size3D, Transform2D, Transform3D,
     Translation2D, Translation3D, Vector2D, Vector3D,
 };
+
+impl Stationary for Angle<f32> {}
+impl Stationary for Angle<f64> {}
+impl Stationary for BoolVector2D {}
+impl Stationary for BoolVector3D {}
+impl<U> Stationary for Box2D<f32, U> {}
+impl<U> Stationary for Box2D<f64, U> {}
+impl<U> Stationary for Box3D<f32, U> {}
+impl<U> Stationary for Box3D<f64, U> {}
+impl<U> Stationary for Length<f32, U> {}
+impl<U> Stationary for Length<f64, U> {}
+impl<U> Stationary for Point2D<f32, U> {}
+impl<U> Stationary for Point2D<f64, U> {}
+impl<U> Stationary for Point3D<f32, U> {}
+impl<U> Stationary for Point3D<f64, U> {}
+impl<U> Stationary for Rect<f32, U> {}
+impl<U> Stationary for Rect<f64, U> {}
+impl<U> Stationary for Size2D<f32, U> {}
+impl<U> Stationary for Size2D<f64, U> {}
+impl<U> Stationary for Size3D<f32, U> {}
+impl<U> Stationary for Size3D<f64, U> {}
+impl<U> Stationary for Vector2D<f32, U> {}
+impl<U> Stationary for Vector2D<f64, U> {}
+impl<U> Stationary for Vector3D<f32, U> {}
+impl<U> Stationary for Vector3D<f64, U> {}
+impl<S, D> Stationary for Translation2D<f32, S, D> {}
+impl<S, D> Stationary for Translation2D<f64, S, D> {}
+impl<S, D> Stationary for Translation3D<f32, S, D> {}
+impl<S, D> Stationary for Translation3D<f64, S, D> {}
+impl<S, D> Stationary for Rotation2D<f32, S, D> {}
+impl<S, D> Stationary for Rotation2D<f64, S, D> {}
+impl<S, D> Stationary for Rotation3D<f32, S, D> {}
+impl<S, D> Stationary for Rotation3D<f64, S, D> {}
+impl<S, D> Stationary for Scale<f32, S, D> {}
+impl<S, D> Stationary for Scale<f64, S, D> {}
+impl<S, D> Stationary for RigidTransform3D<f32, S, D> {}
+impl<S, D> Stationary for RigidTransform3D<f64, S, D> {}
+impl<S, D> Stationary for Transform2D<f32, S, D> {}
+impl<S, D> Stationary for Transform2D<f64, S, D> {}
+impl<S, D> Stationary for Transform3D<f32, S, D> {}
+impl<S, D> Stationary for Transform3D<f64, S, D> {}
 
 impl Mix for Angle<f32> {
     fn mix(self, other: Self, factor: f32) -> Self {
