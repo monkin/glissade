@@ -98,7 +98,10 @@ where
     }
 }
 
-impl<T, const D: usize> Stationary for Point<T, D> where T: Clone {}
+impl<T, const D: usize> Stationary for Point<T, D> where
+    T: Scalar + Zero + One + ClosedAddAssign + ClosedSubAssign + ClosedMulAssign + From<f32>
+{
+}
 
 impl<T, const D: usize> Mix for Scale<T, D>
 where

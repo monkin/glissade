@@ -1,4 +1,5 @@
 use crate::mix::Mix;
+use crate::Stationary;
 use palette::rgb::Rgb;
 use palette::{
     Alpha, Hsl, Hsluv, Hsv, Hwb, Lab, LabHue, Lch, Lchuv, Luv, LuvHue, Okhsl, Okhsv, Okhwb, Oklab,
@@ -15,6 +16,8 @@ macro_rules! impl_mix_for_hue {
                 Self::new(self.into_inner().mix(other.into_inner(), t))
             }
         }
+
+        impl<T: Clone> Stationary for $hue<T> {}
     };
 }
 
@@ -36,6 +39,8 @@ where
     }
 }
 
+impl<C, A> Stationary for Alpha<C, A> where Self: Clone {}
+
 macro_rules! impl_mix_for_color1 {
     ($color:ident, $c1:ident, $c2:ident, $c3:ident) => {
         impl<C> Mix for $color<C>
@@ -50,6 +55,8 @@ macro_rules! impl_mix_for_color1 {
                 )
             }
         }
+
+        impl<C> Stationary for $color<C> where Self: Clone {}
     };
 }
 
@@ -67,6 +74,8 @@ macro_rules! impl_mix_for_color2 {
                 )
             }
         }
+
+        impl<S, C> Stationary for $color<S, C> where Self: Clone {}
     };
 }
 
