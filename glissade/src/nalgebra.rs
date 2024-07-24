@@ -9,8 +9,9 @@ use nalgebra::{
 use num_traits::{One, Zero};
 
 use crate::mix::Mix;
+use crate::Stationary;
 
-macro_rules! impl_mix_for_vector {
+macro_rules! impl_traits_for_vector {
     ($vector:ident) => {
         impl<T> Mix for $vector<T>
         where
@@ -26,15 +27,17 @@ macro_rules! impl_mix_for_vector {
                 self.lerp(&other, T::from(t))
             }
         }
+
+        impl<T: Clone> Stationary for $vector<T> {}
     };
 }
 
-impl_mix_for_vector!(Vector1);
-impl_mix_for_vector!(Vector2);
-impl_mix_for_vector!(Vector3);
-impl_mix_for_vector!(Vector4);
-impl_mix_for_vector!(Vector5);
-impl_mix_for_vector!(Vector6);
+impl_traits_for_vector!(Vector1);
+impl_traits_for_vector!(Vector2);
+impl_traits_for_vector!(Vector3);
+impl_traits_for_vector!(Vector4);
+impl_traits_for_vector!(Vector5);
+impl_traits_for_vector!(Vector6);
 
 macro_rules! impl_mix_for_matrix {
     ($matrix:ident) => {
@@ -46,6 +49,8 @@ macro_rules! impl_mix_for_matrix {
                 self.zip_map(&other, |a, b| a.mix(b, t))
             }
         }
+
+        impl<T: Clone> Stationary for $matrix<T> {}
     };
 }
 
@@ -93,6 +98,8 @@ where
     }
 }
 
+impl<T, const D: usize> Stationary for Point<T, D> where T: Clone {}
+
 impl<T, const D: usize> Mix for Scale<T, D>
 where
     T: Scalar + Zero + One + ClosedAddAssign + ClosedSubAssign + ClosedMulAssign + From<f32>,
@@ -101,6 +108,8 @@ where
         self.vector.lerp(&other.vector, T::from(t)).into()
     }
 }
+
+impl<T, const D: usize> Stationary for Scale<T, D> where T: Clone {}
 
 impl<T> Mix for Rotation<T, 2>
 where
@@ -118,6 +127,8 @@ where
     }
 }
 
+impl<T: Clone> Stationary for Rotation<T, 2> {}
+
 impl<T> Mix for Rotation<T, 3>
 where
     T: Scalar
@@ -134,6 +145,8 @@ where
     }
 }
 
+impl<T: Clone> Stationary for Rotation<T, 3> {}
+
 impl<T, const D: usize> Mix for Translation<T, D>
 where
     T: Scalar + Zero + One + ClosedAddAssign + ClosedSubAssign + ClosedMulAssign + From<f32>,
@@ -142,6 +155,8 @@ where
         self.vector.lerp(&other.vector, T::from(t)).into()
     }
 }
+
+impl<T: Clone, const D: usize> Stationary for Translation<T, D> {}
 
 impl<T> Mix for Quaternion<T>
 where
@@ -159,6 +174,8 @@ where
     }
 }
 
+impl<T> Stationary for Quaternion<T> where T: Clone {}
+
 impl<T> Mix for Isometry<T, Rotation<T, 2>, 2>
 where
     T: Scalar
@@ -175,6 +192,8 @@ where
     }
 }
 
+impl<T> Stationary for Isometry<T, Rotation<T, 2>, 2> where T: Clone {}
+
 impl<T> Mix for Isometry<T, Rotation<T, 3>, 3>
 where
     T: Scalar
@@ -190,6 +209,8 @@ where
         self.lerp_slerp(&other, T::from(t))
     }
 }
+
+impl<T> Stationary for Isometry<T, Rotation<T, 3>, 3> where T: Clone {}
 
 #[cfg(test)]
 mod tests {
