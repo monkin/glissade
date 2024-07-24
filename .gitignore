@@ -6,3 +6,5 @@
 
 # Ignore Cargo.lock file in all subdirectories
 **/Cargo.lock
+
+**/dist
