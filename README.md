@@ -73,7 +73,7 @@ assert_eq!(touch_mix, Touch { x: 50.0, y: 50.0, pressure: 100 });
 * Animating a shape using Inertial [[Live](https://monkin.github.io/glissade/shape-animation/)] [[Source](https://github.com/monkin/glissade/tree/master/examples/shape-animation)]
 * A set of particles following the cursor made with Inertial [[Live](https://monkin.github.io/glissade/follow-cursor/)] [[Source](https://github.com/monkin/glissade/tree/master/examples/follow-cursor)]
 
-### Simple two-step animation
+### Simple two-step `Animation`
 
 ```rust
 use glissade::{keyframes, Animated, Easing, Keyframes};
@@ -119,9 +119,9 @@ It prints the following output:
 3.15s: 5.0000
 ```
 
-Try it yourself with `cargo run -p console-transition`, or view the source code in [./examples/console-transition](https://github.com/monkin/glissade/tree/master/examples/console-transition).
+Try it yourself with `cargo run -p console-transition` or view the source code in [./examples/console-transition](https://github.com/monkin/glissade/tree/master/examples/console-transition).
 
-### Smoothly change color
+### Smoothly change color using `Inertial`
 
 ```rust
 use glissade::{Animated, Inertial};
@@ -185,7 +185,77 @@ In the middle of the transition change direction to blue.
 4.50s: (0, 0, 255)
 ```
 
-Try it yourself with `cargo run -p console-inertial`, or view the source code in [./examples/console-inertial](https://github.com/monkin/glissade/tree/master/examples/console-transition).
+Try it yourself with `cargo run -p console-inertial` or view the source code in [./examples/console-inertial](https://github.com/monkin/glissade/tree/master/examples/console-transition).
+
+### Use the same code for `Animation`, `Inertial`, and `Stationary`
+
+```rust
+use glissade::{keyframes, Animated, Inertial, Keyframes};
+use std::fmt::Debug;
+
+/// Print the values of an animated value at 0.0, 0.25, 0.5, 0.75, and 1.0.
+/// Any value that implements `Animated` can be passed to this function.
+/// So, it can accept animations, inertial, and stationary values.
+pub fn print_1s_values<T: Clone + Debug>(value: impl Animated<T, f32>) {
+    for i in [0.0, 0.25, 0.5, 0.75, 1.0].iter() {
+        println!("{:.2}s: {:?}", i, value.get(*i));
+    }
+}
+
+fn main() {
+    println!("Animation:");
+    let animation = keyframes((0.0, 2.0)).go_to((1.0, 3.0), 1.0).run(0.0);
+    print_1s_values(animation);
+
+    println!("\nInertial:");
+    let inertial = Inertial::new(5.0).go_to(10.0, 0.0, 1.0);
+    print_1s_values(inertial);
+
+    println!("\nStationary:");
+    let stationary = 42;
+    print_1s_values(stationary);
+
+    println!("\nMapped animation:");
+    let animation = keyframes((0.0, 0.0))
+        .go_to((100.0, 40.0), 1.0)
+        .run(0.0)
+        .map(|v| format!("left: {:.2}; top: {:.2};", v.0, v.1));
+    print_1s_values(animation);
+}
+```
+
+It prints the following output:
+```text
+Animation:
+0.00s: (0.0, 2.0)
+0.25s: (0.25, 2.25)
+0.50s: (0.5, 2.5)
+0.75s: (0.75, 2.75)
+1.00s: (1.0, 3.0)
+
+Inertial:
+0.00s: 5.0
+0.25s: 5.625
+0.50s: 7.5
+0.75s: 9.375
+1.00s: 10.0
+
+Stationary:
+0.00s: 42
+0.25s: 42
+0.50s: 42
+0.75s: 42
+1.00s: 42
+
+Mapped animation:
+0.00s: "left: 0.00; top: 0.00;"
+0.25s: "left: 25.00; top: 10.00;"
+0.50s: "left: 50.00; top: 20.00;"
+0.75s: "left: 75.00; top: 30.00;"
+1.00s: "left: 100.00; top: 40.00;"
+```
+
+Try it yourself with `cargo run -p animated` or view the source code in [./examples/animated](https://github.com/monkin/glissade/tree/master/examples/animated).
 
 ## License
 

@@ -8,6 +8,7 @@
       <sourceFolder url="file://$MODULE_DIR$/examples/follow-cursor/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/examples/shape-animation/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/examples/console-inertial/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/examples/animated/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
       <excludeFolder url="file://$MODULE_DIR$/.git" />
       <excludeFolder url="file://$MODULE_DIR$/examples/follow-cursor/dist" />
