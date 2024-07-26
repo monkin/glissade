@@ -7,6 +7,6 @@ mod nalgebra;
 #[cfg(feature = "palette")]
 mod palette;
 #[cfg(not(feature = "web-time"))]
-mod std_time_impl;
+mod std_time;
 #[cfg(feature = "web-time")]
-mod web_time_impl;
+mod web_time;
