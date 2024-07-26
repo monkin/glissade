@@ -18,13 +18,13 @@ The lib contains two main types: `Animation` and `Inertial`.
 
 It also contains a set of easing functions to make animations more natural. See the `Easing` enum for more details.
 
-To make code mo general, the library contains `Animated` trait which is implemented for both `Animation` and `Inertial`.
-To make it easier to work with both animated/static values, the library provides `Stationary` trait which works as always finished
-animation which doesn't change the value. By default, it's implemented for all primitive types like numbers or strings.
+To make code more general the library contains `Animated` trait which is implemented for both `Animation` and `Inertial`.
+With `Stationary` trait it's easy to pass static value in places where `Animated` expected.
+By default, it's implemented for primitive types like numbers or strings.
 
 Most of the methods receive time as a parameter to allow testing without mocks,
 and have a consistent behavior during a single animation frame. It's expected that time is received, for example,
-from `Instant::now()` once in the beginning of the frame, and used lately during the frame rendering.
+from `Instant::now()` once at the beginning of the frame, and used lately during the frame rendering.
 
 Any type that implements `Time` trait can be used as a time type. By default, it's implemented for `std::time::Instant`,
 `std::time::SystemTime`, f32, and f64. It's also implemented for `web_time::*` if `"web-time"` feature is enabled.
