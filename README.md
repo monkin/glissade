@@ -8,7 +8,8 @@
 
 Glissade is a Rust animations and transitions library. It's framework-agnostic with optional
 [euclid](https://crates.io/crates/euclid), [nalgebra](https://crates.io/crates/nalgebra),
-[cgmath](https://crates.io/crates/cgmath), and [palette](https://crates.io/crates/palette) support.
+[cgmath](https://crates.io/crates/cgmath), [glam](https://crates.io/crates/glam),
+and [palette](https://crates.io/crates/palette) support.
 To make it work, you need to enable the corresponding feature.
 
 The lib contains two main types: `Animation` and `Inertial`.
@@ -34,7 +35,7 @@ Animation can be applied to any type that implements `Mix` trait. This trait is 
 Mix trait is implemented for common types like `f32`, `f64`, `bool`, `i8` - `i64`, `u8` - `u64`, `Option<T: Mix>`,
 and tuples like `(Mix, Mix)`, `(Mix, Mix, Mix)`, etc. It's also implemented for some popular libraries:
 [`nalgebra`](https://crates.io/crates/nalgebra), [`euclid`](https://crates.io/crates/euclid),
-[`cgmath`](https://crates.io/crates/cgmath), and [`palette`](https://crates.io/crates/palette).
+[`cgmath`](https://crates.io/crates/cgmath), [`glam`](https://crates.io/crates/glam), and [`palette`](https://crates.io/crates/palette).
 
 The full documentation is available on [docs.rs](https://docs.rs/glissade).
 
@@ -62,6 +63,7 @@ assert_eq!(touch_mix, Touch { x: 50.0, y: 50.0, pressure: 100 });
 * `"euclid"` - enables [euclid](https://crates.io/crates/euclid) vectors, rotations, etc. animation.
 * `"nalgebra"` - enables [nalgebra](https://crates.io/crates/nalgebra) vectors, matrices, transformations, etc. animation.
 * `"cgmath"` - enables [cgmath](https://crates.io/crates/cgmath) vectors, matrices, etc. animation.
+* `"glam"` - enables [glam](https://crates.io/crates/glam) vectors, matrices, etc. animation.
 * `"palette"` - enables [palette](https://crates.io/crates/palette) colors interpolation.
 * `"web-time"` - use `web_time::*` instead of `std::time::*` for `Instant` and `Duration` types. It doesn't change
   anything for desktop platforms, but allows to use the same code for WASM. Enabled by default.
