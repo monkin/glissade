@@ -2,6 +2,8 @@
 mod cgmath;
 #[cfg(feature = "euclid")]
 mod euclid;
+#[cfg(feature = "glam")]
+mod glam;
 #[cfg(feature = "nalgebra")]
 mod nalgebra;
 #[cfg(feature = "palette")]

@@ -6,25 +6,13 @@ pub trait Mix {
 
 impl Mix for f32 {
     fn mix(self, other: f32, t: f32) -> f32 {
-        if t <= 0.0 {
-            self
-        } else if t >= 1.0 {
-            other
-        } else {
-            self + (other - self) * t
-        }
+        self + (other - self) * t
     }
 }
 
 impl Mix for f64 {
     fn mix(self, other: f64, t: f32) -> f64 {
-        if t <= 0.0 {
-            self
-        } else if t >= 1.0 {
-            other
-        } else {
-            self + (other - self) * t as f64
-        }
+        self + (other - self) * t as f64
     }
 }
 
