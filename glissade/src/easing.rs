@@ -1,4 +1,4 @@
-use crate::Mix;
+use crate::smooth_array::SmoothArray;
 
 const BEZIER_POINTS_COUNT: usize = 128;
 
@@ -61,7 +61,7 @@ pub enum Easing {
 
     /// Easing described by a table of values. Values in between are interpolated.
     /// For example, `Easing::Tabular(vec![0.0, 0.1, 0.2, 0.4, 0.8, 1.0])`
-    Tabular(Vec<f32>),
+    Tabular(SmoothArray),
 
     /// <div>
     ///     <img style="width: 102px; height: 102px;" src="data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjEwMiIgd2lkdGg9IjEwMiIgdmlld0JveD0iLTEgLTEgMTAyIDEwMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB4PSItMSIgeT0iLTEiIHdpZHRoPSIxMDIiIGhlaWdodD0iMTAyIiBmaWxsPSJyZ2JhKDAsIDAsIDAsIDAuMTIpIi8+CiAgPHBvbHlsaW5lIHBvaW50cz0iMCwwIDEwMCwwIiBzdHlsZT0ic3Ryb2tlOiBibGFjazsgc3Ryb2tlLXdpZHRoOiAxOyBmaWxsOiBub25lOyIgLz4KPC9zdmc+"/>
@@ -114,18 +114,7 @@ impl Easing {
                     1.0 - t * t / 2.0
                 }
             }
-            Easing::Tabular(data) => {
-                if t == 1.0 {
-                    data.last().copied().unwrap_or(1.0)
-                } else {
-                    let i = t * (data.len() - 1) as f32;
-
-                    let ii = i.floor() as usize;
-                    let f = i.fract();
-
-                    data[ii].mix(data[ii + 1], f)
-                }
-            }
+            Easing::Tabular(data) => data.value_at(t),
             Easing::Step(steps) => (t * steps).floor() / steps,
             Easing::None => 1.0,
         }
@@ -146,20 +135,11 @@ impl Easing {
         let x1 = x1.clamp(0.0, 1.0);
         let x2 = x2.clamp(0.0, 1.0);
 
-        let max_i = (BEZIER_POINTS_COUNT - 1) as f32;
+        let mut data = SmoothArray::with_steps_count(BEZIER_POINTS_COUNT);
 
-        let mut points: [(f32, f32); BEZIER_POINTS_COUNT] = [(0.0, 0.0); BEZIER_POINTS_COUNT];
-
-        points[0] = (0.0, 0.0);
-        points[BEZIER_POINTS_COUNT - 1] = (1.0, 1.0);
-
-        for (i, point) in points
-            .iter_mut()
-            .enumerate()
-            .take(BEZIER_POINTS_COUNT - 1)
-            .skip(1)
-        {
-            let t = i as f32 / (BEZIER_POINTS_COUNT - 1) as f32;
+        let mut previous = (0.0, 0.0);
+        for i in 1..=BEZIER_POINTS_COUNT {
+            let t = i as f32 / BEZIER_POINTS_COUNT as f32;
             let nt = 1.0 - t;
             let t2 = t * t;
             let nt2 = nt * nt;
@@ -167,29 +147,8 @@ impl Easing {
             let x = (3.0 * nt2 * t * x1 + 3.0 * nt * t2 * x2 + t2 * t).clamp(0.0, 1.0);
             let y = 3.0 * nt2 * t * y1 + 3.0 * nt * t2 * y2 + t2 * t;
 
-            point.0 = x;
-            point.1 = y;
-        }
-
-        let mut data = Vec::with_capacity(BEZIER_POINTS_COUNT);
-        data.resize(BEZIER_POINTS_COUNT, 0.0);
-
-        for points in points.windows(2) {
-            let p1 = points[0];
-            let p2 = points[1];
-
-            let (x1, y1) = p1;
-            let (x2, y2) = p2;
-
-            if x2 > x1 {
-                let mut i = (x1 * max_i).ceil();
-                let max = x2 * max_i;
-                while i <= max {
-                    let t = (i / max_i - x1) / (x2 - x1);
-                    data[i as usize] = y1.mix(y2, t);
-                    i += 1.0;
-                }
-            }
+            data.line(previous, (x, y));
+            previous = (x, y);
         }
 
         Easing::Tabular(data)
@@ -253,30 +212,6 @@ mod tests {
         let easing = Easing::CubicInOut;
         assert_eq!(easing.ease(0.0), 0.0);
         assert_eq!(easing.ease(0.5), 0.5);
-        assert_eq!(easing.ease(1.0), 1.0);
-    }
-
-    #[test]
-    fn tabular() {
-        let easing = Easing::Tabular(vec![0.0, 1.0]);
-        assert_eq!(easing.ease(0.0), 0.0);
-        assert_eq!(easing.ease(0.25), 0.25);
-        assert_eq!(easing.ease(0.5), 0.5);
-        assert_eq!(easing.ease(0.75), 0.75);
-        assert_eq!(easing.ease(1.0), 1.0);
-    }
-
-    #[test]
-    fn tabular_non_linear() {
-        let easing = Easing::Tabular(vec![0.0, 1.0, 0.0, 0.5, 1.0]);
-        assert_eq!(easing.ease(0.0), 0.0);
-        assert_eq!(easing.ease(0.125), 0.5);
-        assert_eq!(easing.ease(0.25), 1.0);
-        assert_eq!(easing.ease(0.375), 0.5);
-        assert_eq!(easing.ease(0.5), 0.0);
-        assert_eq!(easing.ease(0.625), 0.25);
-        assert_eq!(easing.ease(0.75), 0.5);
-        assert_eq!(easing.ease(0.875), 0.75);
         assert_eq!(easing.ease(1.0), 1.0);
     }
 

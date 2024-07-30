@@ -10,6 +10,7 @@ mod time;
 
 mod animated;
 mod impls;
+mod smooth_array;
 
 pub use animated::Animated;
 pub use animation::Animation;
