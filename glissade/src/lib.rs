@@ -9,11 +9,13 @@ mod stationary;
 mod time;
 
 mod animated;
+mod distance;
 mod impls;
 mod smooth_array;
 
 pub use animated::Animated;
 pub use animation::Animation;
+pub use distance::Distance;
 pub use easing::Easing;
 pub use inertial::Inertial;
 pub use keyframes::{keyframes, Keyframes};
