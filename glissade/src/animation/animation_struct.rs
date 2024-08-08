@@ -1,5 +1,6 @@
+use super::Keyframes;
 use crate::animated::Animated;
-use crate::{Keyframes, Mix, Time};
+use crate::{Mix, Time};
 use std::fmt::Debug;
 use std::marker::PhantomData;
 
@@ -63,7 +64,7 @@ impl<I: Clone + Mix + PartialEq, X: Time, T: Keyframes<I, X>> Animated<I, X>
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::keyframes::LinearKeyframes;
+    use crate::animation::keyframes_linear::LinearKeyframes;
     use std::time::Instant;
     use web_time::Duration;
 

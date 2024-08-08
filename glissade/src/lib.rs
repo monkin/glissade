@@ -3,7 +3,6 @@
 mod animation;
 mod easing;
 mod inertial;
-mod keyframes;
 mod mix;
 mod stationary;
 mod time;
@@ -15,10 +14,10 @@ mod smooth_array;
 
 pub use animated::Animated;
 pub use animation::Animation;
+pub use animation::{keyframes, Keyframes};
 pub use distance::Distance;
 pub use easing::Easing;
 pub use inertial::Inertial;
-pub use keyframes::{keyframes, Keyframes};
 pub use mix::Mix;
 pub use stationary::Stationary;
 pub use time::{Time, TimeDiff};
