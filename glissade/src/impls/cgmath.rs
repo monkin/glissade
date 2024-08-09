@@ -1,4 +1,5 @@
-use crate::Mix;
+use crate::{Distance, Mix};
+use cgmath::num_traits::Float;
 use cgmath::{
     BaseFloat, Deg, Euler, Matrix2, Matrix3, Matrix4, Point1, Point2, Point3, Quaternion, Rad,
     Vector1, Vector2, Vector3, Vector4,
@@ -50,6 +51,29 @@ impl<S: Mix> Mix for Vector4<S> {
             z: self.z.mix(other.z, t),
             w: self.w.mix(other.w, t),
         }
+    }
+}
+
+impl<S: Float> Distance for Vector1<S> {
+    fn distance(self, other: Self) -> f32 {
+        (self.x - other.x).abs().to_f32().unwrap()
+    }
+}
+
+impl<S: Float> Distance for Vector2<S> {
+    fn distance(self, other: Self) -> f32 {
+        let dx = self.x - other.x;
+        let dy = self.y - other.y;
+        (dx * dx + dy * dy).sqrt().to_f32().unwrap()
+    }
+}
+
+impl<S: Float> Distance for Vector3<S> {
+    fn distance(self, other: Self) -> f32 {
+        let dx = self.x - other.x;
+        let dy = self.y - other.y;
+        let dz = self.z - other.z;
+        (dx * dx + dy * dy + dz * dz).sqrt().to_f32().unwrap()
     }
 }
 
@@ -108,6 +132,29 @@ impl<S: Mix> Mix for Point3<S> {
     }
 }
 
+impl<S: Float> Distance for Point1<S> {
+    fn distance(self, other: Self) -> f32 {
+        (self.x - other.x).abs().to_f32().unwrap()
+    }
+}
+
+impl<S: Float> Distance for Point2<S> {
+    fn distance(self, other: Self) -> f32 {
+        let dx = self.x - other.x;
+        let dy = self.y - other.y;
+        (dx * dx + dy * dy).sqrt().to_f32().unwrap()
+    }
+}
+
+impl<S: Float> Distance for Point3<S> {
+    fn distance(self, other: Self) -> f32 {
+        let dx = self.x - other.x;
+        let dy = self.y - other.y;
+        let dz = self.z - other.z;
+        (dx * dx + dy * dy + dz * dz).sqrt().to_f32().unwrap()
+    }
+}
+
 impl<S: Mix> Mix for Matrix2<S> {
     fn mix(self, other: Self, t: f32) -> Self {
         Matrix2 {
@@ -140,7 +187,7 @@ impl<S: Mix> Mix for Matrix4<S> {
 
 #[cfg(test)]
 mod tests {
-    use crate::Mix;
+    use crate::{Bezier2, Curve, Mix};
     use cgmath::{
         assert_relative_eq, Deg, Euler, Point1, Point2, Point3, Quaternion, Rad, Rotation3,
         Vector1, Vector2, Vector3, Vector4,
@@ -280,5 +327,20 @@ mod tests {
                 z: 0.5,
             }
         );
+    }
+
+    #[test]
+    fn test_bezier_with_point2() {
+        let b = Bezier2(
+            Point2 { x: 0.0, y: 10.0 },
+            Point2 { x: 1.0, y: 5.0 },
+            Point2 { x: 2.0, y: 10.0 },
+        );
+
+        assert_eq!(b.get(0.0), Point2 { x: 0.0, y: 10.0 });
+        assert_eq!(b.get(0.5), Point2 { x: 1.0, y: 7.5 });
+        assert_eq!(b.get(1.0), Point2 { x: 2.0, y: 10.0 });
+
+        assert_eq!(b.estimate_length(), 6.0990195);
     }
 }

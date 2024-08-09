@@ -9,7 +9,7 @@ use nalgebra::{
 use num_traits::{One, Zero};
 
 use crate::mix::Mix;
-use crate::Stationary;
+use crate::{Distance, Stationary};
 
 macro_rules! impl_traits_for_vector {
     ($vector:ident) => {
@@ -29,6 +29,21 @@ macro_rules! impl_traits_for_vector {
         }
 
         impl<T: Clone> Stationary for $vector<T> {}
+
+        impl<T> Distance for $vector<T>
+        where
+            T: Scalar
+                + Zero
+                + One
+                + ClosedAddAssign
+                + ClosedSubAssign
+                + ClosedMulAssign
+                + From<f32>,
+        {
+            fn distance(self, other: Self) -> f32 {
+                (self - other).len() as f32
+            }
+        }
     };
 }
 
@@ -222,7 +237,7 @@ mod tests {
         Vector4,
     };
 
-    use crate::Mix;
+    use crate::{Curve, Mix};
 
     #[test]
     fn test_point2_mix() {
@@ -326,5 +341,18 @@ mod tests {
         let v2 = Vector4::new(5.0, 6.0, 7.0, 8.0);
         let v3 = v1.mix(v2, 0.5);
         assert_eq!(v3, Vector4::new(3.0, 4.0, 5.0, 6.0));
+    }
+
+    #[test]
+    fn test_bezier2_with_vector3() {
+        let b = crate::Bezier2(
+            Vector3::new(0.0, 0.0, 0.0),
+            Vector3::new(1.0, 10.0, 8.0),
+            Vector3::new(2.0, -10.0, 24.0),
+        );
+        let middle = b.get(0.5);
+
+        assert_eq!(middle, Vector3::new(1.0, 2.5, 10.0));
+        assert_eq!(b.estimate_length(), 4.5);
     }
 }

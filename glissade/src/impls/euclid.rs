@@ -1,4 +1,4 @@
-use crate::{Mix, Stationary};
+use crate::{Distance, Mix, Stationary};
 use euclid::{
     Angle, BoolVector2D, BoolVector3D, Box2D, Box3D, Length, Point2D, Point3D, Rect,
     RigidTransform3D, Rotation2D, Rotation3D, Scale, Size2D, Size3D, Transform2D, Transform3D,
@@ -138,6 +138,30 @@ impl<U> Mix for Point3D<f64, U> {
     }
 }
 
+impl<U> Distance for Point2D<f32, U> {
+    fn distance(self, other: Self) -> f32 {
+        (self - other).length()
+    }
+}
+
+impl<U> Distance for Point2D<f64, U> {
+    fn distance(self, other: Self) -> f32 {
+        (self - other).length() as f32
+    }
+}
+
+impl<U> Distance for Point3D<f32, U> {
+    fn distance(self, other: Self) -> f32 {
+        (self - other).length()
+    }
+}
+
+impl<U> Distance for Point3D<f64, U> {
+    fn distance(self, other: Self) -> f32 {
+        (self - other).length() as f32
+    }
+}
+
 impl<U> Mix for Rect<f32, U> {
     fn mix(self, other: Self, t: f32) -> Self {
         self.lerp(other, t)
@@ -195,6 +219,30 @@ impl<U> Mix for Vector3D<f32, U> {
 impl<U> Mix for Vector3D<f64, U> {
     fn mix(self, other: Self, t: f32) -> Self {
         self.lerp(other, t as f64)
+    }
+}
+
+impl<U> Distance for Vector2D<f32, U> {
+    fn distance(self, other: Self) -> f32 {
+        (self - other).length()
+    }
+}
+
+impl<U> Distance for Vector2D<f64, U> {
+    fn distance(self, other: Self) -> f32 {
+        (self - other).length() as f32
+    }
+}
+
+impl<U> Distance for Vector3D<f32, U> {
+    fn distance(self, other: Self) -> f32 {
+        (self - other).length()
+    }
+}
+
+impl<U> Distance for Vector3D<f64, U> {
+    fn distance(self, other: Self) -> f32 {
+        (self - other).length() as f32
     }
 }
 
@@ -345,5 +393,27 @@ impl<S, D> Mix for Transform3D<f64, S, D> {
             self.m43.mix(other.m43, t),
             self.m44.mix(other.m44, t),
         )
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::{Bezier3, Curve};
+    use euclid::default::Point2D;
+
+    #[test]
+    fn test_bezier_with_point2d() {
+        let p1 = Point2D::new(0.0, 0.0);
+        let p2 = Point2D::new(1.0, 10.0);
+        let p3 = Point2D::new(2.0, -20.0);
+        let p4 = Point2D::new(3.0, 0.0);
+
+        let curve = Bezier3(p1, p2, p3, p4);
+
+        assert_eq!(curve.get(0.0), p1);
+        assert_eq!(curve.get(0.5), Point2D::new(1.5, -3.75));
+        assert_eq!(curve.get(1.0), p4);
+
+        assert_eq!(curve.estimate_length(), 31.545761);
     }
 }

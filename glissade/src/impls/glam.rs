@@ -1,35 +1,49 @@
-use crate::Mix;
+use crate::{Distance, Mix};
 use glam::{
     Affine2, Affine3A, BVec2, BVec3, BVec4, DAffine2, DAffine3, DMat2, DMat3, DMat4, DQuat, DVec2,
     DVec3, DVec4, I16Vec2, I16Vec3, I16Vec4, I64Vec2, I64Vec3, I64Vec4, IVec2, IVec3, IVec4, Mat2,
     Mat3, Mat3A, Mat4, Quat, U16Vec2, U16Vec3, U16Vec4, U64Vec2, U64Vec3, U64Vec4, UVec2, UVec3,
     UVec4, Vec2, Vec3, Vec3A, Vec4,
 };
-macro_rules! impl_mix_for_vec {
-    ($type:ty) => {
+macro_rules! impl_traits_for_vec {
+    ($type:ident) => {
         impl Mix for $type {
             fn mix(self, other: Self, t: f32) -> Self {
                 self.lerp(other, t.into())
             }
         }
+
+        impl Distance for $type {
+            fn distance(self, other: Self) -> f32 {
+                $type::distance(self, other) as f32
+            }
+        }
     };
 }
 
-impl_mix_for_vec!(Vec2);
-impl_mix_for_vec!(Vec3);
-impl_mix_for_vec!(Vec3A);
-impl_mix_for_vec!(Vec4);
-impl_mix_for_vec!(DVec2);
-impl_mix_for_vec!(DVec3);
-impl_mix_for_vec!(DVec4);
+impl_traits_for_vec!(Vec2);
+impl_traits_for_vec!(Vec3);
+impl_traits_for_vec!(Vec3A);
+impl_traits_for_vec!(Vec4);
+impl_traits_for_vec!(DVec2);
+impl_traits_for_vec!(DVec3);
+impl_traits_for_vec!(DVec4);
 
 macro_rules! impl_mix_for_ivec {
-    ($type:ty, $to_f:ident, $to_i:ident, $ft:ty) => {
+    ($type:ident, $to_f:ident, $to_i:ident, $ft:ty) => {
         impl Mix for $type {
             fn mix(self, other: Self, t: f32) -> Self {
                 let sf = self.$to_f();
                 let of = other.$to_f();
                 (sf + (of - sf) * (t as $ft)).$to_i()
+            }
+        }
+
+        impl Distance for $type {
+            fn distance(self, other: Self) -> f32 {
+                let sf = self.$to_f();
+                let of = other.$to_f();
+                (sf - of).length() as f32
             }
         }
     };
@@ -138,5 +152,23 @@ impl Mix for DAffine3 {
             self.matrix3.mix(other.matrix3, t),
             self.translation.mix(other.translation, t),
         )
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::{Bezier2, Curve};
+    use glam::Vec2;
+
+    #[test]
+    fn test_vec2_bezier_2() {
+        let b = Bezier2(
+            Vec2::new(0.0, 0.0),
+            Vec2::new(10.0, -1.0),
+            Vec2::new(2.0, 0.0),
+        );
+        let p = b.get(0.5);
+        assert_eq!(p, Vec2::new(5.5, -0.5));
+        assert_eq!(b.estimate_length(), 10.0560665);
     }
 }
