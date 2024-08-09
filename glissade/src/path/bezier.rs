@@ -133,3 +133,44 @@ impl<T: Distance + Mix + Clone> Curve<T> for Bezier3<T> {
         (l_max + l_min) * 0.5
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_bezier0() {
+        let b = Bezier0::new(0.0);
+        assert_eq!(b.get(0.0), 0.0);
+        assert_eq!(b.get(0.5), 0.0);
+        assert_eq!(b.get(1.0), 0.0);
+        assert_eq!(b.estimate_length(), 0.0);
+    }
+
+    #[test]
+    fn test_bezier1() {
+        let b = Bezier1::new(0.0, 1.0);
+        assert_eq!(b.get(0.0), 0.0);
+        assert_eq!(b.get(0.5), 0.5);
+        assert_eq!(b.get(1.0), 1.0);
+        assert_eq!(b.estimate_length(), 1.0);
+    }
+
+    #[test]
+    fn test_bezier2() {
+        let b = Bezier2::new(0.0, 1.5, 2.0);
+        assert_eq!(b.get(0.0), 0.0);
+        assert_eq!(b.get(0.5), 1.25);
+        assert_eq!(b.get(1.0), 2.0);
+        assert_eq!(b.estimate_length(), 2.0);
+    }
+
+    #[test]
+    fn test_bezier3() {
+        let b = Bezier3::new(0.0, 1.5, 2.0, 4.0);
+        assert_eq!(b.get(0.0), 0.0);
+        assert_eq!(b.get(0.5), 1.8125);
+        assert_eq!(b.get(1.0), 4.0);
+        assert_eq!(b.estimate_length(), 4.0);
+    }
+}
