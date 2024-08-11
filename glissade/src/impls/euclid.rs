@@ -410,9 +410,9 @@ mod tests {
 
         let curve = Bezier3(p1, p2, p3, p4);
 
-        assert_eq!(curve.get(0.0), p1);
-        assert_eq!(curve.get(0.5), Point2D::new(1.5, -3.75));
-        assert_eq!(curve.get(1.0), p4);
+        assert_eq!(curve.value_at(0.0), p1);
+        assert_eq!(curve.value_at(0.5), Point2D::new(1.5, -3.75));
+        assert_eq!(curve.value_at(1.0), p4);
 
         assert_eq!(curve.estimate_length(), 31.545761);
     }

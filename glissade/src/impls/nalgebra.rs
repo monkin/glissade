@@ -350,7 +350,7 @@ mod tests {
             Vector3::new(1.0, 10.0, 8.0),
             Vector3::new(2.0, -10.0, 24.0),
         );
-        let middle = b.get(0.5);
+        let middle = b.value_at(0.5);
 
         assert_eq!(middle, Vector3::new(1.0, 2.5, 10.0));
         assert_eq!(b.estimate_length(), 4.5);

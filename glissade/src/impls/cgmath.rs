@@ -337,9 +337,9 @@ mod tests {
             Point2 { x: 2.0, y: 10.0 },
         );
 
-        assert_eq!(b.get(0.0), Point2 { x: 0.0, y: 10.0 });
-        assert_eq!(b.get(0.5), Point2 { x: 1.0, y: 7.5 });
-        assert_eq!(b.get(1.0), Point2 { x: 2.0, y: 10.0 });
+        assert_eq!(b.value_at(0.0), Point2 { x: 0.0, y: 10.0 });
+        assert_eq!(b.value_at(0.5), Point2 { x: 1.0, y: 7.5 });
+        assert_eq!(b.value_at(1.0), Point2 { x: 2.0, y: 10.0 });
 
         assert_eq!(b.estimate_length(), 6.0990195);
     }

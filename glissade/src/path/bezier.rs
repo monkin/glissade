@@ -77,7 +77,7 @@ impl<T: Distance + Mix + Clone + Debug> Debug for Bezier3<T> {
 }
 
 impl<T: Distance + Mix + Clone> Curve<T> for Bezier0<T> {
-    fn get(&self, _t: f32) -> T {
+    fn value_at(&self, _t: f32) -> T {
         self.0.clone()
     }
 
@@ -87,7 +87,7 @@ impl<T: Distance + Mix + Clone> Curve<T> for Bezier0<T> {
 }
 
 impl<T: Distance + Mix + Clone> Curve<T> for Bezier1<T> {
-    fn get(&self, t: f32) -> T {
+    fn value_at(&self, t: f32) -> T {
         self.0.clone().mix(self.1.clone(), t)
     }
 
@@ -97,7 +97,7 @@ impl<T: Distance + Mix + Clone> Curve<T> for Bezier1<T> {
 }
 
 impl<T: Distance + Mix + Clone> Curve<T> for Bezier2<T> {
-    fn get(&self, t: f32) -> T {
+    fn value_at(&self, t: f32) -> T {
         let v01 = self.0.clone().mix(self.1.clone(), t);
         let v12 = self.1.clone().mix(self.2.clone(), t);
         v01.mix(v12, t)
@@ -113,7 +113,7 @@ impl<T: Distance + Mix + Clone> Curve<T> for Bezier2<T> {
 }
 
 impl<T: Distance + Mix + Clone> Curve<T> for Bezier3<T> {
-    fn get(&self, t: f32) -> T {
+    fn value_at(&self, t: f32) -> T {
         let v01 = self.0.clone().mix(self.1.clone(), t);
         let v12 = self.1.clone().mix(self.2.clone(), t);
         let v23 = self.2.clone().mix(self.3.clone(), t);
@@ -141,36 +141,36 @@ mod tests {
     #[test]
     fn test_bezier0() {
         let b = Bezier0::new(0.0);
-        assert_eq!(b.get(0.0), 0.0);
-        assert_eq!(b.get(0.5), 0.0);
-        assert_eq!(b.get(1.0), 0.0);
+        assert_eq!(b.value_at(0.0), 0.0);
+        assert_eq!(b.value_at(0.5), 0.0);
+        assert_eq!(b.value_at(1.0), 0.0);
         assert_eq!(b.estimate_length(), 0.0);
     }
 
     #[test]
     fn test_bezier1() {
         let b = Bezier1::new(0.0, 1.0);
-        assert_eq!(b.get(0.0), 0.0);
-        assert_eq!(b.get(0.5), 0.5);
-        assert_eq!(b.get(1.0), 1.0);
+        assert_eq!(b.value_at(0.0), 0.0);
+        assert_eq!(b.value_at(0.5), 0.5);
+        assert_eq!(b.value_at(1.0), 1.0);
         assert_eq!(b.estimate_length(), 1.0);
     }
 
     #[test]
     fn test_bezier2() {
         let b = Bezier2::new(0.0, 1.5, 2.0);
-        assert_eq!(b.get(0.0), 0.0);
-        assert_eq!(b.get(0.5), 1.25);
-        assert_eq!(b.get(1.0), 2.0);
+        assert_eq!(b.value_at(0.0), 0.0);
+        assert_eq!(b.value_at(0.5), 1.25);
+        assert_eq!(b.value_at(1.0), 2.0);
         assert_eq!(b.estimate_length(), 2.0);
     }
 
     #[test]
     fn test_bezier3() {
         let b = Bezier3::new(0.0, 1.5, 2.0, 4.0);
-        assert_eq!(b.get(0.0), 0.0);
-        assert_eq!(b.get(0.5), 1.8125);
-        assert_eq!(b.get(1.0), 4.0);
+        assert_eq!(b.value_at(0.0), 0.0);
+        assert_eq!(b.value_at(0.5), 1.8125);
+        assert_eq!(b.value_at(1.0), 4.0);
         assert_eq!(b.estimate_length(), 4.0);
     }
 }

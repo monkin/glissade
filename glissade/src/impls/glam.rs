@@ -167,7 +167,7 @@ mod tests {
             Vec2::new(10.0, -1.0),
             Vec2::new(2.0, 0.0),
         );
-        let p = b.get(0.5);
+        let p = b.value_at(0.5);
         assert_eq!(p, Vec2::new(5.5, -0.5));
         assert_eq!(b.estimate_length(), 10.0560665);
     }
