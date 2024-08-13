@@ -34,8 +34,10 @@ impl<T: Clone + Mix + PartialEq, X: Time, S: Keyframes<T, X>> Keyframes<T, X>
     for RepeatKeyframes<T, X, S>
 {
     fn get(&self, offset: X::Duration) -> T {
-        let scale = offset.as_f32() / self.keyframes.duration().as_f32();
-        self.keyframes.get(self.keyframes.duration().scale(scale))
+        let n = offset.as_f32() / self.keyframes.duration().as_f32();
+
+        self.keyframes
+            .get(offset.sub(self.keyframes.duration().scale(n.floor())))
     }
 
     fn duration(&self) -> X::Duration {
@@ -58,4 +60,21 @@ impl<T: Clone + Mix + PartialEq, X: Time, S: Keyframes<T, X>> Keyframes<T, X>
 impl<T: Clone + Copy + Mix + PartialEq, X: Time, S: Keyframes<T, X> + Copy> Copy
     for RepeatKeyframes<T, X, S>
 {
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::{keyframes, Keyframes};
+
+    #[test]
+    fn test_repeat_keyframes() {
+        let keyframes = keyframes::<f64, f64>(0.0).go_to(8.0, 1.0).repeat();
+        assert_eq!(keyframes.get(0.0), 0.0);
+        assert_eq!(keyframes.get(0.5), 4.0);
+        assert_eq!(keyframes.get(0.75), 6.0);
+        assert_eq!(keyframes.get(1.5), 4.0);
+        assert_eq!(keyframes.get(2.25), 2.0);
+        assert_eq!(keyframes.get(2.5), 4.0);
+        assert_eq!(keyframes.get(8.25), 2.0);
+    }
 }

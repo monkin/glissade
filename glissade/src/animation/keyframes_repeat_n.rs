@@ -56,3 +56,20 @@ impl<T: Clone + Copy + Mix + PartialEq, X: Time, S: Keyframes<T, X> + Copy> Copy
     for RepeatNKeyframes<T, X, S>
 {
 }
+
+#[cfg(test)]
+mod test {
+    use crate::{keyframes, Keyframes};
+
+    #[test]
+    fn test_repeat_keyframes() {
+        let keyframes = keyframes::<f64, f64>(0.0).go_to(10.0, 1.0).repeat_n(2.0);
+        assert_eq!(keyframes.get(0.0), 0.0);
+        assert_eq!(keyframes.get(0.5), 5.0);
+        assert_eq!(keyframes.get(0.75), 7.5);
+        assert_eq!(keyframes.get(1.5), 5.0);
+        assert_eq!(keyframes.get(2.0), 10.0);
+        assert_eq!(keyframes.get(2.1), 10.0);
+        assert_eq!(keyframes.get(100.0), 10.0);
+    }
+}
