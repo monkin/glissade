@@ -157,7 +157,7 @@ impl Mix for DAffine3 {
 
 #[cfg(test)]
 mod tests {
-    use crate::{Bezier2, Curve};
+    use crate::path::{Bezier2, Curve};
     use glam::Vec2;
 
     #[test]

@@ -187,7 +187,8 @@ impl<S: Mix> Mix for Matrix4<S> {
 
 #[cfg(test)]
 mod tests {
-    use crate::{Bezier2, Curve, Mix};
+    use crate::path::{Bezier2, Curve};
+    use crate::Mix;
     use cgmath::{
         assert_relative_eq, Deg, Euler, Point1, Point2, Point3, Quaternion, Rad, Rotation3,
         Vector1, Vector2, Vector3, Vector4,

@@ -237,7 +237,8 @@ mod tests {
         Vector4,
     };
 
-    use crate::{Curve, Mix};
+    use crate::path::{Bezier2, Curve};
+    use crate::Mix;
 
     #[test]
     fn test_point2_mix() {
@@ -345,7 +346,7 @@ mod tests {
 
     #[test]
     fn test_bezier2_with_vector3() {
-        let b = crate::Bezier2(
+        let b = Bezier2(
             Vector3::new(0.0, 0.0, 0.0),
             Vector3::new(1.0, 10.0, 8.0),
             Vector3::new(2.0, -10.0, 24.0),

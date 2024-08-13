@@ -20,6 +20,7 @@ pub use distance::Distance;
 pub use easing::Easing;
 pub use inertial::Inertial;
 pub use mix::Mix;
+#[doc(hidden)]
 pub use path::PathBuilder;
 pub use stationary::Stationary;
 pub use time::{Time, TimeDiff};

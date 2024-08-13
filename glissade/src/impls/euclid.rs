@@ -398,7 +398,7 @@ impl<S, D> Mix for Transform3D<f64, S, D> {
 
 #[cfg(test)]
 mod tests {
-    use crate::{Bezier3, Curve};
+    use crate::path::{Bezier3, Curve};
     use euclid::default::Point2D;
 
     #[test]
