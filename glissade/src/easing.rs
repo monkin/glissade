@@ -135,7 +135,7 @@ impl Easing {
         let x1 = x1.clamp(0.0, 1.0);
         let x2 = x2.clamp(0.0, 1.0);
 
-        let mut data = SmoothArray::with_steps_count(BEZIER_POINTS_COUNT);
+        let mut data = SmoothArray::new(BEZIER_POINTS_COUNT);
 
         let mut previous = (0.0, 0.0);
         for i in 1..=BEZIER_POINTS_COUNT {

@@ -84,6 +84,14 @@ impl<T: Distance + Mix + Clone> Curve<T> for Bezier0<T> {
     fn estimate_length(&self) -> f32 {
         0.0
     }
+
+    fn first_point(&self) -> T {
+        self.0.clone()
+    }
+
+    fn last_point(&self) -> T {
+        self.0.clone()
+    }
 }
 
 impl<T: Distance + Mix + Clone> Curve<T> for Bezier1<T> {
@@ -93,6 +101,14 @@ impl<T: Distance + Mix + Clone> Curve<T> for Bezier1<T> {
 
     fn estimate_length(&self) -> f32 {
         self.0.clone().distance(self.1.clone())
+    }
+
+    fn first_point(&self) -> T {
+        self.0.clone()
+    }
+
+    fn last_point(&self) -> T {
+        self.1.clone()
     }
 }
 
@@ -109,6 +125,14 @@ impl<T: Distance + Mix + Clone> Curve<T> for Bezier2<T> {
         let l_min = self.0.clone().distance(self.2.clone());
 
         (l_max + l_min) * 0.5
+    }
+
+    fn first_point(&self) -> T {
+        self.0.clone()
+    }
+
+    fn last_point(&self) -> T {
+        self.2.clone()
     }
 }
 
@@ -131,6 +155,97 @@ impl<T: Distance + Mix + Clone> Curve<T> for Bezier3<T> {
         let l_min = self.0.clone().distance(self.3.clone());
 
         (l_max + l_min) * 0.5
+    }
+
+    fn first_point(&self) -> T {
+        self.0.clone()
+    }
+
+    fn last_point(&self) -> T {
+        self.3.clone()
+    }
+}
+
+#[derive(Clone)]
+pub enum Bezier<T: Distance + Mix + Clone> {
+    Bezier0(Bezier0<T>),
+    Bezier1(Bezier1<T>),
+    Bezier2(Bezier2<T>),
+    Bezier3(Bezier3<T>),
+}
+
+impl<T: Distance + Mix + Clone> Curve<T> for Bezier<T> {
+    fn value_at(&self, t: f32) -> T {
+        match self {
+            Bezier::Bezier0(b) => b.value_at(t),
+            Bezier::Bezier1(b) => b.value_at(t),
+            Bezier::Bezier2(b) => b.value_at(t),
+            Bezier::Bezier3(b) => b.value_at(t),
+        }
+    }
+
+    fn estimate_length(&self) -> f32 {
+        match self {
+            Bezier::Bezier0(b) => b.estimate_length(),
+            Bezier::Bezier1(b) => b.estimate_length(),
+            Bezier::Bezier2(b) => b.estimate_length(),
+            Bezier::Bezier3(b) => b.estimate_length(),
+        }
+    }
+
+    fn first_point(&self) -> T {
+        match self {
+            Bezier::Bezier0(b) => b.first_point(),
+            Bezier::Bezier1(b) => b.first_point(),
+            Bezier::Bezier2(b) => b.first_point(),
+            Bezier::Bezier3(b) => b.first_point(),
+        }
+    }
+
+    fn last_point(&self) -> T {
+        match self {
+            Bezier::Bezier0(b) => b.last_point(),
+            Bezier::Bezier1(b) => b.last_point(),
+            Bezier::Bezier2(b) => b.last_point(),
+            Bezier::Bezier3(b) => b.last_point(),
+        }
+    }
+}
+
+impl<T: Distance + Mix + Clone + Debug> Debug for Bezier<T> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Bezier::Bezier0(b) => write!(f, "Bezier({:?})", b),
+            Bezier::Bezier1(b) => write!(f, "Bezier({:?})", b),
+            Bezier::Bezier2(b) => write!(f, "Bezier({:?})", b),
+            Bezier::Bezier3(b) => write!(f, "Bezier({:?})", b),
+        }
+    }
+}
+
+impl<T: Distance + Mix + Clone + Copy> Copy for Bezier<T> {}
+
+impl<T: Distance + Mix + Clone> From<Bezier0<T>> for Bezier<T> {
+    fn from(b: Bezier0<T>) -> Self {
+        Bezier::Bezier0(b)
+    }
+}
+
+impl<T: Distance + Mix + Clone> From<Bezier1<T>> for Bezier<T> {
+    fn from(b: Bezier1<T>) -> Self {
+        Bezier::Bezier1(b)
+    }
+}
+
+impl<T: Distance + Mix + Clone> From<Bezier2<T>> for Bezier<T> {
+    fn from(b: Bezier2<T>) -> Self {
+        Bezier::Bezier2(b)
+    }
+}
+
+impl<T: Distance + Mix + Clone> From<Bezier3<T>> for Bezier<T> {
+    fn from(b: Bezier3<T>) -> Self {
+        Bezier::Bezier3(b)
     }
 }
 

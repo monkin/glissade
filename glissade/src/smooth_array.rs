@@ -6,7 +6,7 @@ pub struct SmoothArray {
 }
 
 impl SmoothArray {
-    pub fn with_steps_count(steps_count: usize) -> Self {
+    pub fn new(steps_count: usize) -> Self {
         Self {
             data: vec![0.0; steps_count],
         }
@@ -49,7 +49,7 @@ mod tests {
 
     #[test]
     fn test_smooth_array() {
-        let mut array = SmoothArray::with_steps_count(10);
+        let mut array = SmoothArray::new(10);
         array.line((0.0, 0.0), (1.0, 1.0));
 
         assert_eq!(array.value_at(0.0), 0.0);

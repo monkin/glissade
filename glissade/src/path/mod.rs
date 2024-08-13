@@ -1,5 +1,6 @@
 mod bezier;
 mod curve;
+mod path_builder;
+mod path_struct;
 
-pub use bezier::*;
-pub use curve::*;
+pub use path_builder::PathBuilder;
