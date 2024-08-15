@@ -53,7 +53,9 @@ mod tests {
         array.line((0.0, 0.0), (1.0, 1.0));
 
         assert_eq!(array.value_at(0.0), 0.0);
+        assert_eq!(array.value_at(0.25), 0.25);
         assert_eq!(array.value_at(0.5), 0.5);
+        assert_eq!(array.value_at(0.75), 0.75);
         assert_eq!(array.value_at(1.0), 1.0);
     }
 }
