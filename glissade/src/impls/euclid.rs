@@ -395,25 +395,3 @@ impl<S, D> Mix for Transform3D<f64, S, D> {
         )
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use crate::path::{Bezier3, Curve};
-    use euclid::default::Point2D;
-
-    #[test]
-    fn test_bezier_with_point2d() {
-        let p1 = Point2D::new(0.0, 0.0);
-        let p2 = Point2D::new(1.0, 10.0);
-        let p3 = Point2D::new(2.0, -20.0);
-        let p4 = Point2D::new(3.0, 0.0);
-
-        let curve = Bezier3(p1, p2, p3, p4);
-
-        assert_eq!(curve.value_at(0.0), p1);
-        assert_eq!(curve.value_at(0.5), Point2D::new(1.5, -3.75));
-        assert_eq!(curve.value_at(1.0), p4);
-
-        assert_eq!(curve.estimate_length(), 31.545761);
-    }
-}

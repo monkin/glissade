@@ -154,21 +154,3 @@ impl Mix for DAffine3 {
         )
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use crate::path::{Bezier2, Curve};
-    use glam::Vec2;
-
-    #[test]
-    fn test_vec2_bezier_2() {
-        let b = Bezier2(
-            Vec2::new(0.0, 0.0),
-            Vec2::new(10.0, -1.0),
-            Vec2::new(2.0, 0.0),
-        );
-        let p = b.value_at(0.5);
-        assert_eq!(p, Vec2::new(5.5, -0.5));
-        assert_eq!(b.estimate_length(), 10.0560665);
-    }
-}

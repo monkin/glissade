@@ -232,13 +232,11 @@ impl<T> Stationary for Isometry<T, Rotation<T, 3>, 3> where T: Clone {}
 
 #[cfg(test)]
 mod tests {
+    use crate::Mix;
     use nalgebra::{
         Point2, Point3, Quaternion, Rotation2, Translation2, Translation3, Vector2, Vector3,
         Vector4,
     };
-
-    use crate::path::{Bezier2, Curve};
-    use crate::Mix;
 
     #[test]
     fn test_point2_mix() {
@@ -342,18 +340,5 @@ mod tests {
         let v2 = Vector4::new(5.0, 6.0, 7.0, 8.0);
         let v3 = v1.mix(v2, 0.5);
         assert_eq!(v3, Vector4::new(3.0, 4.0, 5.0, 6.0));
-    }
-
-    #[test]
-    fn test_bezier2_with_vector3() {
-        let b = Bezier2(
-            Vector3::new(0.0, 0.0, 0.0),
-            Vector3::new(1.0, 10.0, 8.0),
-            Vector3::new(2.0, -10.0, 24.0),
-        );
-        let middle = b.value_at(0.5);
-
-        assert_eq!(middle, Vector3::new(1.0, 2.5, 10.0));
-        assert_eq!(b.estimate_length(), 4.5);
     }
 }

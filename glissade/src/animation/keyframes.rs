@@ -7,7 +7,9 @@ use super::keyframes_repeat_n::RepeatNKeyframes;
 use super::keyframes_reverse::ReverseKeyframes;
 use super::keyframes_scale::ScaleKeyframes;
 use super::keyframes_sequential::SequentialKeyframes;
-use crate::{Easing, Mix, Time, TimeDiff};
+use crate::animation::keyframes_poly::PolyKeyframes;
+use crate::{Distance, Easing, Mix, Time, TimeDiff};
+use std::iter::once;
 
 /// A transition of a value over time. It works like an animation template, or set of keyframes.
 /// A good point to start building `Animation` is the [`keyframes`] function.
@@ -83,6 +85,21 @@ pub trait Keyframes<T: Clone + Mix + PartialEq, X: Time> {
             self,
             EasingKeyframes::new(end_value, target, duration, easing),
         )
+    }
+
+    /// Create an animation that follows the given polynomial curve with easing.
+    fn poly_to(
+        self,
+        points: impl IntoIterator<Item = T>,
+        duration: X::Duration,
+        easing: Easing,
+    ) -> SequentialKeyframes<T, X, Self, PolyKeyframes<T, X>>
+    where
+        Self: Sized,
+        T: Distance,
+    {
+        let points = once(self.end_value()).chain(points).collect();
+        SequentialKeyframes::new(self, PolyKeyframes::new(points, duration, easing))
     }
 
     /// Create an animation that repeats the given keyframes indefinitely.

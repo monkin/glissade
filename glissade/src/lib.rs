@@ -10,7 +10,7 @@ mod time;
 mod animated;
 mod distance;
 mod impls;
-mod path;
+mod poly;
 mod smooth_array;
 
 pub use animated::Animated;
@@ -20,7 +20,6 @@ pub use distance::Distance;
 pub use easing::Easing;
 pub use inertial::Inertial;
 pub use mix::Mix;
-pub use path::{Path, PathBuilder};
 pub use stationary::Stationary;
 pub use time::{Time, TimeDiff};
 

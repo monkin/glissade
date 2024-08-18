@@ -187,7 +187,6 @@ impl<S: Mix> Mix for Matrix4<S> {
 
 #[cfg(test)]
 mod tests {
-    use crate::path::{Bezier2, Curve};
     use crate::Mix;
     use cgmath::{
         assert_relative_eq, Deg, Euler, Point1, Point2, Point3, Quaternion, Rad, Rotation3,
@@ -328,20 +327,5 @@ mod tests {
                 z: 0.5,
             }
         );
-    }
-
-    #[test]
-    fn test_bezier_with_point2() {
-        let b = Bezier2(
-            Point2 { x: 0.0, y: 10.0 },
-            Point2 { x: 1.0, y: 5.0 },
-            Point2 { x: 2.0, y: 10.0 },
-        );
-
-        assert_eq!(b.value_at(0.0), Point2 { x: 0.0, y: 10.0 });
-        assert_eq!(b.value_at(0.5), Point2 { x: 1.0, y: 7.5 });
-        assert_eq!(b.value_at(1.0), Point2 { x: 2.0, y: 10.0 });
-
-        assert_eq!(b.estimate_length(), 6.0990195);
     }
 }
