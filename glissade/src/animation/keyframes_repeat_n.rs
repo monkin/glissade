@@ -39,9 +39,16 @@ impl<T: Clone + Mix + PartialEq, X: Time, S: Keyframes<T, X>> Keyframes<T, X>
     fn get(&self, offset: X::Duration) -> T {
         let duration = self.keyframes.duration().as_f32();
         let n = offset.as_f32() / duration;
+
         if n < self.n {
-            self.keyframes
-                .get(offset.sub(self.keyframes.duration().scale(n.floor())))
+            let step_offset = self.keyframes.duration().scale(n.floor());
+
+            let offset = if step_offset < offset {
+                offset.sub(step_offset)
+            } else {
+                Default::default()
+            };
+            self.keyframes.get(offset)
         } else {
             self.keyframes.end_value()
         }
