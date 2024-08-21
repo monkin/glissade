@@ -34,11 +34,16 @@ jobs:
         run: |
           cd examples/follow-cursor
           trunk build --release --minify --public-url ./
+      - name: Build Poly Example
+        run: |
+          cd examples/poly
+          trunk build --release --minify --public-url ./
       - name: Copy Files
         run: |
           mkdir gh-pages-build
           cp -r ./examples/shape-animation/dist gh-pages-build/shape-animation
           cp -r ./examples/follow-cursor/dist gh-pages-build/follow-cursor
+          cp -r ./examples/poly/dist gh-pages-build/poly
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact

@@ -72,6 +72,7 @@ assert_eq!(touch_mix, Touch { x: 50.0, y: 50.0, pressure: 100 });
 
 ### Live
 
+* Following a path using keyframes [[Live](https://monkin.github.io/glissade/poly/)] [[Source](https://github.com/monkin/glissade/tree/master/examples/poly)]
 * Animating a shape using Inertial [[Live](https://monkin.github.io/glissade/shape-animation/)] [[Source](https://github.com/monkin/glissade/tree/master/examples/shape-animation)]
 * A set of particles following the cursor made with Inertial [[Live](https://monkin.github.io/glissade/follow-cursor/)] [[Source](https://github.com/monkin/glissade/tree/master/examples/follow-cursor)]
 
