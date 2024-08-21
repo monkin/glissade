@@ -89,7 +89,7 @@ mod tests {
     }
 
     #[test]
-    fn test_debug() {
+    fn test_two_lines() {
         let poly = Poly::new(vec![(0.0, 0.0), (2.0, 0.0), (2.0, 8.0)]);
         assert_eq!(poly.value_at(0.5), (2.0, 3.0));
         assert_eq!(poly.value_at(0.75), (2.0, 5.5));

@@ -29,7 +29,7 @@ impl_traits_for_vec!(DVec2);
 impl_traits_for_vec!(DVec3);
 impl_traits_for_vec!(DVec4);
 
-macro_rules! impl_mix_for_ivec {
+macro_rules! impl_traits_for_ivec {
     ($type:ident, $to_f:ident, $to_i:ident, $ft:ty) => {
         impl Mix for $type {
             fn mix(self, other: Self, t: f32) -> Self {
@@ -49,26 +49,26 @@ macro_rules! impl_mix_for_ivec {
     };
 }
 
-impl_mix_for_ivec!(I16Vec2, as_vec2, as_i16vec2, f32);
-impl_mix_for_ivec!(I16Vec3, as_vec3, as_i16vec3, f32);
-impl_mix_for_ivec!(I16Vec4, as_vec4, as_i16vec4, f32);
-impl_mix_for_ivec!(U16Vec2, as_vec2, as_u16vec2, f32);
-impl_mix_for_ivec!(U16Vec3, as_vec3, as_u16vec3, f32);
-impl_mix_for_ivec!(U16Vec4, as_vec4, as_u16vec4, f32);
+impl_traits_for_ivec!(I16Vec2, as_vec2, as_i16vec2, f32);
+impl_traits_for_ivec!(I16Vec3, as_vec3, as_i16vec3, f32);
+impl_traits_for_ivec!(I16Vec4, as_vec4, as_i16vec4, f32);
+impl_traits_for_ivec!(U16Vec2, as_vec2, as_u16vec2, f32);
+impl_traits_for_ivec!(U16Vec3, as_vec3, as_u16vec3, f32);
+impl_traits_for_ivec!(U16Vec4, as_vec4, as_u16vec4, f32);
 
-impl_mix_for_ivec!(IVec2, as_vec2, as_ivec2, f32);
-impl_mix_for_ivec!(IVec3, as_vec3, as_ivec3, f32);
-impl_mix_for_ivec!(IVec4, as_vec4, as_ivec4, f32);
-impl_mix_for_ivec!(UVec2, as_vec2, as_uvec2, f32);
-impl_mix_for_ivec!(UVec3, as_vec3, as_uvec3, f32);
-impl_mix_for_ivec!(UVec4, as_vec4, as_uvec4, f32);
+impl_traits_for_ivec!(IVec2, as_vec2, as_ivec2, f32);
+impl_traits_for_ivec!(IVec3, as_vec3, as_ivec3, f32);
+impl_traits_for_ivec!(IVec4, as_vec4, as_ivec4, f32);
+impl_traits_for_ivec!(UVec2, as_vec2, as_uvec2, f32);
+impl_traits_for_ivec!(UVec3, as_vec3, as_uvec3, f32);
+impl_traits_for_ivec!(UVec4, as_vec4, as_uvec4, f32);
 
-impl_mix_for_ivec!(I64Vec2, as_dvec2, as_i64vec2, f64);
-impl_mix_for_ivec!(I64Vec3, as_dvec3, as_i64vec3, f64);
-impl_mix_for_ivec!(I64Vec4, as_dvec4, as_i64vec4, f64);
-impl_mix_for_ivec!(U64Vec2, as_dvec2, as_u64vec2, f64);
-impl_mix_for_ivec!(U64Vec3, as_dvec3, as_u64vec3, f64);
-impl_mix_for_ivec!(U64Vec4, as_dvec4, as_u64vec4, f64);
+impl_traits_for_ivec!(I64Vec2, as_dvec2, as_i64vec2, f64);
+impl_traits_for_ivec!(I64Vec3, as_dvec3, as_i64vec3, f64);
+impl_traits_for_ivec!(I64Vec4, as_dvec4, as_i64vec4, f64);
+impl_traits_for_ivec!(U64Vec2, as_dvec2, as_u64vec2, f64);
+impl_traits_for_ivec!(U64Vec3, as_dvec3, as_u64vec3, f64);
+impl_traits_for_ivec!(U64Vec4, as_dvec4, as_u64vec4, f64);
 
 macro_rules! impl_mix_for_type {
     ($type:ident) => {

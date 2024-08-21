@@ -1,14 +1,14 @@
 [package]
-name = "follow-cursor"
+name = "poly"
 version = "0.1.0"
 edition = "2021"
-publish = false
 
 [dependencies]
+glissade = { path = "../../glissade", version = "0.1", features = ["glam"] }
+glam = "0.29"
 wasm-bindgen = { version = "0.2" }
 js-sys = "0.3"
-euclid = { version = "0.22" }
-glissade = { version = "0.1", path = "../../glissade", features = ["euclid"] }
+web-time = "1.1"
 
 [dependencies.web-sys]
 version = "0.3"
@@ -22,3 +22,4 @@ features = [
     "MouseEvent",
     "HtmlBodyElement",
 ]
+

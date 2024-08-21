@@ -1,3 +1,12 @@
 [workspace]
 resolver = "2"
-members = ["examples/animated", "examples/console-inertial", "examples/console-transition", "examples/follow-cursor", "examples/shape-animation", "glissade", "glissade-macro"]
+members = [
+    "examples/animated",
+    "examples/console-inertial",
+    "examples/console-transition",
+    "examples/follow-cursor",
+    "examples/poly",
+    "examples/shape-animation",
+    "glissade",
+    "glissade-macro",
+]
