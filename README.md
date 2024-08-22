@@ -37,6 +37,10 @@ and tuples like `(Mix, Mix)`, `(Mix, Mix, Mix)`, etc. It's also implemented for 
 [`nalgebra`](https://crates.io/crates/nalgebra), [`euclid`](https://crates.io/crates/euclid),
 [`cgmath`](https://crates.io/crates/cgmath), [`glam`](https://crates.io/crates/glam), and [`palette`](https://crates.io/crates/palette).
 
+Besides `Mix`, the library contains `Distance` trait to calculate the distance between two values.
+If your type implements `Distance`, you can use `Keyframes::poly_to` to animate a value along a path.
+Check the [examples](#examples) section for more details.
+
 The full documentation is available on [docs.rs](https://docs.rs/glissade).
 
 ## Derive macro
