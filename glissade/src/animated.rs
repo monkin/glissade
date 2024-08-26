@@ -17,6 +17,15 @@ pub trait Animated<T, X: Time> {
     {
         AnimatedMap::new(self, map)
     }
+
+    /// Join two animated values into a single animated tuple.
+    /// The resulting animation will be finished when both animations are finished.
+    fn join<T2, A2: Animated<T2, X>>(self, other: A2) -> AnimatedJoin<T, T2, X, Self, A2>
+    where
+        Self: Sized,
+    {
+        AnimatedJoin::new(self, other)
+    }
 }
 
 impl<X: Time> Animated<(), X> for () {
@@ -161,6 +170,62 @@ where
         f.debug_struct("AnimatedMap")
             .field("animated", &self.animated)
             .field("map", &"Fn(T) -> R")
+            .finish()
+    }
+}
+
+pub struct AnimatedJoin<T1, T2, X: Time, A1: Animated<T1, X>, A2: Animated<T2, X>> {
+    animated1: A1,
+    animated2: A2,
+    phantom: std::marker::PhantomData<(T1, T2, X)>,
+}
+
+impl<T1, T2, X: Time, A1: Animated<T1, X>, A2: Animated<T2, X>> AnimatedJoin<T1, T2, X, A1, A2> {
+    pub fn new(animated1: A1, animated2: A2) -> Self {
+        Self {
+            animated1,
+            animated2,
+            phantom: Default::default(),
+        }
+    }
+}
+
+impl<T1, T2, X: Time, A1: Animated<T1, X>, A2: Animated<T2, X>> Animated<(T1, T2), X>
+    for AnimatedJoin<T1, T2, X, A1, A2>
+{
+    fn get(&self, time: X) -> (T1, T2) {
+        (self.animated1.get(time), self.animated2.get(time))
+    }
+
+    fn is_finished(&self, time: X) -> bool {
+        self.animated1.is_finished(time) && self.animated2.is_finished(time)
+    }
+}
+
+impl<T1, T2, X: Time, A1: Animated<T1, X> + Clone, A2: Animated<T2, X> + Clone> Clone
+    for AnimatedJoin<T1, T2, X, A1, A2>
+{
+    fn clone(&self) -> Self {
+        Self {
+            animated1: self.animated1.clone(),
+            animated2: self.animated2.clone(),
+            phantom: Default::default(),
+        }
+    }
+}
+
+impl<T1, T2, X: Time, A1: Animated<T1, X> + Copy, A2: Animated<T2, X> + Copy> Copy
+    for AnimatedJoin<T1, T2, X, A1, A2>
+{
+}
+
+impl<T1, T2, X: Time, A1: Animated<T1, X> + Debug, A2: Animated<T2, X> + Debug> Debug
+    for AnimatedJoin<T1, T2, X, A1, A2>
+{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("AnimatedJoin")
+            .field("animated1", &self.animated1)
+            .field("animated2", &self.animated2)
             .finish()
     }
 }
