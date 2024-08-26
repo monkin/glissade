@@ -229,3 +229,50 @@ impl<T1, T2, X: Time, A1: Animated<T1, X> + Debug, A2: Animated<T2, X> + Debug> 
             .finish()
     }
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use crate as glissade;
+    use crate::Mix;
+    use crate::{keyframes, Keyframes};
+
+    #[derive(Clone, Copy, Debug, PartialEq, Mix)]
+    struct TestItem(f32);
+
+    #[test]
+    fn animated_map() {
+        let animated = keyframes(TestItem(0.0))
+            .go_to(TestItem(1.0), 1.0)
+            .run(0.0)
+            .map(|item| (item.0 * 10.0) as i32);
+        assert_eq!(animated.get(0.0), 0);
+        assert_eq!(animated.get(0.5), 5);
+        assert_eq!(animated.get(1.0), 10);
+    }
+
+    #[test]
+    fn animated_join() {
+        let animated1 = keyframes(TestItem(0.0))
+            .go_to(TestItem(1.0), 1.0)
+            .run(0.0)
+            .map(|i| i.0);
+        let animated2 = keyframes(TestItem(3.0))
+            .go_to(TestItem(4.0), 2.0)
+            .run(0.0)
+            .map(|i| i.0);
+
+        let animated = animated1.join(animated2);
+        assert_eq!(animated.get(0.0), (0.0, 3.0));
+        assert_eq!(animated.get(0.5), (0.5, 3.25));
+        assert_eq!(animated.get(1.0), (1.0, 3.5));
+        assert_eq!(animated.get(1.5), (1.0, 3.75));
+        assert_eq!(animated.get(2.0), (1.0, 4.0));
+
+        assert!(!animated.is_finished(0.0));
+        assert!(!animated.is_finished(1.0));
+        assert!(!animated.is_finished(1.5));
+        assert!(animated.is_finished(2.0));
+        assert!(animated.is_finished(3.0));
+    }
+}

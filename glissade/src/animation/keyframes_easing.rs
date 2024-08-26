@@ -37,6 +37,9 @@ impl<T: Mix + Clone + PartialEq, X: Time> EasingKeyframes<T, X> {
 
 impl<T: Mix + Clone + PartialEq, X: Time> Keyframes<T, X> for EasingKeyframes<T, X> {
     fn get(&self, offset: X::Duration) -> T {
+        if offset >= self.duration {
+            return self.v2.clone();
+        }
         let t = self.easing.ease(offset.as_f32() / self.duration.as_f32());
         self.v1.clone().mix(self.v2.clone(), t)
     }

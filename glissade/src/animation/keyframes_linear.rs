@@ -30,8 +30,12 @@ impl<T: Mix + Clone + PartialEq, X: Time> LinearKeyframes<T, X> {
 
 impl<T: Mix + Clone + PartialEq, X: Time> Keyframes<T, X> for LinearKeyframes<T, X> {
     fn get(&self, offset: X::Duration) -> T {
-        let t = offset.as_f32() / self.duration.as_f32();
-        self.v1.clone().mix(self.v2.clone(), t)
+        if offset >= self.duration {
+            self.v2.clone()
+        } else {
+            let t = offset.as_f32() / self.duration.as_f32();
+            self.v1.clone().mix(self.v2.clone(), t)
+        }
     }
 
     fn duration(&self) -> X::Duration {
