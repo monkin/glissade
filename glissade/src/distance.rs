@@ -1,3 +1,6 @@
+/// Distance trait for calculating the distance between two values.
+/// It's necessary for animation along a path in `Keyframes::poly_to`.
+/// The lib provides implementations for primitive types and tuples.
 pub trait Distance {
     /// Calculate the distance between two values.
     fn distance(self, other: Self) -> f32;
