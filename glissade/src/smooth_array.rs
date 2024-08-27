@@ -43,6 +43,12 @@ impl SmoothArray {
     }
 }
 
+impl From<Vec<f32>> for SmoothArray {
+    fn from(data: Vec<f32>) -> Self {
+        Self { data }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -56,6 +62,16 @@ mod tests {
         assert_eq!(array.value_at(0.25), 0.25);
         assert_eq!(array.value_at(0.5), 0.5);
         assert_eq!(array.value_at(0.75), 0.75);
+        assert_eq!(array.value_at(1.0), 1.0);
+    }
+
+    #[test]
+    fn test_smooth_array_step() {
+        let array = SmoothArray::from(vec![0.0, 0.0, 1.0, 1.0]);
+        assert_eq!(array.value_at(0.0), 0.0);
+        assert_eq!(array.value_at(0.25), 0.0);
+        assert_eq!(array.value_at(0.5), 0.5);
+        assert_eq!(array.value_at(0.75), 1.0);
         assert_eq!(array.value_at(1.0), 1.0);
     }
 }
