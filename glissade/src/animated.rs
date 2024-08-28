@@ -26,6 +26,16 @@ pub trait Animated<T, X: Time> {
     {
         AnimatedJoin::new(self, other)
     }
+
+    /// Flatten an animated value of an animated value into a single animated value.
+    /// The resulting animation will be finished when both animations are finished.
+    fn flatten<R>(self) -> AnimatedFlatten<R, X, T, Self>
+    where
+        Self: Sized,
+        T: Animated<R, X>,
+    {
+        AnimatedFlatten::new(self)
+    }
 }
 
 impl<X: Time> Animated<(), X> for () {
@@ -230,6 +240,60 @@ impl<T1, T2, X: Time, A1: Animated<T1, X> + Debug, A2: Animated<T2, X> + Debug> 
     }
 }
 
+pub struct AnimatedFlatten<T, X: Time, A: Animated<T, X>, AG: Animated<A, X>> {
+    animated: AG,
+    phantom: std::marker::PhantomData<(T, X, A)>,
+}
+
+impl<T, X: Time, A: Animated<T, X>, AG: Animated<A, X>> AnimatedFlatten<T, X, A, AG> {
+    pub fn new(animated: AG) -> Self {
+        Self {
+            animated,
+            phantom: Default::default(),
+        }
+    }
+}
+
+impl<T, X: Time, A: Animated<T, X>, AG: Animated<A, X>> Animated<T, X>
+    for AnimatedFlatten<T, X, A, AG>
+{
+    fn get(&self, time: X) -> T {
+        self.animated.get(time).get(time)
+    }
+
+    fn is_finished(&self, time: X) -> bool {
+        self.animated.is_finished(time) && self.animated.get(time).is_finished(time)
+    }
+}
+
+impl<T, X: Time, A: Animated<T, X>, AG: Animated<A, X> + Clone> Clone
+    for AnimatedFlatten<T, X, A, AG>
+{
+    fn clone(&self) -> Self {
+        Self {
+            animated: self.animated.clone(),
+            phantom: Default::default(),
+        }
+    }
+}
+
+impl<T, X: Time, A: Animated<T, X>, AG: Animated<A, X> + Copy> Copy
+    for AnimatedFlatten<T, X, A, AG>
+{
+}
+
+impl<T, X: Time, A: Animated<T, X>, AG: Animated<A, X> + Debug> Debug
+    for AnimatedFlatten<T, X, A, AG>
+where
+    A: Debug,
+{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("AnimatedFlatten")
+            .field("animated", &self.animated)
+            .finish()
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -274,5 +338,23 @@ mod test {
         assert!(!animated.is_finished(1.5));
         assert!(animated.is_finished(2.0));
         assert!(animated.is_finished(3.0));
+    }
+
+    #[test]
+    fn animated_flatten() {
+        let animated = keyframes(0.0)
+            .go_to(2.0, 1.0)
+            .run(0.0)
+            .map(|i| keyframes(i).go_to(4.0, 1.0).run(0.0))
+            .flatten();
+
+        assert_eq!(animated.get(0.0), 0.0);
+        assert_eq!(animated.get(0.25), 1.375);
+        assert_eq!(animated.get(0.5), 2.5);
+        assert_eq!(animated.get(0.75), 3.375);
+        assert_eq!(animated.get(1.0), 4.0);
+        assert_eq!(animated.get(1.5), 4.0);
+        assert_eq!(animated.get(2.0), 4.0);
+        assert_eq!(animated.get(3.0), 4.0);
     }
 }
