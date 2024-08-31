@@ -42,6 +42,10 @@ impl<T, X: Time, S: Keyframes<T, X>> Keyframes<T, X> for ScaleKeyframes<T, X, S>
     fn duration(&self) -> X::Duration {
         self.keyframes.duration().scale(self.scale)
     }
+
+    fn is_finite(&self) -> bool {
+        self.keyframes.is_finite()
+    }
 }
 
 impl<T, X: Time, S: Keyframes<T, X> + Clone> Clone for ScaleKeyframes<T, X, S> {

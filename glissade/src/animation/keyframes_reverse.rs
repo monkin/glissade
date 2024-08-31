@@ -39,6 +39,10 @@ impl<T, X: Time, S: Keyframes<T, X>> Keyframes<T, X> for ReverseKeyframes<T, X, 
     fn duration(&self) -> X::Duration {
         self.keyframes.duration()
     }
+
+    fn is_finite(&self) -> bool {
+        true
+    }
 }
 
 impl<T, X: Time, S: Keyframes<T, X> + Clone> Clone for ReverseKeyframes<T, X, S> {

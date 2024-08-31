@@ -46,14 +46,21 @@ impl<T: Mix + Clone, X: Time> EasingKeyframes<T, X> {
 
 impl<T: Mix + Clone, X: Time> Keyframes<T, X> for EasingKeyframes<T, X> {
     fn get(&self, offset: X::Duration) -> T {
-        if offset >= self.duration {
-            return self.v2.clone();
+        if offset < Default::default() {
+            self.v1.clone()
+        } else if offset >= self.duration {
+            self.v2.clone()
+        } else {
+            let t = self.easing.ease(offset.as_f32() / self.duration.as_f32());
+            self.v1.clone().mix(self.v2.clone(), t)
         }
-        let t = self.easing.ease(offset.as_f32() / self.duration.as_f32());
-        self.v1.clone().mix(self.v2.clone(), t)
     }
 
     fn duration(&self) -> X::Duration {
         self.duration
+    }
+
+    fn is_finite(&self) -> bool {
+        true
     }
 }

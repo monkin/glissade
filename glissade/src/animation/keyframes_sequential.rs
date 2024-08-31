@@ -34,6 +34,10 @@ impl<T, X: Time, S1: Keyframes<T, X>, S2: Keyframes<T, X>> Keyframes<T, X>
     for SequentialKeyframes<T, X, S1, S2>
 {
     fn get(&self, offset: X::Duration) -> T {
+        if !self.t1.is_finite() {
+            return self.t1.get(offset);
+        }
+
         let t1 = self.t1.duration();
         if offset < t1 {
             self.t1.get(offset)
@@ -44,6 +48,10 @@ impl<T, X: Time, S1: Keyframes<T, X>, S2: Keyframes<T, X>> Keyframes<T, X>
 
     fn duration(&self) -> X::Duration {
         self.t1.duration().add(self.t2.duration())
+    }
+
+    fn is_finite(&self) -> bool {
+        self.t1.is_finite() && self.t2.is_finite()
     }
 }
 

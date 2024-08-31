@@ -52,4 +52,8 @@ impl<T: Clone + Mix + Distance, X: Time> Keyframes<T, X> for PolyKeyframes<T, X>
     fn duration(&self) -> X::Duration {
         self.duration
     }
+
+    fn is_finite(&self) -> bool {
+        true
+    }
 }

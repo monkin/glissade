@@ -36,7 +36,9 @@ impl<T: Mix + Clone, X: Time> LinearKeyframes<T, X> {
 
 impl<T: Mix + Clone, X: Time> Keyframes<T, X> for LinearKeyframes<T, X> {
     fn get(&self, offset: X::Duration) -> T {
-        if offset >= self.duration {
+        if offset < Default::default() {
+            self.v1.clone()
+        } else if offset >= self.duration {
             self.v2.clone()
         } else {
             let t = offset.as_f32() / self.duration.as_f32();
@@ -46,6 +48,10 @@ impl<T: Mix + Clone, X: Time> Keyframes<T, X> for LinearKeyframes<T, X> {
 
     fn duration(&self) -> X::Duration {
         self.duration
+    }
+
+    fn is_finite(&self) -> bool {
+        true
     }
 }
 

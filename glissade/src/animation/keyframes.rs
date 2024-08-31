@@ -25,18 +25,11 @@ pub trait Keyframes<T, X: Time> {
 
     /// Check if the animation is finished at the given offset.
     fn is_finished(&self, offset: X::Duration) -> bool {
-        offset >= self.duration()
-    }
-
-    /// Check if the animation is infinite.
-    fn is_infinite(&self) -> bool {
-        false
+        self.is_finite() && self.duration() <= offset
     }
 
     /// Check if the animation is finite.
-    fn is_finite(&self) -> bool {
-        !self.is_infinite()
-    }
+    fn is_finite(&self) -> bool;
 
     /// Get the value of the animation at the start.
     fn start_value(&self) -> T {

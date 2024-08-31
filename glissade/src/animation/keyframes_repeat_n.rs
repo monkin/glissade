@@ -39,6 +39,10 @@ impl<T, X: Time, S: Keyframes<T, X>> RepeatNKeyframes<T, X, S> {
 
 impl<T, X: Time, S: Keyframes<T, X>> Keyframes<T, X> for RepeatNKeyframes<T, X, S> {
     fn get(&self, offset: X::Duration) -> T {
+        if !self.keyframes.is_finite() {
+            return self.keyframes.get(offset);
+        }
+
         let duration = self.keyframes.duration().as_f32();
         let n = offset.as_f32() / duration;
 
@@ -58,6 +62,10 @@ impl<T, X: Time, S: Keyframes<T, X>> Keyframes<T, X> for RepeatNKeyframes<T, X, 
 
     fn duration(&self) -> X::Duration {
         self.keyframes.duration().scale(self.n)
+    }
+
+    fn is_finite(&self) -> bool {
+        self.keyframes.is_finite()
     }
 }
 

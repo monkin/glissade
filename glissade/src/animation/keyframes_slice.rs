@@ -21,7 +21,9 @@ impl<T, X: Time, K: Keyframes<T, X>> SliceKeyframes<T, X, K> {
 impl<T, X: Time, K: Keyframes<T, X>> Keyframes<T, X> for SliceKeyframes<T, X, K> {
     fn get(&self, offset: X::Duration) -> T {
         let offset = offset.add(self.range.0);
-        let offset = if offset > self.range.1 {
+        let offset = if offset < self.range.0 {
+            self.range.0
+        } else if offset > self.range.1 {
             self.range.1
         } else {
             offset
@@ -31,6 +33,10 @@ impl<T, X: Time, K: Keyframes<T, X>> Keyframes<T, X> for SliceKeyframes<T, X, K>
 
     fn duration(&self) -> X::Duration {
         self.range.1.sub(self.range.0)
+    }
+
+    fn is_finite(&self) -> bool {
+        true
     }
 }
 

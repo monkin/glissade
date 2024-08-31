@@ -40,6 +40,10 @@ impl<T: Clone, X: Time> Keyframes<T, X> for NoneKeyframes<T, X> {
     fn duration(&self) -> X::Duration {
         self.duration
     }
+
+    fn is_finite(&self) -> bool {
+        true
+    }
 }
 
 impl<T: Clone + Copy, X: Time> Copy for NoneKeyframes<T, X> {}
