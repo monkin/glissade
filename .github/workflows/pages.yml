@@ -24,8 +24,8 @@ jobs:
         with:
           toolchain: stable
           target: wasm32-unknown-unknown
-      - uses: jetli/trunk-action@v0.1.0
-      - uses: jetli/wasm-bindgen-action@v0.1.0
+      - uses: jetli/trunk-action@v0.5.0
+      - uses: jetli/wasm-bindgen-action@v0.2.0
       - name: Build Shape Animation Example
         run: |
           cd examples/shape-animation
