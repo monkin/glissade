@@ -3,15 +3,14 @@ use std::fmt::Debug;
 use std::marker::PhantomData;
 
 /// An animation that repeats another keyframes n times.
-#[derive(Clone, PartialEq)]
-pub struct RepeatNKeyframes<T: Clone + Mix + PartialEq, X: Time, S: Keyframes<T, X>> {
+#[derive(Clone)]
+pub struct RepeatNKeyframes<T: Clone + Mix, X: Time, S: Keyframes<T, X>> {
     keyframes: S,
     n: f32,
     phantom: PhantomData<(T, X)>,
 }
 
-impl<T: Clone + Mix + PartialEq, X: Time, S: Keyframes<T, X> + Debug> Debug
-    for RepeatNKeyframes<T, X, S>
+impl<T: Clone + Mix, X: Time, S: Keyframes<T, X> + Debug> Debug for RepeatNKeyframes<T, X, S>
 where
     X::Duration: Debug,
 {
@@ -23,7 +22,15 @@ where
     }
 }
 
-impl<T: Clone + Mix + PartialEq, X: Time, S: Keyframes<T, X>> RepeatNKeyframes<T, X, S> {
+impl<T: Clone + Mix, X: Time, S: Keyframes<T, X> + PartialEq> PartialEq
+    for RepeatNKeyframes<T, X, S>
+{
+    fn eq(&self, other: &Self) -> bool {
+        self.keyframes == other.keyframes && self.n == other.n
+    }
+}
+
+impl<T: Clone + Mix, X: Time, S: Keyframes<T, X>> RepeatNKeyframes<T, X, S> {
     pub fn new(keyframes: S, n: f32) -> Self {
         Self {
             keyframes,
@@ -33,9 +40,7 @@ impl<T: Clone + Mix + PartialEq, X: Time, S: Keyframes<T, X>> RepeatNKeyframes<T
     }
 }
 
-impl<T: Clone + Mix + PartialEq, X: Time, S: Keyframes<T, X>> Keyframes<T, X>
-    for RepeatNKeyframes<T, X, S>
-{
+impl<T: Clone + Mix, X: Time, S: Keyframes<T, X>> Keyframes<T, X> for RepeatNKeyframes<T, X, S> {
     fn get(&self, offset: X::Duration) -> T {
         let duration = self.keyframes.duration().as_f32();
         let n = offset.as_f32() / duration;
@@ -59,10 +64,7 @@ impl<T: Clone + Mix + PartialEq, X: Time, S: Keyframes<T, X>> Keyframes<T, X>
     }
 }
 
-impl<T: Clone + Copy + Mix + PartialEq, X: Time, S: Keyframes<T, X> + Copy> Copy
-    for RepeatNKeyframes<T, X, S>
-{
-}
+impl<T: Clone + Copy + Mix, X: Time, S: Keyframes<T, X> + Copy> Copy for RepeatNKeyframes<T, X, S> {}
 
 #[cfg(test)]
 mod test {

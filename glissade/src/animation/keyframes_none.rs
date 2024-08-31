@@ -2,13 +2,13 @@ use crate::{Keyframes, Mix, Time};
 use std::fmt::Debug;
 
 /// An animation that stays at a single value.
-#[derive(Clone, PartialEq)]
-pub struct NoneKeyframes<T: Clone + Mix + PartialEq, X: Time> {
+#[derive(Clone)]
+pub struct NoneKeyframes<T: Clone + Mix, X: Time> {
     value: T,
     duration: X::Duration,
 }
 
-impl<T: Clone + Mix + PartialEq + Debug, X: Time> Debug for NoneKeyframes<T, X>
+impl<T: Clone + Mix + Debug, X: Time> Debug for NoneKeyframes<T, X>
 where
     X::Duration: Debug,
 {
@@ -20,13 +20,19 @@ where
     }
 }
 
-impl<T: Clone + Mix + PartialEq, X: Time> NoneKeyframes<T, X> {
+impl<T: Clone + Mix + PartialEq, X: Time> PartialEq for NoneKeyframes<T, X> {
+    fn eq(&self, other: &Self) -> bool {
+        self.value == other.value && self.duration == other.duration
+    }
+}
+
+impl<T: Clone + Mix, X: Time> NoneKeyframes<T, X> {
     pub fn new(value: T, duration: X::Duration) -> Self {
         Self { value, duration }
     }
 }
 
-impl<T: Clone + Mix + PartialEq, X: Time> Keyframes<T, X> for NoneKeyframes<T, X> {
+impl<T: Clone + Mix, X: Time> Keyframes<T, X> for NoneKeyframes<T, X> {
     fn get(&self, _offset: X::Duration) -> T {
         self.value.clone()
     }
@@ -36,4 +42,4 @@ impl<T: Clone + Mix + PartialEq, X: Time> Keyframes<T, X> for NoneKeyframes<T, X
     }
 }
 
-impl<T: Clone + Mix + PartialEq + Copy, X: Time> Copy for NoneKeyframes<T, X> {}
+impl<T: Clone + Mix + Copy, X: Time> Copy for NoneKeyframes<T, X> {}

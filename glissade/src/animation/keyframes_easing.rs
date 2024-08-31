@@ -2,15 +2,15 @@ use crate::{Easing, Keyframes, Mix, Time, TimeDiff};
 use std::fmt::Debug;
 
 /// An animation that eases between two values.
-#[derive(Clone, PartialEq)]
-pub struct EasingKeyframes<T: Mix + Clone + PartialEq, X: Time> {
+#[derive(Clone)]
+pub struct EasingKeyframes<T: Mix + Clone, X: Time> {
     v1: T,
     v2: T,
     duration: X::Duration,
     easing: Easing,
 }
 
-impl<T: Mix + Clone + PartialEq + Debug, X: Time> Debug for EasingKeyframes<T, X>
+impl<T: Mix + Clone + Debug, X: Time> Debug for EasingKeyframes<T, X>
 where
     X::Duration: Debug,
 {
@@ -24,7 +24,16 @@ where
     }
 }
 
-impl<T: Mix + Clone + PartialEq, X: Time> EasingKeyframes<T, X> {
+impl<T: Mix + Clone + PartialEq, X: Time> PartialEq for EasingKeyframes<T, X> {
+    fn eq(&self, other: &Self) -> bool {
+        self.v1 == other.v1
+            && self.v2 == other.v2
+            && self.duration == other.duration
+            && self.easing == other.easing
+    }
+}
+
+impl<T: Mix + Clone, X: Time> EasingKeyframes<T, X> {
     pub fn new(v1: T, v2: T, duration: X::Duration, easing: Easing) -> Self {
         Self {
             v1,
@@ -35,7 +44,7 @@ impl<T: Mix + Clone + PartialEq, X: Time> EasingKeyframes<T, X> {
     }
 }
 
-impl<T: Mix + Clone + PartialEq, X: Time> Keyframes<T, X> for EasingKeyframes<T, X> {
+impl<T: Mix + Clone, X: Time> Keyframes<T, X> for EasingKeyframes<T, X> {
     fn get(&self, offset: X::Duration) -> T {
         if offset >= self.duration {
             return self.v2.clone();

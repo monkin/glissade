@@ -13,7 +13,7 @@ use std::iter::once;
 
 /// A transition of a value over time. It works like an animation template, or set of keyframes.
 /// A good point to start building `Animation` is the [`keyframes`] function.
-pub trait Keyframes<T: Clone + Mix + PartialEq, X: Time> {
+pub trait Keyframes<T: Clone + Mix, X: Time> {
     /// Get the value at a specific time offset from the start.
     /// If the offset is greater than the duration, the value at the end of the animation is returned.
     fn get(&self, offset: X::Duration) -> T;
@@ -193,7 +193,7 @@ pub trait Keyframes<T: Clone + Mix + PartialEq, X: Time> {
 /// assert_eq!(transition.get(Duration::from_secs(6)), 5.0);
 /// assert_eq!(transition.get(Duration::from_secs(74)), 9.0);
 /// ```
-pub fn keyframes<T: Mix + Clone + PartialEq, X: Time>(start_value: T) -> NoneKeyframes<T, X> {
+pub fn keyframes<T: Mix + Clone, X: Time>(start_value: T) -> NoneKeyframes<T, X> {
     NoneKeyframes::new(start_value, Default::default())
 }
 

@@ -2,14 +2,14 @@ use crate::{Keyframes, Mix, Time, TimeDiff};
 use std::fmt::Debug;
 
 /// An animation that linearly interpolates between two values.
-#[derive(Clone, PartialEq)]
-pub struct LinearKeyframes<T: Mix + Clone + PartialEq, X: Time> {
+#[derive(Clone)]
+pub struct LinearKeyframes<T: Mix + Clone, X: Time> {
     v1: T,
     v2: T,
     duration: X::Duration,
 }
 
-impl<T: Mix + Clone + PartialEq + Debug, X: Time> Debug for LinearKeyframes<T, X>
+impl<T: Mix + Clone + Debug, X: Time> Debug for LinearKeyframes<T, X>
 where
     X::Duration: Debug,
 {
@@ -22,13 +22,19 @@ where
     }
 }
 
-impl<T: Mix + Clone + PartialEq, X: Time> LinearKeyframes<T, X> {
+impl<T: Mix + Clone + PartialEq, X: Time> PartialEq for LinearKeyframes<T, X> {
+    fn eq(&self, other: &Self) -> bool {
+        self.v1 == other.v1 && self.v2 == other.v2 && self.duration == other.duration
+    }
+}
+
+impl<T: Mix + Clone, X: Time> LinearKeyframes<T, X> {
     pub fn new(v1: T, v2: T, duration: X::Duration) -> Self {
         Self { v1, v2, duration }
     }
 }
 
-impl<T: Mix + Clone + PartialEq, X: Time> Keyframes<T, X> for LinearKeyframes<T, X> {
+impl<T: Mix + Clone, X: Time> Keyframes<T, X> for LinearKeyframes<T, X> {
     fn get(&self, offset: X::Duration) -> T {
         if offset >= self.duration {
             self.v2.clone()
@@ -43,4 +49,4 @@ impl<T: Mix + Clone + PartialEq, X: Time> Keyframes<T, X> for LinearKeyframes<T,
     }
 }
 
-impl<T: Mix + Clone + PartialEq + Copy, X: Time> Copy for LinearKeyframes<T, X> {}
+impl<T: Mix + Clone + Copy, X: Time> Copy for LinearKeyframes<T, X> {}
