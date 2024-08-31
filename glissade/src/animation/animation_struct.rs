@@ -1,18 +1,17 @@
 use super::Keyframes;
 use crate::animated::Animated;
-use crate::{Mix, Time};
+use crate::Time;
 use std::fmt::Debug;
 use std::marker::PhantomData;
 
 /// Running keyframes animation started at a specific time.
-#[derive(Clone)]
-pub struct Animation<I: Clone + Mix, X: Time, T: Keyframes<I, X>> {
+pub struct Animation<I, X: Time, T: Keyframes<I, X>> {
     keyframes: T,
     start_time: X,
     phantom: PhantomData<I>,
 }
 
-impl<I: Clone + Mix, X: Time, T: Keyframes<I, X> + Debug> Debug for Animation<I, X, T>
+impl<I, X: Time, T: Keyframes<I, X> + Debug> Debug for Animation<I, X, T>
 where
     X: Debug,
 {
@@ -24,13 +23,13 @@ where
     }
 }
 
-impl<I: Clone + Mix, X: Time, T: Keyframes<I, X> + PartialEq> PartialEq for Animation<I, X, T> {
+impl<I, X: Time, T: Keyframes<I, X> + PartialEq> PartialEq for Animation<I, X, T> {
     fn eq(&self, other: &Self) -> bool {
         self.keyframes == other.keyframes && self.start_time == other.start_time
     }
 }
 
-impl<I: Clone + Mix, X: Time, T: Keyframes<I, X>> Animation<I, X, T> {
+impl<I, X: Time, T: Keyframes<I, X>> Animation<I, X, T> {
     /// Start the animation at a specific time.
     ///
     /// * `keyframes` - The transition to animate.
@@ -55,7 +54,19 @@ impl<I: Clone + Mix, X: Time, T: Keyframes<I, X>> Animation<I, X, T> {
     }
 }
 
-impl<I: Clone + Mix, X: Time, T: Keyframes<I, X>> Animated<I, X> for Animation<I, X, T> {
+impl<I, X: Time, T: Keyframes<I, X> + Clone> Clone for Animation<I, X, T> {
+    fn clone(&self) -> Self {
+        Self {
+            keyframes: self.keyframes.clone(),
+            start_time: self.start_time,
+            phantom: Default::default(),
+        }
+    }
+}
+
+impl<I, X: Time, T: Keyframes<I, X> + Copy> Copy for Animation<I, X, T> {}
+
+impl<I, X: Time, T: Keyframes<I, X>> Animated<I, X> for Animation<I, X, T> {
     fn get(&self, time: X) -> I {
         self.keyframes.get(time.since(self.start_time))
     }

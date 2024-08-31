@@ -1,16 +1,15 @@
-use crate::{Keyframes, Mix, Time, TimeDiff};
+use crate::{Keyframes, Time, TimeDiff};
 use std::fmt::Debug;
 use std::marker::PhantomData;
 
 /// An animation that repeats another keyframes n times.
-#[derive(Clone)]
-pub struct RepeatNKeyframes<T: Clone + Mix, X: Time, S: Keyframes<T, X>> {
+pub struct RepeatNKeyframes<T, X: Time, S: Keyframes<T, X>> {
     keyframes: S,
     n: f32,
     phantom: PhantomData<(T, X)>,
 }
 
-impl<T: Clone + Mix, X: Time, S: Keyframes<T, X> + Debug> Debug for RepeatNKeyframes<T, X, S>
+impl<T, X: Time, S: Keyframes<T, X> + Debug> Debug for RepeatNKeyframes<T, X, S>
 where
     X::Duration: Debug,
 {
@@ -22,15 +21,13 @@ where
     }
 }
 
-impl<T: Clone + Mix, X: Time, S: Keyframes<T, X> + PartialEq> PartialEq
-    for RepeatNKeyframes<T, X, S>
-{
+impl<T, X: Time, S: Keyframes<T, X> + PartialEq> PartialEq for RepeatNKeyframes<T, X, S> {
     fn eq(&self, other: &Self) -> bool {
         self.keyframes == other.keyframes && self.n == other.n
     }
 }
 
-impl<T: Clone + Mix, X: Time, S: Keyframes<T, X>> RepeatNKeyframes<T, X, S> {
+impl<T, X: Time, S: Keyframes<T, X>> RepeatNKeyframes<T, X, S> {
     pub fn new(keyframes: S, n: f32) -> Self {
         Self {
             keyframes,
@@ -40,7 +37,7 @@ impl<T: Clone + Mix, X: Time, S: Keyframes<T, X>> RepeatNKeyframes<T, X, S> {
     }
 }
 
-impl<T: Clone + Mix, X: Time, S: Keyframes<T, X>> Keyframes<T, X> for RepeatNKeyframes<T, X, S> {
+impl<T, X: Time, S: Keyframes<T, X>> Keyframes<T, X> for RepeatNKeyframes<T, X, S> {
     fn get(&self, offset: X::Duration) -> T {
         let duration = self.keyframes.duration().as_f32();
         let n = offset.as_f32() / duration;
@@ -64,7 +61,17 @@ impl<T: Clone + Mix, X: Time, S: Keyframes<T, X>> Keyframes<T, X> for RepeatNKey
     }
 }
 
-impl<T: Clone + Copy + Mix, X: Time, S: Keyframes<T, X> + Copy> Copy for RepeatNKeyframes<T, X, S> {}
+impl<T, X: Time, S: Keyframes<T, X> + Clone> Clone for RepeatNKeyframes<T, X, S> {
+    fn clone(&self) -> Self {
+        Self {
+            keyframes: self.keyframes.clone(),
+            n: self.n,
+            phantom: Default::default(),
+        }
+    }
+}
+
+impl<T: Copy, X: Time, S: Keyframes<T, X> + Copy> Copy for RepeatNKeyframes<T, X, S> {}
 
 #[cfg(test)]
 mod test {

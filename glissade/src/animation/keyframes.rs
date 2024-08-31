@@ -13,7 +13,7 @@ use std::iter::once;
 
 /// A transition of a value over time. It works like an animation template, or set of keyframes.
 /// A good point to start building `Animation` is the [`keyframes`] function.
-pub trait Keyframes<T: Clone + Mix, X: Time> {
+pub trait Keyframes<T, X: Time> {
     /// Get the value at a specific time offset from the start.
     /// If the offset is greater than the duration, the value at the end of the animation is returned.
     fn get(&self, offset: X::Duration) -> T;
@@ -51,6 +51,7 @@ pub trait Keyframes<T: Clone + Mix, X: Time> {
     /// Create an animation that stays at the end value for the given duration.
     fn stay(self, duration: X::Duration) -> SequentialKeyframes<T, X, Self, NoneKeyframes<T, X>>
     where
+        T: Clone,
         Self: Sized,
     {
         let end_value = self.end_value();
@@ -64,6 +65,7 @@ pub trait Keyframes<T: Clone + Mix, X: Time> {
         duration: X::Duration,
     ) -> SequentialKeyframes<T, X, Self, LinearKeyframes<T, X>>
     where
+        T: Mix + Clone,
         Self: Sized,
     {
         let end_value = self.end_value();
@@ -78,6 +80,7 @@ pub trait Keyframes<T: Clone + Mix, X: Time> {
         easing: Easing,
     ) -> SequentialKeyframes<T, X, Self, EasingKeyframes<T, X>>
     where
+        T: Mix + Clone,
         Self: Sized,
     {
         let end_value = self.end_value();
@@ -96,7 +99,7 @@ pub trait Keyframes<T: Clone + Mix, X: Time> {
     ) -> SequentialKeyframes<T, X, Self, PolyKeyframes<T, X>>
     where
         Self: Sized,
-        T: Distance,
+        T: Mix + Clone + Distance,
     {
         let points = once(self.end_value()).chain(points).collect();
         SequentialKeyframes::new(self, PolyKeyframes::new(points, duration, easing))
