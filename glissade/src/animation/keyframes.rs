@@ -205,7 +205,7 @@ pub trait Keyframes<T, X: Time> {
 /// assert_eq!(transition.get(Duration::from_secs(6)), 5.0);
 /// assert_eq!(transition.get(Duration::from_secs(74)), 9.0);
 /// ```
-pub fn keyframes<T: Mix + Clone, X: Time>(start_value: T) -> NoneKeyframes<T, X> {
+pub fn keyframes<T: Clone, X: Time>(start_value: T) -> NoneKeyframes<T, X> {
     NoneKeyframes::new(start_value, Default::default())
 }
 
