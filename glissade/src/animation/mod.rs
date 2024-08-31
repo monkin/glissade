@@ -9,6 +9,7 @@ mod keyframes_repeat_n;
 mod keyframes_reverse;
 mod keyframes_scale;
 mod keyframes_sequential;
+mod keyframes_slice;
 
 pub use animation_struct::Animation;
 pub use keyframes::{keyframes, Keyframes};

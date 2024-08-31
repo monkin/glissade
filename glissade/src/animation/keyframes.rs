@@ -8,6 +8,7 @@ use super::keyframes_reverse::ReverseKeyframes;
 use super::keyframes_scale::ScaleKeyframes;
 use super::keyframes_sequential::SequentialKeyframes;
 use crate::animation::keyframes_poly::PolyKeyframes;
+use crate::animation::keyframes_slice::SliceKeyframes;
 use crate::{Distance, Easing, Mix, Time, TimeDiff};
 use std::iter::once;
 
@@ -158,6 +159,14 @@ pub trait Keyframes<T, X: Time> {
         Self: Sized,
     {
         SequentialKeyframes::new(self, other)
+    }
+
+    /// Get a slice of the keyframes from the start to the end.
+    fn slice(self, start_offset: X::Duration, end_offset: X::Duration) -> SliceKeyframes<T, X, Self>
+    where
+        Self: Sized,
+    {
+        SliceKeyframes::new(self, (start_offset, end_offset))
     }
 
     /// Run keyframes at a specific time.
