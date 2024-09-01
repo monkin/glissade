@@ -1,6 +1,6 @@
 [package]
 name = "glissade"
-version = "0.2.0"
+version = "0.2.1"
 authors = ["Andrei Monkin <monkin.andrey@gmail.com>"]
 description = "Rust library that provides various utilities for animations and transitions"
 keywords = ["animation", "transition", "interpolation", "easing"]
