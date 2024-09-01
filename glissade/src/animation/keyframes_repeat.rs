@@ -81,7 +81,7 @@ mod tests {
 
     #[test]
     fn test_repeat_keyframes() {
-        let keyframes = keyframes::<f64, f64>(0.0).go_to(8.0, 1.0).repeat();
+        let keyframes = keyframes::from::<f64, f64>(0.0).go_to(8.0, 1.0).repeat();
         assert_eq!(keyframes.get(0.0), 0.0);
         assert_eq!(keyframes.get(0.5), 4.0);
         assert_eq!(keyframes.get(0.75), 6.0);

@@ -1,12 +1,12 @@
 use super::animation_struct::Animation;
 use super::keyframes_easing::EasingKeyframes;
 use super::keyframes_linear::LinearKeyframes;
-use super::keyframes_none::NoneKeyframes;
 use super::keyframes_repeat::RepeatKeyframes;
 use super::keyframes_repeat_n::RepeatNKeyframes;
 use super::keyframes_reverse::ReverseKeyframes;
 use super::keyframes_scale::ScaleKeyframes;
 use super::keyframes_sequential::SequentialKeyframes;
+use super::keyframes_stay::StayKeyframes;
 use crate::animation::keyframes_function::FunctionKeyframes;
 use crate::animation::keyframes_poly::PolyKeyframes;
 use crate::animation::keyframes_slice::SliceKeyframes;
@@ -14,7 +14,6 @@ use crate::{Distance, Easing, Mix, Time, TimeDiff};
 use std::iter::once;
 
 /// A transition of a value over time. It works like an animation template, or set of keyframes.
-/// A good point to start building `Animation` is the [`keyframes`] function.
 pub trait Keyframes<T, X: Time> {
     /// Get the value at a specific time offset from the start.
     /// If the offset is greater than the duration, the value at the end of the animation is returned.
@@ -44,13 +43,13 @@ pub trait Keyframes<T, X: Time> {
     }
 
     /// Create an animation that stays at the end value for the given duration.
-    fn stay(self, duration: X::Duration) -> SequentialKeyframes<T, X, Self, NoneKeyframes<T, X>>
+    fn stay(self, duration: X::Duration) -> SequentialKeyframes<T, X, Self, StayKeyframes<T, X>>
     where
         T: Clone,
         Self: Sized,
     {
         let end_value = self.end_value();
-        SequentialKeyframes::new(self, NoneKeyframes::new(end_value, duration))
+        SequentialKeyframes::new(self, StayKeyframes::new(end_value, duration))
     }
 
     /// Create an animation that linearly interpolates between the end value and the target value.
@@ -197,8 +196,7 @@ pub trait Keyframes<T, X: Time> {
 /// use glissade::{keyframes, Keyframes};
 /// use web_time::Duration;
 ///
-/// let transition = keyframes::<f64, Instant>(5.0)
-///     .stay(Duration::from_secs(1))
+/// let transition = keyframes::stay::<f64, Instant>(5.0, Duration::from_secs(1))
 ///     .go_to(9.0, Duration::from_secs(4))
 ///     .repeat_n(2.0);
 ///
@@ -211,8 +209,60 @@ pub trait Keyframes<T, X: Time> {
 /// assert_eq!(transition.get(Duration::from_secs(6)), 5.0);
 /// assert_eq!(transition.get(Duration::from_secs(74)), 9.0);
 /// ```
-pub fn keyframes<T: Clone, X: Time>(start_value: T) -> NoneKeyframes<T, X> {
-    NoneKeyframes::new(start_value, Default::default())
+pub mod keyframes {
+    use super::Keyframes;
+    use crate::animation::keyframes_easing::EasingKeyframes;
+    use crate::animation::keyframes_function::FunctionKeyframes;
+    use crate::animation::keyframes_linear::LinearKeyframes;
+    use crate::animation::keyframes_poly::PolyKeyframes;
+    use crate::animation::keyframes_stay::StayKeyframes;
+    use crate::{Distance, Easing, Mix, Time};
+
+    pub fn from<T: Clone, X: Time>(point: T) -> impl Keyframes<T, X> {
+        stay(point, Default::default())
+    }
+
+    /// Create a new keyframes that stays at a single value.
+    pub fn stay<T: Clone, X: Time>(value: T, duration: X::Duration) -> impl Keyframes<T, X> {
+        StayKeyframes::new(value, duration)
+    }
+
+    /// Create a new keyframes that linearly go from one value to another.
+    pub fn line<T: Mix + Clone, X: Time>(
+        start: T,
+        end: T,
+        duration: X::Duration,
+    ) -> impl Keyframes<T, X> {
+        LinearKeyframes::new(start, end, duration)
+    }
+
+    /// Create a new keyframes that go from one value to another with easing.
+    pub fn ease<T: Mix + Clone, X: Time>(
+        start: T,
+        end: T,
+        duration: X::Duration,
+        easing: Easing,
+    ) -> impl Keyframes<T, X> {
+        EasingKeyframes::new(start, end, duration, easing)
+    }
+
+    /// Create a new keyframes that goes along a path.
+    pub fn poly<T: Mix + Distance + Clone, X: Time>(
+        points: Vec<T>,
+        duration: X::Duration,
+        easing: Easing,
+    ) -> impl Keyframes<T, X> {
+        PolyKeyframes::new(points, duration, easing)
+    }
+
+    /// Create a new keyframes that goes along functionally defined path.
+    pub fn function<T, X, F>(f: F, duration: X::Duration) -> impl Keyframes<T, X>
+    where
+        X: Time,
+        F: Fn(X::Duration) -> T,
+    {
+        FunctionKeyframes::new(f, duration)
+    }
 }
 
 //----------------------------------------------------------------
@@ -242,8 +292,8 @@ mod tests {
 
     #[test]
     fn none_keyframes() {
-        let keyframes: NoneKeyframes<TestItem, Instant> =
-            NoneKeyframes::new(TestItem(0.0), Duration::from_secs(1));
+        let keyframes: StayKeyframes<TestItem, Instant> =
+            StayKeyframes::new(TestItem(0.0), Duration::from_secs(1));
         assert_eq!(keyframes.get(ZERO_DURATION), TestItem(0.0));
         assert_eq!(keyframes.get(HALF_SECOND), TestItem(0.0));
         assert_eq!(keyframes.get(ONE_SECOND), TestItem(0.0));
@@ -286,7 +336,7 @@ mod tests {
 
     #[test]
     fn reversed_keyframes() {
-        let keyframes = keyframes::<TestItem, Instant>(TestItem(0.0))
+        let keyframes = keyframes::from::<TestItem, Instant>(TestItem(0.0))
             .go_to(TestItem(1.0), ONE_SECOND)
             .reverse();
 

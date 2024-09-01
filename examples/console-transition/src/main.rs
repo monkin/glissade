@@ -11,9 +11,9 @@ fn main() {
     let start_time = Instant::now();
 
     // Transition consists of two steps:
-    // 1. from 0.0 to 10.0 in 1 second linearly,
-    // 2. and then go to 5.0 with easing function.
-    let animation = keyframes(0.0)
+    // 1. From 0.0 to 10.0 in 1 second linearly,
+    // 2. And then go to 5.0 with easing function.
+    let animation = keyframes::from(0.0)
         .go_to(10.0, Duration::from_secs(1))
         .ease_to(5.0, Duration::from_secs(2), Easing::QuadraticInOut)
         .run(start_time);

@@ -3,12 +3,12 @@ use std::fmt::Debug;
 
 /// An animation that stays at a single value.
 #[derive(Clone)]
-pub struct NoneKeyframes<T: Clone, X: Time> {
+pub struct StayKeyframes<T: Clone, X: Time> {
     value: T,
     duration: X::Duration,
 }
 
-impl<T: Clone + Debug, X: Time> Debug for NoneKeyframes<T, X>
+impl<T: Clone + Debug, X: Time> Debug for StayKeyframes<T, X>
 where
     X::Duration: Debug,
 {
@@ -20,19 +20,19 @@ where
     }
 }
 
-impl<T: Clone + PartialEq, X: Time> PartialEq for NoneKeyframes<T, X> {
+impl<T: Clone + PartialEq, X: Time> PartialEq for StayKeyframes<T, X> {
     fn eq(&self, other: &Self) -> bool {
         self.value == other.value && self.duration == other.duration
     }
 }
 
-impl<T: Clone, X: Time> NoneKeyframes<T, X> {
+impl<T: Clone, X: Time> StayKeyframes<T, X> {
     pub fn new(value: T, duration: X::Duration) -> Self {
         Self { value, duration }
     }
 }
 
-impl<T: Clone, X: Time> Keyframes<T, X> for NoneKeyframes<T, X> {
+impl<T: Clone, X: Time> Keyframes<T, X> for StayKeyframes<T, X> {
     fn get(&self, _offset: X::Duration) -> T {
         self.value.clone()
     }
@@ -46,4 +46,4 @@ impl<T: Clone, X: Time> Keyframes<T, X> for NoneKeyframes<T, X> {
     }
 }
 
-impl<T: Clone + Copy, X: Time> Copy for NoneKeyframes<T, X> {}
+impl<T: Clone + Copy, X: Time> Copy for StayKeyframes<T, X> {}

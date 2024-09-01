@@ -1,6 +1,5 @@
-use super::Keyframes;
 use crate::animated::Animated;
-use crate::Time;
+use crate::{Keyframes, Time};
 use std::fmt::Debug;
 use std::marker::PhantomData;
 
@@ -51,6 +50,17 @@ impl<I, X: Time, T: Keyframes<I, X>> Animation<I, X, T> {
     /// Infinite animations will panic.
     pub fn end_time(&self) -> X {
         self.start_time.advance(self.keyframes.duration())
+    }
+
+    /// Get the duration of the animation.
+    /// Infinite animations will panic.
+    pub fn duration(&self) -> X::Duration {
+        self.keyframes.duration()
+    }
+
+    /// Check if the animation is infinite.
+    pub fn is_finite(&self) -> bool {
+        self.keyframes.is_finite()
     }
 }
 

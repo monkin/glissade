@@ -306,7 +306,7 @@ mod test {
 
     #[test]
     fn animated_map() {
-        let animated = keyframes(TestItem(0.0))
+        let animated = keyframes::from(TestItem(0.0))
             .go_to(TestItem(1.0), 1.0)
             .run(0.0)
             .map(|item| (item.0 * 10.0) as i32);
@@ -317,11 +317,11 @@ mod test {
 
     #[test]
     fn animated_join() {
-        let animated1 = keyframes(TestItem(0.0))
+        let animated1 = keyframes::from(TestItem(0.0))
             .go_to(TestItem(1.0), 1.0)
             .run(0.0)
             .map(|i| i.0);
-        let animated2 = keyframes(TestItem(3.0))
+        let animated2 = keyframes::from(TestItem(3.0))
             .go_to(TestItem(4.0), 2.0)
             .run(0.0)
             .map(|i| i.0);
@@ -342,10 +342,10 @@ mod test {
 
     #[test]
     fn animated_flatten() {
-        let animated = keyframes(0.0)
+        let animated = keyframes::from(0.0)
             .go_to(2.0, 1.0)
             .run(0.0)
-            .map(|i| keyframes(i).go_to(4.0, 1.0).run(0.0))
+            .map(|i| keyframes::from(i).go_to(4.0, 1.0).run(0.0))
             .flatten();
 
         assert_eq!(animated.get(0.0), 0.0);

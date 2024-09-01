@@ -89,7 +89,7 @@ impl PathView {
         let origin = points.first().copied().unwrap();
 
         // Create a keyframes animation
-        let animation = keyframes(PathItem::new(1.0, origin))
+        let animation = keyframes::from(PathItem::new(1.0, origin))
             // blink two times
             .go_to(PathItem::new(0.0, origin), Duration::from_millis(400))
             .go_to(PathItem::new(1.0, origin), Duration::from_millis(400))

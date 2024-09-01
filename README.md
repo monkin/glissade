@@ -96,7 +96,7 @@ fn main() {
     // Transition consists of two steps:
     // 1. from 0.0 to 10.0 in 1 second linearly,
     // 2. and then go to 5.0 with easing function.
-    let animation = keyframes(0.0)
+    let animation = keyframes::from(0.0)
         .go_to(10.0, Duration::from_secs(1))
         .ease_to(5.0, Duration::from_secs(2), Easing::QuadraticInOut)
         .run(start_time);
@@ -211,7 +211,7 @@ pub fn print_1s_values<T: Clone + Debug>(value: impl Animated<T, f32>) {
 
 fn main() {
     println!("Animation:");
-    let animation = keyframes((0.0, 2.0)).go_to((1.0, 3.0), 1.0).run(0.0);
+    let animation = keyframes::from((0.0, 2.0)).go_to((1.0, 3.0), 1.0).run(0.0);
     print_1s_values(animation);
 
     println!("\nInertial:");
@@ -223,7 +223,7 @@ fn main() {
     print_1s_values(stationary);
 
     println!("\nMapped animation:");
-    let animation = keyframes((0.0, 0.0))
+    let animation = keyframes::from((0.0, 0.0))
         .go_to((100.0, 40.0), 1.0)
         .run(0.0)
         .map(|v| format!("left: {:.2}; top: {:.2};", v.0, v.1));

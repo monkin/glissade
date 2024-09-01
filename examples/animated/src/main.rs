@@ -12,7 +12,7 @@ pub fn print_1s_values<T: Clone + Debug>(value: impl Animated<T, f32>) {
 
 fn main() {
     println!("Animation:");
-    let animation = keyframes((0.0, 2.0)).go_to((1.0, 3.0), 1.0).run(0.0);
+    let animation = keyframes::line((0.0, 2.0), (1.0, 3.0), 1.0).run(0.0f32);
     print_1s_values(animation);
 
     println!("\nInertial:");
@@ -24,7 +24,7 @@ fn main() {
     print_1s_values(stationary);
 
     println!("\nMapped animation:");
-    let animation = keyframes((0.0, 0.0))
+    let animation = keyframes::from((0.0, 0.0))
         .go_to((100.0, 40.0), 1.0)
         .run(0.0)
         .map(|v| format!("left: {:.2}; top: {:.2};", v.0, v.1));
