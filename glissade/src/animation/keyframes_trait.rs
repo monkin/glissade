@@ -184,8 +184,12 @@ pub trait Keyframes<T, X: Time> {
     }
 }
 
-/// Start `Animation` constructing with this function. It receives the initial value.
-/// * `value` - The value to start at.
+/// Start `Animation` constructing with this module.
+/// * `keyframes::from` - to start keyframes at a specific point.
+/// * `keyframes::stay` - to create a keyframes that stays at point for a while.
+/// * `keyframes::line` - to create a keyframes that linearly goes from one point to another.
+/// * `keyframes::ease` - to create a keyframes that goes from one point to another with easing.
+/// * `keyframes::poly` - to create a keyframes that goes along a path.
 ///
 /// See [`Keyframes`] trait methods for more ways of adding next frames and building an animation.
 ///
