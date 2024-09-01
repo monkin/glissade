@@ -1,6 +1,7 @@
 mod animation_struct;
 mod keyframes;
 mod keyframes_easing;
+mod keyframes_function;
 mod keyframes_linear;
 mod keyframes_none;
 mod keyframes_poly;

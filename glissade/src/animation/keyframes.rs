@@ -7,6 +7,7 @@ use super::keyframes_repeat_n::RepeatNKeyframes;
 use super::keyframes_reverse::ReverseKeyframes;
 use super::keyframes_scale::ScaleKeyframes;
 use super::keyframes_sequential::SequentialKeyframes;
+use crate::animation::keyframes_function::FunctionKeyframes;
 use crate::animation::keyframes_poly::PolyKeyframes;
 use crate::animation::keyframes_slice::SliceKeyframes;
 use crate::{Distance, Easing, Mix, Time, TimeDiff};
@@ -97,6 +98,18 @@ pub trait Keyframes<T, X: Time> {
     {
         let points = once(self.end_value()).chain(points).collect();
         SequentialKeyframes::new(self, PolyKeyframes::new(points, duration, easing))
+    }
+
+    /// Follows the given function.
+    fn function<F: Fn(X::Duration) -> T>(
+        self,
+        function: F,
+        duration: X::Duration,
+    ) -> SequentialKeyframes<T, X, Self, FunctionKeyframes<T, X, F>>
+    where
+        Self: Sized,
+    {
+        SequentialKeyframes::new(self, FunctionKeyframes::new(function, duration))
     }
 
     /// Create an animation that repeats the given keyframes indefinitely.
