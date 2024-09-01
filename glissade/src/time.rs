@@ -1,24 +1,18 @@
-/// Positive time difference
-pub trait TimeDiff: Default + PartialEq + PartialOrd + Clone + Copy {
-    fn as_f32(self) -> f32;
-    fn add(self, other: Self) -> Self;
-
-    /// Panics if `self < other`
-    fn sub(self, other: Self) -> Self;
-
-    /// Panics if `scale < 0.0`
-    fn scale(self, scale: f32) -> Self;
-}
-
 /// Time trait should be implemented for types that represent animation time.
 /// It's implemented for `f32`, `f64`, `std::time::Instant`, and `std::time::SystemTime` by default.
 /// You can implement it for your own types.
 pub trait Time: PartialEq + PartialOrd + Clone + Copy {
-    type Duration: TimeDiff;
+    /// Positive time difference
+    type Duration: Default + PartialEq + PartialOrd + Clone + Copy;
 
     /// Panics if `self < earlier`
     fn since(self, earlier: Self) -> Self::Duration;
     fn advance(self, duration: Self::Duration) -> Self;
+
+    fn duration_as_f32(duration: Self::Duration) -> f32;
+    fn duration_sum(duration: Self::Duration, other: Self::Duration) -> Self::Duration;
+    fn duration_diff(duration: Self::Duration, other: Self::Duration) -> Self::Duration;
+    fn duration_scale(duration: Self::Duration, scale: f32) -> Self::Duration;
 }
 
 impl Time for f32 {
@@ -34,29 +28,27 @@ impl Time for f32 {
     fn advance(self, duration: f32) -> f32 {
         self + duration
     }
-}
 
-impl TimeDiff for f32 {
-    fn as_f32(self) -> f32 {
-        self
+    fn duration_as_f32(duration: f32) -> f32 {
+        duration
     }
 
-    fn add(self, other: f32) -> f32 {
-        self + other
+    fn duration_sum(duration: f32, other: f32) -> f32 {
+        duration + other
     }
 
-    fn sub(self, other: f32) -> f32 {
-        if self < other {
-            panic!("TimeDiff::sub: self < other");
+    fn duration_diff(duration: f32, other: f32) -> f32 {
+        if duration < other {
+            panic!("Time::sub_duration: duration < other");
         }
-        self - other
+        duration - other
     }
 
-    fn scale(self, scale: f32) -> f32 {
+    fn duration_scale(duration: f32, scale: f32) -> f32 {
         if scale < 0.0 {
-            panic!("TimeDiff::scale: scale < 0.0");
+            panic!("Time::scale_duration: scale < 0.0");
         }
-        self * scale
+        duration * scale
     }
 }
 
@@ -72,28 +64,26 @@ impl Time for f64 {
     fn advance(self, duration: f64) -> f64 {
         self + duration
     }
-}
 
-impl TimeDiff for f64 {
-    fn as_f32(self) -> f32 {
-        self as f32
+    fn duration_as_f32(duration: f64) -> f32 {
+        duration as f32
     }
 
-    fn add(self, other: f64) -> f64 {
-        self + other
+    fn duration_sum(duration: f64, other: f64) -> f64 {
+        duration + other
     }
 
-    fn sub(self, other: f64) -> f64 {
-        if self < other {
-            panic!("TimeDiff::sub: self < other");
+    fn duration_diff(duration: f64, other: f64) -> f64 {
+        if duration < other {
+            panic!("Time::sub_duration: duration < other");
         }
-        self - other
+        duration - other
     }
 
-    fn scale(self, scale: f32) -> f64 {
+    fn duration_scale(duration: f64, scale: f32) -> f64 {
         if scale < 0.0 {
-            panic!("TimeDiff::scale: scale < 0.0");
+            panic!("Time::scale_duration: scale < 0.0");
         }
-        self * f64::from(scale)
+        duration * scale as f64
     }
 }

@@ -21,7 +21,7 @@ pub use easing::Easing;
 pub use inertial::Inertial;
 pub use mix::Mix;
 pub use stationary::Stationary;
-pub use time::{Time, TimeDiff};
+pub use time::Time;
 
 #[cfg(feature = "derive")]
 pub use glissade_macro::Mix;

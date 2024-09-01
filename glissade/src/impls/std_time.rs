@@ -1,4 +1,4 @@
-use crate::{Time, TimeDiff};
+use crate::Time;
 
 impl Time for std::time::Instant {
     type Duration = std::time::Duration;
@@ -8,6 +8,22 @@ impl Time for std::time::Instant {
 
     fn advance(self, duration: Self::Duration) -> Self {
         self + duration
+    }
+
+    fn duration_as_f32(duration: Self::Duration) -> f32 {
+        duration.as_secs_f32()
+    }
+
+    fn duration_sum(duration: Self::Duration, other: Self::Duration) -> Self::Duration {
+        duration + other
+    }
+
+    fn duration_diff(duration: Self::Duration, other: Self::Duration) -> Self::Duration {
+        duration - other
+    }
+
+    fn duration_scale(duration: Self::Duration, scale: f32) -> Self::Duration {
+        duration.mul_f32(scale)
     }
 }
 
@@ -20,22 +36,20 @@ impl Time for std::time::SystemTime {
     fn advance(self, duration: Self::Duration) -> Self {
         self + duration
     }
-}
 
-impl TimeDiff for std::time::Duration {
-    fn as_f32(self) -> f32 {
-        self.as_secs_f32()
+    fn duration_as_f32(duration: Self::Duration) -> f32 {
+        duration.as_secs_f32()
     }
 
-    fn add(self, other: Self) -> Self {
-        self + other
+    fn duration_sum(duration: Self::Duration, other: Self::Duration) -> Self::Duration {
+        duration + other
     }
 
-    fn sub(self, other: Self) -> Self {
-        self - other
+    fn duration_diff(duration: Self::Duration, other: Self::Duration) -> Self::Duration {
+        duration - other
     }
 
-    fn scale(self, scale: f32) -> Self {
-        self.mul_f32(scale)
+    fn duration_scale(duration: Self::Duration, scale: f32) -> Self::Duration {
+        duration.mul_f32(scale)
     }
 }

@@ -1,5 +1,5 @@
 use crate::animated::Animated;
-use crate::{Easing, TimeDiff};
+use crate::Easing;
 use crate::{Mix, Time};
 use std::fmt::Debug;
 
@@ -31,7 +31,7 @@ impl<Item: Mix + Clone + PartialEq, X: Time> Animated<Item, X> for Inertial<Item
             } else if let Some(parent) = &self.parent {
                 let elapsed = current_time.since(start_time);
 
-                let t = elapsed.as_f32() / self.duration.as_f32();
+                let t = X::duration_as_f32(elapsed) / X::duration_as_f32(self.duration);
                 let t = self.easing.ease(t);
 
                 parent.get(current_time).mix(self.target.clone(), t)

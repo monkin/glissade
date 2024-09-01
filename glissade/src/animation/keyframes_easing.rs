@@ -1,4 +1,4 @@
-use crate::{Easing, Keyframes, Mix, Time, TimeDiff};
+use crate::{Easing, Keyframes, Mix, Time};
 use std::fmt::Debug;
 
 /// An animation that eases between two values.
@@ -51,7 +51,9 @@ impl<T: Mix + Clone, X: Time> Keyframes<T, X> for EasingKeyframes<T, X> {
         } else if offset >= self.duration {
             self.v2.clone()
         } else {
-            let t = self.easing.ease(offset.as_f32() / self.duration.as_f32());
+            let t = self
+                .easing
+                .ease(X::duration_as_f32(offset) / X::duration_as_f32(self.duration));
             self.v1.clone().mix(self.v2.clone(), t)
         }
     }

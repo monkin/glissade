@@ -1,4 +1,4 @@
-use crate::{Keyframes, Time, TimeDiff};
+use crate::{Keyframes, Time};
 use std::fmt::Debug;
 use std::marker::PhantomData;
 
@@ -33,7 +33,8 @@ impl<T, X: Time, S: Keyframes<T, X>> ReverseKeyframes<T, X, S> {
 
 impl<T, X: Time, S: Keyframes<T, X>> Keyframes<T, X> for ReverseKeyframes<T, X, S> {
     fn get(&self, offset: X::Duration) -> T {
-        self.keyframes.get(self.keyframes.duration().sub(offset))
+        self.keyframes
+            .get(X::duration_diff(self.keyframes.duration(), offset))
     }
 
     fn duration(&self) -> X::Duration {

@@ -1,5 +1,5 @@
 use crate::poly::Poly;
-use crate::{Distance, Easing, Keyframes, Mix, Time, TimeDiff};
+use crate::{Distance, Easing, Keyframes, Mix, Time};
 use std::fmt::Debug;
 
 #[derive(Clone)]
@@ -45,8 +45,10 @@ impl<T: Clone + Mix + Distance, X: Time> PolyKeyframes<T, X> {
 
 impl<T: Clone + Mix + Distance, X: Time> Keyframes<T, X> for PolyKeyframes<T, X> {
     fn get(&self, offset: X::Duration) -> T {
-        self.poly
-            .value_at(self.easing.ease(offset.as_f32() / self.duration.as_f32()))
+        self.poly.value_at(
+            self.easing
+                .ease(X::duration_as_f32(offset) / X::duration_as_f32(self.duration)),
+        )
     }
 
     fn duration(&self) -> X::Duration {

@@ -10,7 +10,7 @@ use super::keyframes_stay::StayKeyframes;
 use crate::animation::keyframes_function::FunctionKeyframes;
 use crate::animation::keyframes_poly::PolyKeyframes;
 use crate::animation::keyframes_slice::SliceKeyframes;
-use crate::{Distance, Easing, Mix, Time, TimeDiff};
+use crate::{Distance, Easing, Mix, Time};
 use std::iter::once;
 
 /// A transition of a value over time. It works like an animation template, or set of keyframes.
@@ -152,7 +152,7 @@ pub trait Keyframes<T, X: Time> {
         let scale = if self.duration() == Default::default() {
             1.0
         } else {
-            new_duration.as_f32() / self.duration().as_f32()
+            X::duration_as_f32(new_duration) / X::duration_as_f32(self.duration())
         };
 
         ScaleKeyframes::new(self, scale)

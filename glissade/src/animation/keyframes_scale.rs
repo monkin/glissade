@@ -1,4 +1,4 @@
-use crate::{Keyframes, Time, TimeDiff};
+use crate::{Keyframes, Time};
 use std::fmt::Debug;
 use std::marker::PhantomData;
 
@@ -36,11 +36,11 @@ impl<T, X: Time, S: Keyframes<T, X>> ScaleKeyframes<T, X, S> {
 
 impl<T, X: Time, S: Keyframes<T, X>> Keyframes<T, X> for ScaleKeyframes<T, X, S> {
     fn get(&self, offset: X::Duration) -> T {
-        self.keyframes.get(offset.scale(self.scale))
+        self.keyframes.get(X::duration_scale(offset, self.scale))
     }
 
     fn duration(&self) -> X::Duration {
-        self.keyframes.duration().scale(self.scale)
+        X::duration_scale(self.keyframes.duration(), self.scale)
     }
 
     fn is_finite(&self) -> bool {

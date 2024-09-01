@@ -1,4 +1,4 @@
-use crate::{Keyframes, Time, TimeDiff};
+use crate::{Keyframes, Time};
 use std::fmt::Debug;
 use std::marker::PhantomData;
 
@@ -42,12 +42,12 @@ impl<T, X: Time, S1: Keyframes<T, X>, S2: Keyframes<T, X>> Keyframes<T, X>
         if offset < t1 {
             self.t1.get(offset)
         } else {
-            self.t2.get(offset.sub(t1))
+            self.t2.get(X::duration_diff(offset, t1))
         }
     }
 
     fn duration(&self) -> X::Duration {
-        self.t1.duration().add(self.t2.duration())
+        X::duration_sum(self.t1.duration(), self.t2.duration())
     }
 
     fn is_finite(&self) -> bool {

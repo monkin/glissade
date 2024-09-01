@@ -1,4 +1,4 @@
-use crate::{Keyframes, Time, TimeDiff};
+use crate::{Keyframes, Time};
 use std::fmt::Debug;
 use std::marker::PhantomData;
 
@@ -43,14 +43,14 @@ impl<T, X: Time, S: Keyframes<T, X>> Keyframes<T, X> for RepeatNKeyframes<T, X, 
             return self.keyframes.get(offset);
         }
 
-        let duration = self.keyframes.duration().as_f32();
-        let n = offset.as_f32() / duration;
+        let duration = X::duration_as_f32(self.keyframes.duration());
+        let n = X::duration_as_f32(offset) / duration;
 
         if n < self.n {
-            let step_offset = self.keyframes.duration().scale(n.floor());
+            let step_offset = X::duration_scale(self.keyframes.duration(), n.floor());
 
             let offset = if step_offset < offset {
-                offset.sub(step_offset)
+                X::duration_diff(offset, step_offset)
             } else {
                 Default::default()
             };
@@ -61,7 +61,7 @@ impl<T, X: Time, S: Keyframes<T, X>> Keyframes<T, X> for RepeatNKeyframes<T, X, 
     }
 
     fn duration(&self) -> X::Duration {
-        self.keyframes.duration().scale(self.n)
+        X::duration_scale(self.keyframes.duration(), self.n)
     }
 
     fn is_finite(&self) -> bool {
