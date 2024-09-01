@@ -190,6 +190,7 @@ pub trait Keyframes<T, X: Time> {
 /// * `keyframes::line` - to create a keyframes that linearly goes from one point to another.
 /// * `keyframes::ease` - to create a keyframes that goes from one point to another with easing.
 /// * `keyframes::poly` - to create a keyframes that goes along a path.
+/// * `keyframes::function` - to create a keyframes that goes along a functionally defined path.
 ///
 /// See [`Keyframes`] trait methods for more ways of adding next frames and building an animation.
 ///
