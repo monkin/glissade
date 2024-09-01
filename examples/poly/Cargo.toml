@@ -5,7 +5,7 @@ edition = "2021"
 publish = false
 
 [dependencies]
-glissade = { path = "../../glissade", version = "0.1", features = ["glam"] }
+glissade = { path = "../../glissade", version = "0.2", features = ["glam"] }
 glam = "0.29"
 wasm-bindgen = { version = "0.2" }
 js-sys = "0.3"

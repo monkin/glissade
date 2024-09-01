@@ -5,4 +5,4 @@ edition = "2021"
 publish = false
 
 [dependencies]
-glissade = { version = "0.1", path = "../../glissade" }
+glissade = { version = "0.2", path = "../../glissade" }
