@@ -7,6 +7,7 @@ use super::keyframes_reverse::ReverseKeyframes;
 use super::keyframes_scale::ScaleKeyframes;
 use super::keyframes_sequential::SequentialKeyframes;
 use super::keyframes_stay::StayKeyframes;
+use crate::animation::keyframes_apply_easing::ApplyEasingKeyframes;
 use crate::animation::keyframes_function::FunctionKeyframes;
 use crate::animation::keyframes_poly::PolyKeyframes;
 use crate::animation::keyframes_slice::SliceKeyframes;
@@ -156,6 +157,15 @@ pub trait Keyframes<T, X: Time> {
         };
 
         ScaleKeyframes::new(self, scale)
+    }
+
+    /// Apply easing to the keyframes.
+    /// It can be useful to apply easing to slices of keyframes to go along a path segment with easing.
+    fn apply_easing(self, easing: Easing) -> ApplyEasingKeyframes<T, X, Self>
+    where
+        Self: Sized,
+    {
+        ApplyEasingKeyframes::new(self, easing)
     }
 
     /// Concatenate two keyframes set.
