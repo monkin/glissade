@@ -194,6 +194,104 @@ pub trait Keyframes<T, X: Time> {
     }
 }
 
+fn max<X: PartialOrd>(v1: X, v2: X) -> X {
+    if v1 > v2 {
+        v1
+    } else {
+        v2
+    }
+}
+
+impl<X, T, K> Keyframes<(T,), X> for (K,)
+where
+    X: Time,
+    K: Keyframes<T, X>,
+{
+    fn get(&self, offset: X::Duration) -> (T,) {
+        (self.0.get(offset),)
+    }
+
+    fn duration(&self) -> X::Duration {
+        self.0.duration()
+    }
+
+    fn is_finite(&self) -> bool {
+        self.0.is_finite()
+    }
+}
+
+impl<X, T1, T2, K1, K2> Keyframes<(T1, T2), X> for (K1, K2)
+where
+    X: Time,
+    K1: Keyframes<T1, X>,
+    K2: Keyframes<T2, X>,
+{
+    fn get(&self, offset: X::Duration) -> (T1, T2) {
+        (self.0.get(offset), self.1.get(offset))
+    }
+
+    fn duration(&self) -> X::Duration {
+        max(self.0.duration(), self.1.duration())
+    }
+
+    fn is_finite(&self) -> bool {
+        self.0.is_finite() && self.1.is_finite()
+    }
+}
+
+impl<X, T1, T2, T3, K1, K2, K3> Keyframes<(T1, T2, T3), X> for (K1, K2, K3)
+where
+    X: Time,
+    K1: Keyframes<T1, X>,
+    K2: Keyframes<T2, X>,
+    K3: Keyframes<T3, X>,
+{
+    fn get(&self, offset: X::Duration) -> (T1, T2, T3) {
+        (self.0.get(offset), self.1.get(offset), self.2.get(offset))
+    }
+
+    fn duration(&self) -> X::Duration {
+        let d0 = self.0.duration();
+        let d1 = self.1.duration();
+        let d2 = self.2.duration();
+        max(d0, max(d1, d2))
+    }
+
+    fn is_finite(&self) -> bool {
+        self.0.is_finite() && self.1.is_finite() && self.2.is_finite()
+    }
+}
+
+impl<X, T1, T2, T3, T4, K1, K2, K3, K4> Keyframes<(T1, T2, T3, T4), X> for (K1, K2, K3, K4)
+where
+    X: Time,
+    K1: Keyframes<T1, X>,
+    K2: Keyframes<T2, X>,
+    K3: Keyframes<T3, X>,
+    K4: Keyframes<T4, X>,
+{
+    fn get(&self, offset: X::Duration) -> (T1, T2, T3, T4) {
+        (
+            self.0.get(offset),
+            self.1.get(offset),
+            self.2.get(offset),
+            self.3.get(offset),
+        )
+    }
+
+    fn duration(&self) -> X::Duration {
+        let d0 = self.0.duration();
+        let d1 = self.1.duration();
+        let d2 = self.2.duration();
+        let d3 = self.3.duration();
+        max(max(d0, d1), max(d2, d3))
+    }
+
+    fn is_finite(&self) -> bool {
+        self.0.is_finite() && self.1.is_finite() && self.2.is_finite() && self.3.is_finite()
+    }
+}
+
 /// Start `Animation` constructing with this module.
 /// * `keyframes::from` - to start keyframes at a specific point.
 /// * `keyframes::stay` - to create a keyframes that stays at point for a while.
