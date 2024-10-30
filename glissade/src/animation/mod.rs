@@ -3,6 +3,7 @@ mod keyframes_apply_easing;
 mod keyframes_easing;
 mod keyframes_function;
 mod keyframes_linear;
+mod keyframes_map;
 mod keyframes_poly;
 mod keyframes_repeat;
 mod keyframes_repeat_n;

@@ -9,6 +9,7 @@ use super::keyframes_sequential::SequentialKeyframes;
 use super::keyframes_stay::StayKeyframes;
 use crate::animation::keyframes_apply_easing::ApplyEasingKeyframes;
 use crate::animation::keyframes_function::FunctionKeyframes;
+use crate::animation::keyframes_map::MapKeyframes;
 use crate::animation::keyframes_poly::PolyKeyframes;
 use crate::animation::keyframes_slice::SliceKeyframes;
 use crate::{Distance, Easing, Mix, Time};
@@ -182,6 +183,14 @@ pub trait Keyframes<T, X: Time> {
         Self: Sized,
     {
         SliceKeyframes::new(self, (start_offset, end_offset))
+    }
+
+    fn map<R, F>(self, f: F) -> MapKeyframes<T, R, X, Self, F>
+    where
+        F: Fn(T) -> R,
+        Self: Sized,
+    {
+        MapKeyframes::new(self, f)
     }
 
     /// Run keyframes at a specific time.
@@ -456,5 +465,16 @@ mod tests {
         assert_eq!(keyframes.get(ZERO_DURATION), TestItem(1.0));
         assert_eq!(keyframes.get(HALF_SECOND), TestItem(0.5));
         assert_eq!(keyframes.get(ONE_SECOND), TestItem(0.0));
+    }
+
+    #[test]
+    fn map_keyframes() {
+        let keyframes = keyframes::from::<f32, Instant>(0.0)
+            .go_to(1.0, ONE_SECOND)
+            .map(TestItem);
+
+        assert_eq!(keyframes.get(ZERO_DURATION), TestItem(0.0));
+        assert_eq!(keyframes.get(HALF_SECOND), TestItem(0.5));
+        assert_eq!(keyframes.get(ONE_SECOND), TestItem(1.0));
     }
 }
