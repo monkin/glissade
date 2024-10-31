@@ -477,4 +477,16 @@ mod tests {
         assert_eq!(keyframes.get(HALF_SECOND), TestItem(0.5));
         assert_eq!(keyframes.get(ONE_SECOND), TestItem(1.0));
     }
+
+    #[test]
+    fn scale_keyframes() {
+        let keyframes = keyframes::from::<f32, Instant>(0.0)
+            .go_to(1.0, ONE_SECOND)
+            .scale(2.0);
+
+        assert_eq!(keyframes.get(ZERO_DURATION), 0.0);
+        assert_eq!(keyframes.get(HALF_SECOND), 0.25);
+        assert_eq!(keyframes.get(ONE_SECOND), 0.5);
+        assert_eq!(keyframes.get(ONE_SECOND * 2), 1.0);
+    }
 }

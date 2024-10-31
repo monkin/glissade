@@ -36,7 +36,8 @@ impl<T, X: Time, S: Keyframes<T, X>> ScaleKeyframes<T, X, S> {
 
 impl<T, X: Time, S: Keyframes<T, X>> Keyframes<T, X> for ScaleKeyframes<T, X, S> {
     fn get(&self, offset: X::Duration) -> T {
-        self.keyframes.get(X::duration_scale(offset, self.scale))
+        self.keyframes
+            .get(X::duration_scale(offset, 1.0 / self.scale))
     }
 
     fn duration(&self) -> X::Duration {
