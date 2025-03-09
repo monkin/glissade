@@ -6,7 +6,7 @@ publish = false
 
 [dependencies]
 glissade = { path = "../../glissade", version = "0.2", features = ["glam"] }
-glam = "0.29"
+glam = "0.30"
 wasm-bindgen = { version = "0.2" }
 js-sys = "0.3"
 web-time = "1.1"
