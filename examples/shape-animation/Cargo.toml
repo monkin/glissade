@@ -6,7 +6,7 @@ publish = false
 
 [dependencies]
 yew = { version = "0.21", features = ["csr"] }
-uuid = { version = "1.10", features = ["v4"] }
+uuid = { version = "1.10", features = ["v4", "js"] }
 strum = "0.26"
 strum_macros = "0.26"
 getrandom = { version = "0.2", features = ["js"] }
