@@ -6,3 +6,5 @@ Each next circle has a bit longer animation duration.
 Live Example: https://monkin.github.io/glissade/follow-cursor/
 
 ![Circles following cursor](./follow-cursor.gif)
+
+Use `trunk serve` to run the example locally.

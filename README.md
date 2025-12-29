@@ -13,13 +13,17 @@ and [palette](https://crates.io/crates/palette) support.
 To make it work, you need to enable the corresponding feature.
 
 The lib contains two main types: `Animation` and `Inertial`.
-* `Animation` contains `Keyframes` and can be used in cases when we know start, end, and in between points. It's similar to [CSS animations/keyframes](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_animations/Using_CSS_animations).
-* `Inertial` can be used to make an object smoothly follow a target value. It's similar to [CSS transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_transitions/Using_CSS_transitions).
+
+* `Animation` contains `Keyframes` and can be used in cases when we know start, end, and in between points. It's similar
+  to [CSS animations/keyframes](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_animations/Using_CSS_animations).
+* `Inertial` can be used to make an object smoothly follow a target value. It's similar
+  to [CSS transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_transitions/Using_CSS_transitions).
   For example, a particle following a cursor. Background color changing smoothly on theme change.
 
 It also contains a set of easing functions to make animations more natural. See the `Easing` enum for more details.
 
-To make code more general the library contains `Animated` trait which is implemented for both `Animation` and `Inertial`.
+To make code more general the library contains `Animated` trait which is implemented for both `Animation` and
+`Inertial`.
 With `Stationary` trait it's easy to pass static value in places where `Animated` expected.
 By default, it's implemented for primitive types like numbers or strings.
 
@@ -35,7 +39,8 @@ Animation can be applied to any type that implements `Mix` trait. This trait is 
 Mix trait is implemented for common types like `f32`, `f64`, `bool`, `i8` - `i64`, `u8` - `u64`, `Option<T: Mix>`,
 and tuples like `(Mix, Mix)`, `(Mix, Mix, Mix)`, etc. It's also implemented for some popular libraries:
 [`nalgebra`](https://crates.io/crates/nalgebra), [`euclid`](https://crates.io/crates/euclid),
-[`cgmath`](https://crates.io/crates/cgmath), [`glam`](https://crates.io/crates/glam), and [`palette`](https://crates.io/crates/palette).
+[`cgmath`](https://crates.io/crates/cgmath), [`glam`](https://crates.io/crates/glam), and [
+`palette`](https://crates.io/crates/palette).
 
 Besides `Mix`, the library contains `Distance` trait to calculate the distance between two values.
 If your type implements `Distance`, you can use `Keyframes::poly_to` to animate a value along a path.
@@ -51,9 +56,9 @@ The library contains a derive macro to implement the `Mix` trait for structs and
 use glissade::Mix;
 #[derive(Mix, PartialEq, Debug)]
 struct Touch {
-   x: f32,
-   y: f32,
-   pressure: u8,
+    x: f32,
+    y: f32,
+    pressure: u8,
 }
 let touch1 = Touch { x: 0.0, y: 0.0, pressure: 0 };
 let touch2 = Touch { x: 100.0, y: 100.0, pressure: 200 };
@@ -65,20 +70,24 @@ assert_eq!(touch_mix, Touch { x: 50.0, y: 50.0, pressure: 100 });
 
 * `"derive"` - enables derive macro for `Mix` trait. Enabled by default.
 * `"euclid"` - enables [euclid](https://crates.io/crates/euclid) vectors, rotations, etc. animation.
-* `"nalgebra"` - enables [nalgebra](https://crates.io/crates/nalgebra) vectors, matrices, transformations, etc. animation.
+* `"nalgebra"` - enables [nalgebra](https://crates.io/crates/nalgebra) vectors, matrices, transformations, etc.
+  animation.
 * `"cgmath"` - enables [cgmath](https://crates.io/crates/cgmath) vectors, matrices, etc. animation.
 * `"glam"` - enables [glam](https://crates.io/crates/glam) vectors, matrices, etc. animation.
 * `"palette"` - enables [palette](https://crates.io/crates/palette) colors interpolation.
 * `"web-time"` - use `web_time::*` instead of `std::time::*` for `Instant` and `Duration` types. It doesn't change
-  anything for desktop platforms, but allows to use the same code for WASM. Enabled by default.
+  anything for desktop platforms, but allows to use the same code for WASM.
 
 ## Examples
 
 ### Live
 
-* Following a path using keyframes [[Live](https://monkin.github.io/glissade/poly/)] [[Source](https://github.com/monkin/glissade/tree/master/examples/poly)]
-* Animating a shape using Inertial [[Live](https://monkin.github.io/glissade/shape-animation/)] [[Source](https://github.com/monkin/glissade/tree/master/examples/shape-animation)]
-* A set of particles following the cursor made with Inertial [[Live](https://monkin.github.io/glissade/follow-cursor/)] [[Source](https://github.com/monkin/glissade/tree/master/examples/follow-cursor)]
+* Following a path using
+  keyframes [[Live](https://monkin.github.io/glissade/poly/)] [[Source](https://github.com/monkin/glissade/tree/master/examples/poly)]
+* Animating a shape using
+  Inertial [[Live](https://monkin.github.io/glissade/shape-animation/)] [[Source](https://github.com/monkin/glissade/tree/master/examples/shape-animation)]
+* A set of particles following the cursor made with
+  Inertial [[Live](https://monkin.github.io/glissade/follow-cursor/)] [[Source](https://github.com/monkin/glissade/tree/master/examples/follow-cursor)]
 
 ### Simple two-step `Animation`
 
@@ -113,6 +122,7 @@ fn main() {
 ```
 
 It prints the following output:
+
 ```text
 0.00s: 0.0000
 0.35s: 3.5000
@@ -126,7 +136,8 @@ It prints the following output:
 3.15s: 5.0000
 ```
 
-Try it yourself with `cargo run -p console-transition` or view the source code in [./examples/console-transition](https://github.com/monkin/glissade/tree/master/examples/console-transition).
+Try it yourself with `cargo run -p console-transition` or view the source code
+in [./examples/console-transition](https://github.com/monkin/glissade/tree/master/examples/console-transition).
 
 ### Smoothly change color using `Inertial`
 
@@ -165,6 +176,7 @@ fn main() {
 ```
 
 It prints the following output:
+
 ```text
 Static color for one second.
 0.00s: (255, 0, 0)
@@ -192,7 +204,8 @@ In the middle of the transition change direction to blue.
 4.50s: (0, 0, 255)
 ```
 
-Try it yourself with `cargo run -p console-inertial` or view the source code in [./examples/console-inertial](https://github.com/monkin/glissade/tree/master/examples/console-transition).
+Try it yourself with `cargo run -p console-inertial` or view the source code
+in [./examples/console-inertial](https://github.com/monkin/glissade/tree/master/examples/console-transition).
 
 ### Use the same code for `Animation`, `Inertial`, and `Stationary`
 
@@ -232,6 +245,7 @@ fn main() {
 ```
 
 It prints the following output:
+
 ```text
 Animation:
 0.00s: (0.0, 2.0)
@@ -262,8 +276,10 @@ Mapped animation:
 1.00s: "left: 100.00; top: 40.00;"
 ```
 
-Try it yourself with `cargo run -p animated` or view the source code in [./examples/animated](https://github.com/monkin/glissade/tree/master/examples/animated).
+Try it yourself with `cargo run -p animated` or view the source code
+in [./examples/animated](https://github.com/monkin/glissade/tree/master/examples/animated).
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](https://github.com/monkin/glissade/blob/master/LICENSE.md) file for details.
+This project is licensed under the MIT License - see
+the [LICENSE.md](https://github.com/monkin/glissade/blob/master/LICENSE.md) file for details.

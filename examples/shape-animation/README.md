@@ -7,3 +7,5 @@ The shape can change its size, position, and color even when the previous animat
 Live Example: https://monkin.github.io/glissade/shape-animation/
 
 ![image](./shape-animation-example.gif)
+
+Use `trunk serve` to run the example locally.
