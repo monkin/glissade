@@ -3,48 +3,57 @@
 <head>
     <meta charset="utf-8"/>
     <title>Glissade Inertial Example</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" type="text/css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
-    <script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/material-design-lite/1.3.0/material.indigo-pink.min.css"
+          rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/material-design-lite/1.3.0/material.min.js"></script>
     <style>
         body {
             font-family: 'Roboto', 'Helvetica', sans-serif;
             height: 100%;
         }
+
         fieldset {
             display: flex;
             gap: 1rem;
             margin: 1rem;
             flex-direction: column;
         }
+
         fieldset legend {
             width: 100%;
             margin-bottom: 0.5rem;
         }
+
         .control-panel button {
             margin: 0.5rem;
         }
+
         .animated-view {
             width: 100%;
             height: 100%;
             overflow: hidden;
         }
+
         .source-link {
             display: flex;
             flex-grow: 1;
             width: 100%;
             justify-content: flex-end;
         }
+
         .source-link, .source-link > a {
             display: flex;
             flex-direction: column;
             align-items: stretch;
         }
+
         .source-link > a, .source-link button {
             text-decoration: none;
         }
+
         .source-link .material-icons {
             margin-left: 0.5rem;
             font-size: 1.4rem;
