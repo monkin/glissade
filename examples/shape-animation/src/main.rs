@@ -12,7 +12,7 @@ use crate::enum_input::EnumInput;
 use cgmath::Vector2;
 use palette::LinSrgb;
 use rand::rngs::ThreadRng;
-use rand::Rng;
+use rand::RngExt;
 use yew::prelude::*;
 
 #[derive(Clone, PartialEq, Copy, Default, strum_macros::Display, strum_macros::EnumIter)]
@@ -25,7 +25,7 @@ pub enum Size {
 
 impl Size {
     fn random(rng: &mut ThreadRng) -> Self {
-        match rng.gen_range(0..3) {
+        match rng.random_range(0..3) {
             0 => Size::Small,
             1 => Size::Medium,
             _ => Size::Large,
@@ -52,7 +52,7 @@ pub enum Shape {
 
 impl Shape {
     fn random(rng: &mut ThreadRng) -> Self {
-        match rng.gen_range(0..2) {
+        match rng.random_range(0..2) {
             0 => Shape::Circle,
             _ => Shape::Square,
         }
@@ -88,7 +88,7 @@ impl From<HorizontalPosition> for f32 {
 
 impl HorizontalPosition {
     fn random(rng: &mut ThreadRng) -> Self {
-        match rng.gen_range(0..3) {
+        match rng.random_range(0..3) {
             0 => HorizontalPosition::Left,
             1 => HorizontalPosition::Center,
             _ => HorizontalPosition::Right,
@@ -106,7 +106,7 @@ pub enum VerticalPosition {
 
 impl VerticalPosition {
     fn random(rng: &mut ThreadRng) -> Self {
-        match rng.gen_range(0..3) {
+        match rng.random_range(0..3) {
             0 => VerticalPosition::Top,
             1 => VerticalPosition::Middle,
             _ => VerticalPosition::Bottom,
@@ -136,7 +136,7 @@ pub enum Color {
 
 impl Color {
     fn random(rng: &mut ThreadRng) -> Self {
-        match rng.gen_range(0..5) {
+        match rng.random_range(0..5) {
             0 => Color::Red,
             1 => Color::Green,
             2 => Color::Blue,
@@ -169,7 +169,7 @@ struct App {
 
 impl App {
     fn random() -> App {
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
         App {
             size: Size::random(&mut rng),
             shape: Shape::random(&mut rng),

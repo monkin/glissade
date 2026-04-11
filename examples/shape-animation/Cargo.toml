@@ -5,16 +5,16 @@ edition = "2021"
 publish = false
 
 [dependencies]
-yew = { version = "0.21", features = ["csr"] }
-uuid = { version = "1.10", features = ["v4", "js"] }
-strum = "0.26"
-strum_macros = "0.26"
+yew = { version = "0.23", features = ["csr"] }
+uuid = { version = "1.23", features = ["v4", "js"] }
+strum = "0.28"
+strum_macros = "0.28"
 palette = "0.7"
 cgmath = "0.18"
 web-sys = { version = "0.3", features = ["Window", "console"] }
 js-sys = "0.3"
 wasm-bindgen = "0.2"
 web-time = "1.1"
-rand = "0.8"
+rand = "0.10"
 
 glissade = { path = "../../glissade", version = "0.2", features = ["palette", "cgmath", "web-time"] }
