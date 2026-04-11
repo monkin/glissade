@@ -16,5 +16,6 @@ js-sys = "0.3"
 wasm-bindgen = "0.2"
 web-time = "1.1"
 rand = "0.10"
+getrandom = { version = "0.4", features = ["wasm_js"] }
 
 glissade = { path = "../../glissade", version = "0.2", features = ["palette", "cgmath", "web-time"] }
